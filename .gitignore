@@ -1,0 +1,18 @@
+# Python cache and artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore output files except the daily report
+output/*
+!output/daily_report.json
+
+# Ignore generated scheduler/runtime files
+output/scheduler.log
+output/strategy_status.json
+
+# Common editor/temp files
+*.swp
+*.swo
+.DS_Store
