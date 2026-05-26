@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-26T13:04:43.692964+00:00",
+  "timestamp": "2026-05-26T16:42:17.737505+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -22,7 +22,7 @@
     "profit_pct": -0.04987716714,
     "drawdown_pct": 0.054275120309599044,
     "trade_count": 196,
-    "timestamp": "2026-05-26T13:04:43.692964+00:00"
+    "timestamp": "2026-05-26T16:42:17.737505+00:00"
   },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -53,7 +53,7 @@
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
       "trade_count": 196,
-      "timestamp": "2026-05-26T13:04:43.692964+00:00"
+      "timestamp": "2026-05-26T16:42:17.737505+00:00"
     }
   }
 }
