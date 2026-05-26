@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-26T16:42:17.737505+00:00",
+  "timestamp": "2026-05-26T20:12:35.908245+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -22,7 +22,26 @@
     "profit_pct": -0.04987716714,
     "drawdown_pct": 0.054275120309599044,
     "trade_count": 196,
-    "timestamp": "2026-05-26T16:42:17.737505+00:00"
+    "timestamp": "2026-05-26T20:12:35.908245+00:00"
+  },
+  "dsr": {
+    "dsr": -12.8656,
+    "note": "Estimated DSR from profit, drawdown and trades."
+  },
+  "kelly": {
+    "kelly_fraction": 0.0,
+    "half_kelly": 0.0,
+    "max_position_usdt": 0.0,
+    "note": "Estimated Kelly fraction from backtest metrics."
+  },
+  "costs": {
+    "commissioni_stimate": 196.0,
+    "slippage_stimato": 98.0,
+    "funding_rate": 0.0,
+    "tassa_box3_stimata": 21.6,
+    "tassa_box1_rischio": 0.0,
+    "profit_netto_stimato": -267.48,
+    "note": "Estimated trading costs and tax liabilities from backtest metrics."
   },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -31,6 +50,21 @@
     "dsr": {
       "dsr": -12.8656,
       "note": "Estimated DSR from profit, drawdown and trades."
+    },
+    "kelly": {
+      "kelly_fraction": 0.0,
+      "half_kelly": 0.0,
+      "max_position_usdt": 0.0,
+      "note": "Estimated Kelly fraction from backtest metrics."
+    },
+    "costs": {
+      "commissioni_stimate": 196.0,
+      "slippage_stimato": 98.0,
+      "funding_rate": 0.0,
+      "tassa_box3_stimata": 21.6,
+      "tassa_box1_rischio": 0.0,
+      "profit_netto_stimato": -267.48,
+      "note": "Estimated trading costs and tax liabilities from backtest metrics."
     },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -53,7 +87,7 @@
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
       "trade_count": 196,
-      "timestamp": "2026-05-26T16:42:17.737505+00:00"
+      "timestamp": "2026-05-26T20:12:35.908245+00:00"
     }
   }
 }

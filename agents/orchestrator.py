@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 import zipfile
 from agents.agent2_dsr import compute_dsr
+from agents.agent3_kelly import compute_kelly_fraction
+from agents.agent4_costs import estimate_costs
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -171,12 +173,16 @@ def build_report() -> dict:
     summary["timestamp"] = now
 
     dsr = compute_dsr(summary)
+    kelly = compute_kelly_fraction(summary)
+    costs = estimate_costs(summary)
 
     strategy_status = {
         "backtest_file": summary["meta_file"],
         "run_id": summary.get("run_id"),
         "strategy_name": summary.get("strategy_name"),
         "dsr": dsr,
+        "kelly": kelly,
+        "costs": costs,
         "summary": summary,
     }
 
@@ -184,6 +190,9 @@ def build_report() -> dict:
         "timestamp": now,
         "status": "ok",
         "backtest_summary": summary,
+        "dsr": dsr,
+        "kelly": kelly,
+        "costs": costs,
         "strategy_status": strategy_status,
     }
     return report

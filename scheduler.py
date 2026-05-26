@@ -8,7 +8,7 @@ import subprocess
 
 BASE_DIR = Path(__file__).resolve().parent
 LOG_FILE = BASE_DIR / "output" / "scheduler.log"
-REMOTE_URL = os.environ.get("GIT_REMOTE_URL", "https://github.com/polyglottentacle/zeus-reports")
+REMOTE_URL = os.environ.get("GIT_REMOTE_URL", "https://github.com/polyglottentacle/zeus-reports.git")
 
 
 def log(message: str) -> None:
