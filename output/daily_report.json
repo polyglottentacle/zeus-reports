@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-26T21:22:46.804207+00:00",
+  "timestamp": "2026-05-26T21:31:24.422488+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -22,7 +22,7 @@
     "profit_pct": -0.04987716714,
     "drawdown_pct": 0.054275120309599044,
     "trade_count": 196,
-    "timestamp": "2026-05-26T21:22:46.804207+00:00"
+    "timestamp": "2026-05-26T21:31:24.422488+00:00"
   },
   "dsr": {
     "dsr": -12.8656,
@@ -42,6 +42,20 @@
     "tassa_box1_rischio": 0.0,
     "profit_netto_stimato": -267.48,
     "note": "Estimated trading costs and tax liabilities from backtest metrics."
+  },
+  "mirofish": {
+    "timestamp": "2026-05-26T21:31:24.449854+00:00",
+    "source": "mirofish",
+    "enabled": false,
+    "status": "disabled",
+    "message": "MiroFish integration is not available.",
+    "scenario_count": 0,
+    "scenarios": [],
+    "recommendation": "Provide LLM_API_KEY and ZEP_API_KEY in the root .env and ensure MiroFish is cloned under the workspace.",
+    "errors": [
+      "LLM_API_KEY not configured.",
+      "ZEP_API_KEY not configured."
+    ]
   },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -66,6 +80,11 @@
       "profit_netto_stimato": -267.48,
       "note": "Estimated trading costs and tax liabilities from backtest metrics."
     },
+    "mirofish": {
+      "status": "disabled",
+      "scenario_count": 0,
+      "message": "MiroFish integration is not available."
+    },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
       "strategy_name": "EmaRsiAdxVolumePlusStrategy",
@@ -87,7 +106,7 @@
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
       "trade_count": 196,
-      "timestamp": "2026-05-26T21:22:46.804207+00:00"
+      "timestamp": "2026-05-26T21:31:24.422488+00:00"
     }
   }
 }

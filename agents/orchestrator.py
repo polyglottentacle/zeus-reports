@@ -5,6 +5,7 @@ import zipfile
 from agents.agent2_dsr import compute_dsr
 from agents.agent3_kelly import compute_kelly_fraction
 from agents.agent4_costs import estimate_costs
+from mirofish_runner.run_daily import run_daily_scenarios
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -176,6 +177,18 @@ def build_report() -> dict:
     kelly = compute_kelly_fraction(summary)
     costs = estimate_costs(summary)
 
+    try:
+        mirofish_forecast = run_daily_scenarios()
+    except Exception as exc:
+        mirofish_forecast = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "error",
+            "message": "MiroFish integration failed.",
+            "error": str(exc),
+            "scenario_count": 0,
+            "scenarios": [],
+        }
+
     strategy_status = {
         "backtest_file": summary["meta_file"],
         "run_id": summary.get("run_id"),
@@ -183,6 +196,11 @@ def build_report() -> dict:
         "dsr": dsr,
         "kelly": kelly,
         "costs": costs,
+        "mirofish": {
+            "status": mirofish_forecast.get("status"),
+            "scenario_count": mirofish_forecast.get("scenario_count"),
+            "message": mirofish_forecast.get("message"),
+        },
         "summary": summary,
     }
 
@@ -193,6 +211,7 @@ def build_report() -> dict:
         "dsr": dsr,
         "kelly": kelly,
         "costs": costs,
+        "mirofish": mirofish_forecast,
         "strategy_status": strategy_status,
     }
     return report

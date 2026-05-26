@@ -14,7 +14,9 @@ output/strategy_status.json
 
 # Ignore installed repos and local sensitive files
 freqtrade/
-mirofish_runner/
+MiroFish/
+MiroFish/node_modules/
+MiroFish/**/__pycache__/
 hostinger credenziali.txt
 
 # Common editor/temp files
