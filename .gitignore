@@ -12,6 +12,11 @@ output/*
 output/scheduler.log
 output/strategy_status.json
 
+# Ignore installed repos and local sensitive files
+freqtrade/
+mirofish_runner/
+hostinger credenziali.txt
+
 # Common editor/temp files
 *.swp
 *.swo

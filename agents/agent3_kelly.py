@@ -15,9 +15,9 @@ def compute_kelly_fraction(backtest_summary: dict) -> dict:
     profit_factor = backtest_summary.get("profit_factor")
 
     if win_rate is not None and avg_profit is not None and avg_loss is not None:
-        source = "avg_profit"  # explicit average values
-    elif win_rate is not None and profit_pct is not None and profit_factor is not None:
-        source = "inferred"
+        source = "avg_profit"
+    elif win_rate is not None and profit_factor is not None:
+        source = "profit_factor"
     else:
         source = None
 
@@ -27,18 +27,15 @@ def compute_kelly_fraction(backtest_summary: dict) -> dict:
             if source == "avg_profit":
                 avg_profit = float(avg_profit)
                 avg_loss = float(avg_loss)
+                if avg_loss == 0:
+                    raise ValueError("avg_loss is zero")
+                b = avg_profit / abs(avg_loss)
             else:
-                profit_pct = float(profit_pct)
                 profit_factor = float(profit_factor)
-                if win_rate <= 0 or win_rate >= 1 or profit_factor == 1:
-                    raise ValueError("Cannot infer average profit/loss")
-                avg_loss = profit_pct / ((1 - win_rate) * (profit_factor - 1))
-                avg_profit = profit_factor * ((1 - win_rate) / win_rate) * avg_loss
+                if profit_factor <= 0:
+                    raise ValueError("Invalid profit_factor")
+                b = profit_factor
 
-            if avg_loss == 0:
-                raise ValueError("avg_loss is zero")
-
-            b = avg_profit / abs(avg_loss)
             if b > 0:
                 f = win_rate - (1 - win_rate) / b
                 f = max(min(f, 1.0), 0.0)
