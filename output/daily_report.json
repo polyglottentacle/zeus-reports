@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-05-26T13:04:43.692964+00:00",
+  "status": "ok",
+  "backtest_summary": {
+    "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
+    "strategy_name": "EmaRsiAdxVolumePlusStrategy",
+    "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
+    "backtest_start_time": "2024-01-02T06:00:00+00:00",
+    "backtest_end_time": "2026-05-26T10:00:00+00:00",
+    "profit_total": -0.04987716714,
+    "profit_total_abs": -49.87716714,
+    "max_relative_drawdown": 0.054275120309599044,
+    "max_drawdown_abs": 54.527518700000016,
+    "total_trades": 196,
+    "trade_count_long": 196,
+    "trade_count_short": 0,
+    "winrate": 0.3112244897959184,
+    "cagr": -0.021116555519132274,
+    "sortino": -1.2404819551069126,
+    "sharpe": -0.6426911459260518,
+    "profit_factor": 0.6789643828235471,
+    "profit_pct": -0.04987716714,
+    "drawdown_pct": 0.054275120309599044,
+    "trade_count": 196,
+    "timestamp": "2026-05-26T13:04:43.692964+00:00"
+  },
+  "strategy_status": {
+    "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
+    "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
+    "strategy_name": "EmaRsiAdxVolumePlusStrategy",
+    "dsr": {
+      "dsr": -12.8656,
+      "note": "Estimated DSR from profit, drawdown and trades."
+    },
+    "summary": {
+      "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
+      "strategy_name": "EmaRsiAdxVolumePlusStrategy",
+      "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
+      "backtest_start_time": "2024-01-02T06:00:00+00:00",
+      "backtest_end_time": "2026-05-26T10:00:00+00:00",
+      "profit_total": -0.04987716714,
+      "profit_total_abs": -49.87716714,
+      "max_relative_drawdown": 0.054275120309599044,
+      "max_drawdown_abs": 54.527518700000016,
+      "total_trades": 196,
+      "trade_count_long": 196,
+      "trade_count_short": 0,
+      "winrate": 0.3112244897959184,
+      "cagr": -0.021116555519132274,
+      "sortino": -1.2404819551069126,
+      "sharpe": -0.6426911459260518,
+      "profit_factor": 0.6789643828235471,
+      "profit_pct": -0.04987716714,
+      "drawdown_pct": 0.054275120309599044,
+      "trade_count": 196,
+      "timestamp": "2026-05-26T13:04:43.692964+00:00"
+    }
+  }
+}
