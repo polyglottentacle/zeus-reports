@@ -1,57 +1,85 @@
-def compute_kelly_fraction(backtest_summary: dict) -> dict:
-    """Estimate Kelly fraction, half-Kelly and position sizing from backtest metrics."""
+from typing import List
+
+
+def _safe_mean(values: List[float]) -> float:
+    values = [float(v) for v in values if v is not None]
+    return sum(values) / len(values) if values else 0.0
+
+
+def _extract_profit_ratios(trades: List[dict]) -> List[float]:
+    ratios = []
+    for trade in trades or []:
+        ratio = trade.get("profit_ratio")
+        if ratio is None:
+            profit_abs = trade.get("profit_abs")
+            stake = trade.get("stake_amount")
+            if stake is None:
+                amount = trade.get("amount")
+                open_rate = trade.get("open_rate")
+                if amount is not None and open_rate is not None:
+                    stake = abs(amount) * float(open_rate)
+            if profit_abs is not None and stake:
+                ratio = float(profit_abs) / float(stake)
+        if ratio is not None:
+            try:
+                ratios.append(float(ratio))
+            except (TypeError, ValueError):
+                continue
+    return ratios
+
+
+def compute_kelly_fraction(backtest_summary: dict, trades: List[dict] = None) -> dict:
+    """Compute Kelly fraction using win rate and average win/loss ratios."""
     result = {
         "kelly_fraction": None,
         "half_kelly": None,
         "max_position_usdt": None,
+        "win_rate": None,
+        "avg_win_ratio": None,
+        "avg_loss_ratio": None,
         "note": "Insufficient metrics for Kelly calculation.",
     }
 
-    win_rate = backtest_summary.get("win_rate") or backtest_summary.get("winrate")
-    avg_profit = backtest_summary.get("avg_profit_pct") or backtest_summary.get("avg_profit")
-    avg_loss = backtest_summary.get("avg_loss_pct") or backtest_summary.get("avg_loss")
-
-    profit_pct = backtest_summary.get("profit_pct") or backtest_summary.get("profit_total")
-    profit_factor = backtest_summary.get("profit_factor")
-
-    if win_rate is not None and avg_profit is not None and avg_loss is not None:
-        source = "avg_profit"
-    elif win_rate is not None and profit_factor is not None:
-        source = "profit_factor"
+    trade_returns = _extract_profit_ratios(trades) if trades else []
+    if trade_returns:
+        winners = [r for r in trade_returns if r > 0]
+        losers = [abs(r) for r in trade_returns if r < 0]
+        p = len(winners) / len(trade_returns)
+        avg_win = _safe_mean(winners)
+        avg_loss = _safe_mean(losers)
     else:
-        source = None
+        p = float(backtest_summary.get("win_rate") or backtest_summary.get("winrate") or 0.0)
+        avg_win = float(backtest_summary.get("avg_profit_pct") or backtest_summary.get("avg_profit") or 0.0)
+        avg_loss = abs(float(backtest_summary.get("avg_loss_pct") or backtest_summary.get("avg_loss") or 0.0))
 
-    if source is not None:
-        try:
-            win_rate = float(win_rate)
-            if source == "avg_profit":
-                avg_profit = float(avg_profit)
-                avg_loss = float(avg_loss)
-                if avg_loss == 0:
-                    raise ValueError("avg_loss is zero")
-                b = avg_profit / abs(avg_loss)
-            else:
-                profit_factor = float(profit_factor)
-                if profit_factor <= 0:
-                    raise ValueError("Invalid profit_factor")
-                b = profit_factor
+    q = 1.0 - p
+    if avg_loss <= 0 or avg_win <= 0:
+        result["note"] = "Non ci sono vittorie o perdite sufficienti per calcolare Kelly."
+        return result
 
-            if b > 0:
-                f = win_rate - (1 - win_rate) / b
-                f = max(min(f, 1.0), 0.0)
-                half_f = round(f / 2, 4)
+    b = avg_win / avg_loss
+    if b <= 0:
+        result["note"] = "Rapporto tra vincite e perdite non valido per Kelly."
+        return result
 
-                stake = backtest_summary.get("stake_amount") or backtest_summary.get("stake") or backtest_summary.get("equity") or backtest_summary.get("wallet_balance") or 1000
-                try:
-                    stake = float(stake)
-                except Exception:
-                    stake = 1000.0
+    f = (p * b - q) / b
+    f = max(min(f, 1.0), 0.0)
+    stake = backtest_summary.get("stake_amount") or backtest_summary.get("starting_balance") or backtest_summary.get("equity") or 1000.0
+    try:
+        stake = float(stake)
+    except (TypeError, ValueError):
+        stake = 1000.0
 
-                result["kelly_fraction"] = round(f, 4)
-                result["half_kelly"] = half_f
-                result["max_position_usdt"] = round(stake * f, 2)
-                result["note"] = "Estimated Kelly fraction from backtest metrics."
-        except Exception:
-            result["note"] = "Error computing Kelly fraction."
-
+    result.update({
+        "kelly_fraction": round(f, 6),
+        "half_kelly": round(f / 2, 6),
+        "max_position_usdt": round(stake * f, 2),
+        "win_rate": round(p, 6),
+        "avg_win_ratio": round(avg_win, 6),
+        "avg_loss_ratio": round(avg_loss, 6),
+        "note": (
+            "Kelly fraction calcolata con la formula f=(p*b-q)/b,"
+            " dove p è la probabilità di successo e b è avg_win/avg_loss."
+        ),
+    })
     return result

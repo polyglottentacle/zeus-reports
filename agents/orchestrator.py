@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 FREQTRADE_RESULTS_DIR = BASE_DIR / "freqtrade" / "user_data" / "backtest_results"
 OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+MIROFISH_FORECAST_DIR = BASE_DIR / "mirofish_runner" / "forecast_history"
 
 
 def find_latest_meta() -> Path:
@@ -51,76 +52,105 @@ def format_timestamp(value):
         return str(value)
 
 
+def find_latest_mirofish_forecast() -> Path:
+    if not MIROFISH_FORECAST_DIR.exists():
+        return None
+
+    forecast_files = sorted(
+        MIROFISH_FORECAST_DIR.glob("*.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    return forecast_files[0] if forecast_files else None
+
+
+def load_mirofish_forecast(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _zip_path_from_meta(meta_path: Path) -> Path:
+    zip_path = meta_path.with_suffix("")
+    zip_path = zip_path.with_suffix("")
+    return zip_path.with_suffix(".zip")
+
+
+def _unwrap_strategy_payload(payload: dict) -> dict:
+    if isinstance(payload, dict) and len(payload) == 1:
+        first_value = next(iter(payload.values()))
+        if isinstance(first_value, dict):
+            return first_value
+    return payload
+
+
 def extract_backtest_metrics_from_zip(path: Path) -> dict:
     result = {}
     try:
-        zip_path = path.with_suffix("").with_suffix(".zip")
+        zip_path = _zip_path_from_meta(path)
         if not zip_path.exists():
             return result
 
         with zipfile.ZipFile(zip_path, "r") as z:
-            for name in z.namelist():
-                if not name.endswith(".json"):
-                    continue
-                if name.endswith("_config.json"):
-                    continue
+            json_name = zip_path.stem + ".json"
+            if json_name not in z.namelist():
+                return result
 
-                try:
-                    content = json.loads(z.read(name).decode("utf-8"))
-                except Exception:
-                    continue
+            content = json.loads(z.read(json_name).decode("utf-8"))
+            strategy_payload = None
+            if "strategy" in content:
+                strategy_payload = _unwrap_strategy_payload(content["strategy"])
+            elif "strategy_comparison" in content:
+                strategy_payload = _unwrap_strategy_payload(content["strategy_comparison"])
+            else:
+                strategy_payload = content
 
-                if not isinstance(content, dict):
-                    continue
+            if isinstance(strategy_payload, dict):
+                for key in [
+                    "profit_pct",
+                    "profit_total",
+                    "profit_total_abs",
+                    "max_relative_drawdown",
+                    "max_drawdown_abs",
+                    "trade_count",
+                    "total_trades",
+                    "trade_count_long",
+                    "trade_count_short",
+                    "winrate",
+                    "cagr",
+                    "sortino",
+                    "sharpe",
+                    "profit_factor",
+                    "profit_mean",
+                    "avg_profit_pct",
+                    "avg_loss_pct",
+                    "stake_amount",
+                    "starting_balance",
+                    "backtest_start",
+                    "backtest_end",
+                ]:
+                    if key in strategy_payload:
+                        result[key] = strategy_payload[key]
 
-                strategy_payload = None
-                if "strategy" in content and isinstance(content["strategy"], dict):
-                    nested = content["strategy"]
-                    if len(nested) == 1 and isinstance(next(iter(nested.values())), dict):
-                        strategy_payload = next(iter(nested.values()))
-                    else:
-                        strategy_payload = nested
-                elif "strategy_comparison" in content and isinstance(content["strategy_comparison"], dict):
-                    nested = content["strategy_comparison"]
-                    if len(nested) == 1 and isinstance(next(iter(nested.values())), dict):
-                        strategy_payload = next(iter(nested.values()))
-                    else:
-                        strategy_payload = nested
-                else:
-                    strategy_payload = content
+                trades = strategy_payload.get("trades")
+                if isinstance(trades, list):
+                    result["trades"] = trades
+                    result["trade_count"] = len(trades)
+                    result["total_trades"] = len(trades)
 
-                if isinstance(strategy_payload, dict):
+                performance = strategy_payload.get("performance")
+                if isinstance(performance, dict):
                     for key in [
                         "profit_pct",
-                        "profit_total",
-                        "profit_total_abs",
-                        "max_relative_drawdown",
-                        "max_drawdown_abs",
+                        "drawdown_pct",
                         "trade_count",
-                        "total_trades",
-                        "trade_count_long",
-                        "trade_count_short",
-                        "winrate",
-                        "cagr",
-                        "sortino",
-                        "sharpe",
-                        "profit_factor",
+                        "win_rate",
+                        "avg_profit_pct",
+                        "avg_loss_pct",
                     ]:
-                        if key in strategy_payload:
-                            result[key] = strategy_payload[key]
-
-                    performance = strategy_payload.get("performance")
-                    if isinstance(performance, dict):
-                        for key in [
-                            "profit_pct",
-                            "drawdown_pct",
-                            "trade_count",
-                            "win_rate",
-                            "avg_profit_pct",
-                            "avg_loss_pct",
-                        ]:
-                            if key in performance:
-                                result[key] = performance[key]
+                        if key in performance:
+                            result[key] = performance[key]
 
         if "profit_pct" not in result and "profit_total" in result:
             result["profit_pct"] = result["profit_total"]
@@ -170,24 +200,36 @@ def build_report() -> dict:
     }
 
     metrics = extract_backtest_metrics_from_zip(latest_meta)
+    trades = metrics.pop("trades", [])
     summary.update(metrics)
     summary["timestamp"] = now
 
-    dsr = compute_dsr(summary)
-    kelly = compute_kelly_fraction(summary)
-    costs = estimate_costs(summary)
+    dsr = compute_dsr(summary, trades)
+    kelly = compute_kelly_fraction(summary, trades)
+    costs = estimate_costs(summary, trades)
 
-    try:
-        mirofish_forecast = run_daily_scenarios()
-    except Exception as exc:
-        mirofish_forecast = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "status": "error",
-            "message": "MiroFish integration failed.",
-            "error": str(exc),
-            "scenario_count": 0,
-            "scenarios": [],
-        }
+    mirofish_forecast = None
+    latest_forecast_path = find_latest_mirofish_forecast()
+    if latest_forecast_path is not None:
+        mirofish_forecast = load_mirofish_forecast(latest_forecast_path)
+        if mirofish_forecast:
+            mirofish_forecast["loaded_from"] = str(latest_forecast_path.name)
+            mirofish_forecast["message"] = (
+                mirofish_forecast.get("message", "Loaded latest MiroFish forecast from disk.")
+            )
+
+    if mirofish_forecast is None:
+        try:
+            mirofish_forecast = run_daily_scenarios()
+        except Exception as exc:
+            mirofish_forecast = {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "status": "error",
+                "message": "MiroFish integration failed.",
+                "error": str(exc),
+                "scenario_count": 0,
+                "scenarios": [],
+            }
 
     strategy_status = {
         "backtest_file": summary["meta_file"],

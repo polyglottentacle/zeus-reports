@@ -5,7 +5,7 @@ import sys
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 BASE_DIR = Path(__file__).resolve().parent
 SCENARIOS_DIR = BASE_DIR / "scenarios"
@@ -18,6 +18,8 @@ MIROFISH_BACKEND = MIROFISH_ROOT / "backend"
 MIROFISH_SIMULATION_SCRIPT = MIROFISH_BACKEND / "scripts" / "run_parallel_simulation.py"
 MIROFISH_RUN_DIR = FORECAST_HISTORY_DIR / "mirofish_runs"
 MIROFISH_RUN_DIR.mkdir(parents=True, exist_ok=True)
+FREQTRADE_DATA_FILE = BASE_DIR.parent / "freqtrade" / "user_data" / "data" / "binance" / "BTC_USDT-1h.feather"
+MAX_MIROFISH_AGENTS = 100
 
 
 def _load_env_value(name: str) -> Optional[str]:
@@ -55,6 +57,38 @@ def _collect_existing_scenarios() -> List[Dict]:
     return scenarios
 
 
+def _get_data_reference() -> str:
+    if FREQTRADE_DATA_FILE.exists():
+        return (
+            "Use the last 30 days of BTC/USDT market data from Freqtrade "
+            f"at {FREQTRADE_DATA_FILE}."
+        )
+    return "Use the Zeus BTC/USDT Freqtrade dataset if available."
+
+
+def _build_agent_configs(agent_count: int = MAX_MIROFISH_AGENTS) -> List[Dict[str, Any]]:
+    configs = []
+    for agent_id in range(1, agent_count + 1):
+        configs.append(
+            {
+                "agent_id": agent_id,
+                "entity_uuid": f"zeus_agent_{agent_id}",
+                "entity_name": f"Zeus Market Agent {agent_id}",
+                "entity_type": "forecast",
+                "activity_level": 0.5,
+                "posts_per_hour": 0.5 + 0.3 * ((agent_id % 5) / 4),
+                "comments_per_hour": 0.5,
+                "active_hours": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+                "response_delay_min": 5,
+                "response_delay_max": 40,
+                "sentiment_bias": 0.0,
+                "stance": "neutral",
+                "influence_weight": 1.0,
+            }
+        )
+    return configs
+
+
 def _count_jsonl_records(path: Path) -> int:
     if not path.exists():
         return 0
@@ -89,12 +123,15 @@ def _build_simulation_config() -> Dict:
         "simulation_id": f"zeus_mirofish_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
         "project_id": "zeus",
         "graph_id": "zeus_graph",
-        "simulation_requirement": "Generate a short daily scenario forecast for Zeus using MiroFish.",
+        "simulation_requirement": (
+            "Generate a daily Zeus market forecast using the last 30 days of BTC/USDT data "
+            "from Freqtrade, keeping the simulation under 40 rounds and within the Zeus agent limit."
+        ),
         "time_config": {
-            "total_simulation_hours": 6,
+            "total_simulation_hours": 40,
             "minutes_per_round": 60,
-            "agents_per_hour_min": 3,
-            "agents_per_hour_max": 10,
+            "agents_per_hour_min": 20,
+            "agents_per_hour_max": 60,
             "peak_hours": [19, 20, 21, 22],
             "off_peak_hours": [0, 1, 2, 3, 4, 5],
             "peak_activity_multiplier": 1.2,
@@ -102,33 +139,24 @@ def _build_simulation_config() -> Dict:
             "morning_activity_multiplier": 0.5,
             "work_activity_multiplier": 0.7,
         },
-        "agent_configs": [
-            {
-                "agent_id": 1,
-                "entity_uuid": "zeus_forecast_agent_1",
-                "entity_name": "Zeus Forecast Agent",
-                "entity_type": "forecast",
-                "activity_level": 0.5,
-                "posts_per_hour": 1.0,
-                "comments_per_hour": 0.5,
-                "active_hours": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-                "response_delay_min": 5,
-                "response_delay_max": 30,
-                "sentiment_bias": 0.0,
-                "stance": "neutral",
-                "influence_weight": 1.0,
-            }
-        ],
+        "agent_configs": _build_agent_configs(),
         "event_config": {
             "initial_posts": [
                 {
-                    "content": "Generate a daily market forecast for Zeus operations, strategy, and sentiment.",
+                    "content": (
+                        "Use the last 30 days of BTC/USDT market performance from Zeus Freqtrade and "
+                        "generate a market forecast focused on risk, sentiment, liquidity, and trading strategy."
+                    ),
                     "author": "Zeus Forecast Agent",
                     "timestamp": timestamp,
                 }
             ],
-            "hot_topics": ["crypto", "trading", "market", "AI", "strategy"],
-            "narrative_direction": "forecast market sentiment and risk factors relevant to the Zeus strategy.",
+            "hot_topics": ["BTC/USDT", "crypto", "market sentiment", "risk", "volatility"],
+            "narrative_direction": (
+                "Focus on a low-budget forecast using 30 days of BTC/USDT input, constrained to 40 simulation rounds "
+                "and a maximum of 500 agents."
+            ),
+            "source_data_reference": _get_data_reference(),
         },
         "twitter_config": {
             "platform": "twitter",
@@ -187,7 +215,7 @@ def _run_mirofish_simulation() -> Dict:
         str(config_path),
         "--no-wait",
         "--max-rounds",
-        "8",
+        "40",
     ]
 
     result = subprocess.run(
@@ -261,7 +289,10 @@ def run_daily_scenarios() -> Dict:
     existing_scenarios = _collect_existing_scenarios()
     forecast = _build_mirofish_forecast(existing_scenarios)
 
-    output_file = FORECAST_HISTORY_DIR / f"forecast_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = FORECAST_HISTORY_DIR / f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    if output_file.exists():
+        output_file = FORECAST_HISTORY_DIR / f"{datetime.now(timezone.utc).strftime('%Y-%m-%d_%H%M%S')}.json"
+
     output_file.write_text(json.dumps(forecast, indent=2, ensure_ascii=False), encoding="utf-8")
     return forecast
 
