@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv(r'C:/Users/docum/Desktop/zeus/.env')
+import csv
 import json
 import os
 import subprocess
@@ -6,6 +9,13 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+# Python interpreter corretto: legge PYTHON_EXECUTABLE da .env o usa il percorso codex
+_CODEX_PYTHON = r"C:\Users\docum\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
+PYTHON_EXECUTABLE = (
+    os.environ.get("PYTHON_EXECUTABLE")
+    or (_CODEX_PYTHON if Path(_CODEX_PYTHON).exists() else sys.executable)
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 SCENARIOS_DIR = BASE_DIR / "scenarios"
@@ -193,11 +203,87 @@ def _load_simulation_summary(simulation_dir: Path) -> Dict:
     }
 
 
+def _generate_agent_profiles(run_dir: Path, agent_count: int) -> None:
+    """
+    Genera i file profilo agenti richiesti da OASIS prima della simulazione.
+    - twitter_profiles.csv  → colonne: user_char, username, description
+    - reddit_profiles.json  → lista di {persona, mbti, gender, age, country, username, realname, bio}
+    """
+    # Archetipi trader BTC variati (bullish / bearish / neutral)
+    _ARCHETYPES = [
+        ("Retail crypto trader focused on momentum and trend following in BTC/USDT markets.",
+         "ENFP", "M", 28, "Italy",   "momentum_mike",  "Mike Rossi",    "Crypto trader obsessed with BTC momentum plays."),
+        ("Risk-averse institutional analyst who monitors macro signals and volatility regimes.",
+         "INTJ", "F", 35, "Germany", "macro_hanna",    "Hanna Bauer",   "Quantitative analyst tracking macro + crypto correlations."),
+        ("Contrarian bear who sees BTC valuations as fundamentally overextended.",
+         "ISTP", "M", 42, "USA",     "bear_thesis",    "David Chen",    "Skeptical economist questioning crypto narratives."),
+        ("Long-term HODLer who buys every dip and ignores short-term noise.",
+         "INFJ", "F", 31, "Brazil",  "hodl_forever",   "Sofia Lima",    "Diamond-hand BTC hodler since 2017."),
+        ("Algorithmic trader running Freqtrade strategies on BTC/USDT 1h timeframe.",
+         "INTP", "M", 26, "Spain",   "algo_zeus",      "Carlos García", "Quant dev optimizing EMA+RSI+ADX strategies on Freqtrade."),
+        ("Day trader focused on support/resistance levels and order flow.",
+         "ESTP", "F", 29, "France",  "sr_trader",      "Julie Dubois",  "Technical analyst specializing in S/R levels and volume."),
+        ("Crypto journalist covering market narratives and sentiment shifts.",
+         "ENFJ", "M", 33, "UK",      "crypto_news",    "James Wilson",  "Journalist tracking crypto sentiment and market narratives."),
+        ("Derivatives trader hedging BTC exposure using options and futures.",
+         "ENTJ", "F", 38, "Japan",   "deriv_hedge",    "Yuki Tanaka",   "Options trader using BTC derivatives for portfolio hedging."),
+        ("Retail investor who recently entered crypto and follows influencers.",
+         "ISFP", "M", 22, "India",   "newbie_btc",     "Raj Patel",     "New crypto investor learning TA and following market news."),
+        ("Portfolio manager balancing BTC allocation with traditional assets.",
+         "ISTJ", "F", 45, "Canada",  "portfolio_mgr",  "Linda Clarke",  "Asset manager integrating BTC into diversified portfolios."),
+    ]
+
+    # Scala archetipi fino ad agent_count con varianti numeriche
+    profiles_twitter = []
+    profiles_reddit = []
+
+    for i in range(agent_count):
+        base = _ARCHETYPES[i % len(_ARCHETYPES)]
+        idx = i // len(_ARCHETYPES)
+        suffix = f"_{idx}" if idx > 0 else ""
+        sentiment = ["bullish", "bearish", "neutral"][i % 3]
+
+        char = f"{base[0]} Current market sentiment: {sentiment}."
+        username = f"{base[4]}{suffix}"
+        realname = base[5]
+        description = f"{base[7] if idx == 0 else base[7].replace('.', f' (v{idx+1}).').replace('  ', ' ')}"
+
+        profiles_twitter.append({
+            "user_char": char,
+            "username": username,
+            "description": description,
+        })
+        profiles_reddit.append({
+            "persona": char,
+            "mbti": base[1],
+            "gender": base[2],
+            "age": base[3] + (idx * 2),
+            "country": base[6] if isinstance(base[6], str) else base[6],
+            "username": username,
+            "realname": realname,
+            "bio": description,
+        })
+
+    # Scrivi twitter_profiles.csv
+    csv_path = run_dir / "twitter_profiles.csv"
+    with csv_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["user_char", "username", "description"])
+        writer.writeheader()
+        writer.writerows(profiles_twitter)
+
+    # Scrivi reddit_profiles.json
+    json_path = run_dir / "reddit_profiles.json"
+    json_path.write_text(json.dumps(profiles_reddit, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
 def _run_mirofish_simulation() -> Dict:
     config = _build_simulation_config()
     run_timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
     run_dir = MIROFISH_RUN_DIR / f"run_{run_timestamp}"
     run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Genera i profili agenti richiesti da OASIS prima della simulazione
+    _generate_agent_profiles(run_dir, agent_count=MAX_MIROFISH_AGENTS)
 
     config_path = run_dir / "simulation_config.json"
     config_path.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -209,7 +295,7 @@ def _run_mirofish_simulation() -> Dict:
             env[key] = value
 
     command = [
-        sys.executable,
+        PYTHON_EXECUTABLE,
         str(MIROFISH_SIMULATION_SCRIPT),
         "--config",
         str(config_path),
@@ -300,3 +386,5 @@ def run_daily_scenarios() -> Dict:
 if __name__ == "__main__":
     forecast = run_daily_scenarios()
     print(json.dumps(forecast, indent=2, ensure_ascii=False))
+
+

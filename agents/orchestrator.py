@@ -53,15 +53,33 @@ def format_timestamp(value):
 
 
 def find_latest_mirofish_forecast() -> Path:
+    """Ritorna il forecast di OGGI solo se status=='ok' e enabled==True.
+    Salta i file dentro mirofish_runs/. Restituisce None → riesegue fresh."""
     if not MIROFISH_FORECAST_DIR.exists():
         return None
+
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 
     forecast_files = sorted(
         MIROFISH_FORECAST_DIR.glob("*.json"),
         key=lambda p: p.stat().st_mtime,
         reverse=True,
     )
-    return forecast_files[0] if forecast_files else None
+
+    for path in forecast_files:
+        # Ignora file nelle sottocartelle (es. mirofish_runs/)
+        if path.parent != MIROFISH_FORECAST_DIR:
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        # Usa solo il forecast di oggi con status ok
+        file_date = (data.get("timestamp") or "")[:10]
+        if file_date == today and data.get("status") == "ok" and data.get("enabled"):
+            return path
+
+    return None  # nessun forecast valido oggi → orchestrator riesegue fresh
 
 
 def load_mirofish_forecast(path: Path) -> dict:

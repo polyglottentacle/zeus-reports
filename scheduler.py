@@ -6,6 +6,13 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import subprocess
 
+# Python interpreter corretto: evita di usare sys.executable che potrebbe non avere i deps
+_CODEX_PYTHON = r"C:\Users\docum\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
+PYTHON_EXECUTABLE = (
+    os.environ.get("PYTHON_EXECUTABLE")
+    or (_CODEX_PYTHON if Path(_CODEX_PYTHON).exists() else sys.executable)
+)
+
 BASE_DIR = Path(__file__).resolve().parent
 LOG_FILE = BASE_DIR / "output" / "scheduler.log"
 REMOTE_URL = os.environ.get("GIT_REMOTE_URL", "https://github.com/polyglottentacle/zeus-reports.git")
@@ -127,7 +134,7 @@ def commit_and_push_report() -> None:
 
 def run_once() -> None:
     result = subprocess.run(
-        [sys.executable, "-m", "agents.orchestrator"],
+        [PYTHON_EXECUTABLE, "-m", "agents.orchestrator"],
         cwd=str(BASE_DIR),
         capture_output=True,
         text=True,
