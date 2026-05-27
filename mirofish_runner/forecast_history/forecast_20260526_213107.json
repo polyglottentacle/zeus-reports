@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-05-26T21:31:07.087974+00:00",
+  "source": "mirofish",
+  "enabled": false,
+  "status": "disabled",
+  "message": "MiroFish integration is not available.",
+  "scenario_count": 0,
+  "scenarios": [],
+  "recommendation": "Provide LLM_API_KEY and ZEP_API_KEY in the root .env and ensure MiroFish is cloned under the workspace.",
+  "errors": [
+    "LLM_API_KEY not configured.",
+    "ZEP_API_KEY not configured."
+  ]
+}
