@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-26T21:31:24.422488+00:00",
+  "timestamp": "2026-05-27T07:33:20.019164+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -22,7 +22,7 @@
     "profit_pct": -0.04987716714,
     "drawdown_pct": 0.054275120309599044,
     "trade_count": 196,
-    "timestamp": "2026-05-26T21:31:24.422488+00:00"
+    "timestamp": "2026-05-27T07:33:20.019164+00:00"
   },
   "dsr": {
     "dsr": -12.8656,
@@ -44,7 +44,7 @@
     "note": "Estimated trading costs and tax liabilities from backtest metrics."
   },
   "mirofish": {
-    "timestamp": "2026-05-26T21:31:24.449854+00:00",
+    "timestamp": "2026-05-26T23:47:37.832897+00:00",
     "source": "mirofish",
     "enabled": false,
     "status": "disabled",
@@ -55,7 +55,8 @@
     "errors": [
       "LLM_API_KEY not configured.",
       "ZEP_API_KEY not configured."
-    ]
+    ],
+    "loaded_from": "2026-05-26_234737.json"
   },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -106,7 +107,7 @@
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
       "trade_count": 196,
-      "timestamp": "2026-05-26T21:31:24.422488+00:00"
+      "timestamp": "2026-05-27T07:33:20.019164+00:00"
     }
   }
 }
