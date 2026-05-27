@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-27T14:49:14.503956+00:00",
+  "timestamp": "2026-05-27T14:55:52.347407+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -27,7 +27,7 @@
     "trade_count": 196,
     "profit_pct": -0.04987716714,
     "drawdown_pct": 0.054275120309599044,
-    "timestamp": "2026-05-27T14:49:14.503956+00:00"
+    "timestamp": "2026-05-27T14:55:52.347407+00:00"
   },
   "dsr": {
     "dsr": 0.0,
@@ -57,19 +57,18 @@
     "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
   },
   "mirofish": {
-    "timestamp": "2026-05-26T23:47:37.832897+00:00",
+    "timestamp": "2026-05-27T14:50:02.384737+00:00",
     "source": "mirofish",
     "enabled": false,
-    "status": "disabled",
-    "message": "MiroFish integration is not available.",
+    "status": "error",
+    "message": "MiroFish simulation could not be completed.",
     "scenario_count": 0,
     "scenarios": [],
     "recommendation": "Provide LLM_API_KEY and ZEP_API_KEY in the root .env and ensure MiroFish is cloned under the workspace.",
     "errors": [
-      "LLM_API_KEY not configured.",
-      "ZEP_API_KEY not configured."
+      "MiroFish simulation failed with return code 1.\nstdout: 错误: 缺少依赖 No module named 'camel'\n请先安装: pip install oasis-ai camel-ai\nstderr: "
     ],
-    "loaded_from": "2026-05-26_234737.json"
+    "loaded_from": "2026-05-27.json"
   },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -103,9 +102,9 @@
       "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
     },
     "mirofish": {
-      "status": "disabled",
+      "status": "error",
       "scenario_count": 0,
-      "message": "MiroFish integration is not available."
+      "message": "MiroFish simulation could not be completed."
     },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -133,7 +132,7 @@
       "trade_count": 196,
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
-      "timestamp": "2026-05-27T14:49:14.503956+00:00"
+      "timestamp": "2026-05-27T14:55:52.347407+00:00"
     }
   }
 }
