@@ -58,6 +58,8 @@ Report pubblico:
 https://raw.githubusercontent.com/polyglottentacle/zeus-reports/main/output/daily_report.json
 ```
 
+Nota: se il raw GitHub non e' accessibile dal runtime Hermes, usare il file locale dopo `git pull`.
+
 File locale generato:
 
 ```text
@@ -78,6 +80,37 @@ Se Hermes deve rispondere sullo stato Zeus, deve leggere soprattutto:
 - `mirofish.status`
 - `mirofish.scenario_count`
 - `mirofish.mirofish_run.total_actions`
+
+Checker ufficiale:
+
+```text
+hermes/check_zeus_report.py
+```
+
+Quando possibile, Hermes deve eseguire o replicare questo controllo prima di dare un verdetto:
+
+```bash
+python3 hermes/check_zeus_report.py
+```
+
+Il checker usa prima `output/daily_report.json` locale, se presente, e poi l'URL raw GitHub.
+Per forzare solo l'URL:
+
+```bash
+python3 hermes/check_zeus_report.py --url-only
+```
+
+Il checker produce:
+
+- `ok`: validazione dei campi obbligatori.
+- `sha256`: impronta del JSON letto.
+- `age_hours`: eta' del report.
+- `fresh`: true se il report ha meno di 24 ore.
+- `extract`: campi reali del report.
+- `verdict`: `RESTA_FLAT` oppure `TRADING_CANDIDATE`.
+
+Se `ok=false`, Hermes non deve dare un verdetto operativo.
+Se `fresh=false`, Hermes deve avvisare che il report e' vecchio.
 
 ## Interpretazione Operativa
 
@@ -131,6 +164,9 @@ Quando Olimpus chiede "stato Zeus", "puo' tradare?" o "verdetto operativo", usar
 ```text
 Zeus oggi: RESTA FLAT
 
+Report ok: <true/false>
+Fresh: <true/false>, age_hours=<valore reale>
+SHA256: <hash reale breve o completo>
 Strategia: <nome reale>
 Sharpe: <valore reale>
 Profitto: <valore reale>
@@ -194,3 +230,6 @@ Zeus oggi puo' tradare o deve restare flat?
 Controlla Sharpe, DSR, Kelly, costi e MiroFish. Dammi verdetto operativo.
 ```
 
+```text
+Esegui o replica hermes/check_zeus_report.py e dammi solo extract, fresh, sha256 e verdict.
+```
