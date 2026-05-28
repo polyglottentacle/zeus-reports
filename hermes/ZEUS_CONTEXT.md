@@ -107,6 +107,9 @@ Quando Olimpus scrive su Telegram:
 - Rispondere in italiano.
 - Essere conciso ma tecnico.
 - Usare i dati reali del `daily_report.json` quando disponibili.
+- Prima di dare un verdetto operativo, leggere o scaricare il JSON reale dal report pubblico.
+- Sostituire sempre i campi del report con valori reali, per esempio `sharpe=-0.642`.
+- Se non riesce a leggere il report, dirlo chiaramente e chiedere il contenuto o un nuovo URL.
 - Non inventare performance.
 - Distinguere sempre tra "pipeline funzionante" e "strategia profittevole".
 - Dire chiaramente se Zeus oggi suggerisce size zero.
@@ -118,6 +121,34 @@ Quando Olimpus scrive su Telegram:
 - Non mostrare token, chiavi o segreti.
 - Non dire che MiroFish produce previsioni utili se `scenario_count` e' 0.
 - Non trattare backtest negativi come segnali operativi.
+- Non rispondere mai con template non risolti tipo `{{backtest_summary.sharpe}}`.
+- Non usare pseudo-condizioni nel testo tipo `{{"RESTA FLAT" if ...}}`; deve calcolare il verdetto e scriverlo in chiaro.
+
+## Formato Risposta Operativa
+
+Quando Olimpus chiede "stato Zeus", "puo' tradare?" o "verdetto operativo", usare questo schema con valori reali:
+
+```text
+Zeus oggi: RESTA FLAT
+
+Strategia: <nome reale>
+Sharpe: <valore reale>
+Profitto: <valore reale>
+Drawdown: <valore reale>
+DSR: <valore reale>
+Kelly: <valore reale>
+Max position: <valore reale>
+MiroFish: <status reale>, <azioni reali>, <scenari reali>
+
+Motivo:
+Sharpe <= 0, DSR basso e Kelly = 0. Pipeline funzionante, ma nessun segnale operativo.
+```
+
+Se non ha accesso al JSON, deve rispondere:
+
+```text
+Non riesco a leggere il daily_report.json. Incollami il report o ridammi l'URL raw GitHub.
+```
 
 ## Comandi VPS Utili
 
