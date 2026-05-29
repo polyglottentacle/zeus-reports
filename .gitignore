@@ -19,6 +19,14 @@ MiroFish/node_modules/
 MiroFish/**/__pycache__/
 hostinger credenziali.txt
 
+# SECRETS — chiavi API, mai su GitHub
+.env
+*.env
+.env.*
+secrets/
+*secret*
+*credenziali*
+
 # Common editor/temp files
 *.swp
 *.swo

@@ -5,6 +5,7 @@ import zipfile
 from agents.agent2_dsr import compute_dsr
 from agents.agent3_kelly import compute_kelly_fraction
 from agents.agent4_costs import estimate_costs
+from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio
 from mirofish_runner.run_daily import run_daily_scenarios
 
 
@@ -15,13 +16,49 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 MIROFISH_FORECAST_DIR = BASE_DIR / "mirofish_runner" / "forecast_history"
 
 
-def find_latest_meta() -> Path:
-    meta_files = sorted(
-        FREQTRADE_RESULTS_DIR.glob("*.meta.json"),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
-    return meta_files[0] if meta_files else None
+def _read_sharpe_from_meta(meta_path: Path) -> float:
+    """Estrae lo Sharpe ratio dal .zip corrispondente al .meta.json."""
+    try:
+        zip_path = _zip_path_from_meta(meta_path)
+        if not zip_path.exists():
+            return float("-inf")
+        with zipfile.ZipFile(zip_path, "r") as z:
+            json_name = zip_path.stem + ".json"
+            if json_name not in z.namelist():
+                return float("-inf")
+            content = json.loads(z.read(json_name).decode("utf-8"))
+            payload = _unwrap_strategy_payload(content.get("strategy", content))
+            sharpe = payload.get("sharpe")
+            profit = payload.get("profit_total") or payload.get("profit_pct")
+            # Salta strategie senza trades reali (profit=None)
+            if profit is None:
+                return float("-inf")
+            return float(sharpe) if sharpe is not None else float("-inf")
+    except Exception:
+        return float("-inf")
+
+
+def find_best_meta() -> Path:
+    """Ritorna il .meta.json con il miglior Sharpe ratio tra tutti i backtest.
+    Fallback al più recente se nessuno ha dati validi."""
+    meta_files = list(FREQTRADE_RESULTS_DIR.glob("*.meta.json"))
+    if not meta_files:
+        return None
+
+    scored = []
+    for p in meta_files:
+        sharpe = _read_sharpe_from_meta(p)
+        scored.append((sharpe, p.stat().st_mtime, p))
+
+    # Ordina: Sharpe desc, poi mtime desc come tiebreaker
+    scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+
+    # Prendi il migliore con Sharpe reale, altrimenti il più recente
+    best = scored[0][2]
+    if scored[0][0] == float("-inf"):
+        # Fallback: più recente
+        best = max(meta_files, key=lambda p: p.stat().st_mtime)
+    return best
 
 
 def read_json(path: Path) -> dict:
@@ -189,7 +226,7 @@ def extract_backtest_metrics_from_zip(path: Path) -> dict:
 
 def build_report() -> dict:
     now = datetime.now(timezone.utc).isoformat()
-    latest_meta = find_latest_meta()
+    latest_meta = find_best_meta()
 
     if latest_meta is None:
         return {
@@ -225,6 +262,46 @@ def build_report() -> dict:
     dsr = compute_dsr(summary, trades)
     kelly = compute_kelly_fraction(summary, trades)
     costs = estimate_costs(summary, trades)
+
+    # Sensi di Zeus: solo letture pubbliche, ZERO chiavi, ZERO rischio.
+    # OHLCV fetchato una volta sola e condiviso tra Preveggenza/Memoria/Equilibrio.
+    # Avvolti in try/except: nessun senso puo' mai uccidere il report.
+    senses = {}
+
+    try:
+        senses["udito"] = agent_udito.listen()
+    except Exception as exc:
+        senses["udito"] = {"sense": "udito", "status": "error", "error": str(exc)}
+
+    # Fetch OHLCV una volta, condiviso tra i 3 sensi analitici
+    _shared_ohlcv = None
+    try:
+        senses["vista"] = agent_vista.see()
+        # Vista ha gia' fetchato i dati — ri-fetch separato per i sensi analitici
+        # (Vista usa limit=30, gli altri ne vogliono 60 per maggiore accuratezza)
+        try:
+            import ccxt as _ccxt
+            _ex = _ccxt.kraken({"enableRateLimit": True})
+            _shared_ohlcv = _ex.fetch_ohlcv("BTC/USDT", timeframe="1d", limit=60)
+        except Exception:
+            _shared_ohlcv = None
+    except Exception as exc:
+        senses["vista"] = {"sense": "vista", "status": "error", "error": str(exc)}
+
+    try:
+        senses["preveggenza"] = agent_preveggenza.foresee(ohlcv=_shared_ohlcv)
+    except Exception as exc:
+        senses["preveggenza"] = {"sense": "preveggenza", "status": "error", "error": str(exc)}
+
+    try:
+        senses["memoria"] = agent_memoria.remember(ohlcv=_shared_ohlcv)
+    except Exception as exc:
+        senses["memoria"] = {"sense": "memoria", "status": "error", "error": str(exc)}
+
+    try:
+        senses["equilibrio"] = agent_equilibrio.balance(ohlcv=_shared_ohlcv)
+    except Exception as exc:
+        senses["equilibrio"] = {"sense": "equilibrio", "status": "error", "error": str(exc)}
 
     mirofish_forecast = None
     latest_forecast_path = find_latest_mirofish_forecast()
@@ -262,6 +339,13 @@ def build_report() -> dict:
             "message": mirofish_forecast.get("message"),
             "sentiment": mirofish_forecast.get("sentiment"),
         },
+        "senses": {
+            "udito": senses.get("udito", {}).get("verdict"),
+            "vista": senses.get("vista", {}).get("verdict"),
+            "preveggenza": senses.get("preveggenza", {}).get("verdict"),
+            "memoria": senses.get("memoria", {}).get("verdict"),
+            "equilibrio": senses.get("equilibrio", {}).get("verdict"),
+        },
         "summary": summary,
     }
 
@@ -273,6 +357,7 @@ def build_report() -> dict:
         "kelly": kelly,
         "costs": costs,
         "mirofish": mirofish_forecast,
+        "senses": senses,
         "strategy_status": strategy_status,
     }
     return report

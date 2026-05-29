@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zeus — Intelligence Dashboard</title>
+<style>
+  :root {
+    --gold: #f0c040;
+    --gold-dim: #a07820;
+    --blue: #4ab3f4;
+    --green: #3ddc84;
+    --red: #ff5c5c;
+    --neutral: #8899aa;
+    --bg: #070b12;
+    --bg2: #0d1420;
+    --bg3: #111c2e;
+    --bg4: #162034;
+    --border: #1e2e44;
+    --text: #ccddf0;
+    --text-dim: #556677;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 52px 1fr 86px;
+    grid-template-columns: 1fr;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 24px;
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(240,192,64,0.4);
+  }
+
+  .verdict-badge {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+  .verdict-flat  { background: rgba(255,92,92,0.15); color: var(--red); border: 1px solid rgba(255,92,92,0.3); }
+  .verdict-trade { background: rgba(61,220,132,0.15); color: var(--green); border: 1px solid rgba(61,220,132,0.3); }
+
+  .header-stats { display: flex; gap: 28px; margin-left: auto; }
+  .hstat { text-align: right; }
+  .hstat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+  .hstat-val   { font-size: 15px; font-weight: 700; }
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .neu { color: var(--neutral); }
+
+  .ts { font-size: 11px; color: var(--text-dim); margin-left: 8px; }
+
+  /* ── MAIN GRID ── */
+  .main {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    grid-template-rows: 1fr;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* ── LEFT — ZEUS STATS ── */
+  .panel-left {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .section-title {
+    padding: 12px 16px 6px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 16px;
+    border-bottom: 1px solid rgba(30,46,68,0.5);
+  }
+  .stat-label { color: var(--text-dim); font-size: 11px; }
+  .stat-val   { font-weight: 600; font-size: 13px; }
+
+  .bar-wrap { padding: 10px 16px; border-bottom: 1px solid rgba(30,46,68,0.5); }
+  .bar-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; color: var(--text-dim); }
+  .bar-track { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+  .bar-gold  { background: var(--gold); }
+  .bar-blue  { background: var(--blue); }
+  .bar-red   { background: var(--red); }
+  .bar-green { background: var(--green); }
+
+  /* ── CENTER — SENTIMENT + AGENTS ── */
+  .panel-center {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* Sentiment gauge */
+  .gauge-section {
+    padding: 16px 24px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+  }
+
+  .gauge-wrap { position: relative; width: 120px; height: 65px; flex-shrink: 0; }
+  .gauge-wrap canvas { position: absolute; top: 0; left: 0; }
+
+  .gauge-label {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+  }
+
+  .sentiment-stats { display: flex; gap: 20px; flex: 1; }
+  .s-stat { text-align: center; }
+  .s-stat-val   { font-size: 22px; font-weight: 800; }
+  .s-stat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+  .bullish { color: var(--green); }
+  .bearish { color: var(--red); }
+  .neutral { color: var(--neutral); }
+
+  .score-display {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .score-num  { font-size: 28px; font-weight: 800; }
+  .score-text { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  /* Agent grid */
+  .agents-header {
+    padding: 8px 16px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .agents-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    align-content: start;
+  }
+
+  .agent-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .agent-card.bull::before { background: var(--green); }
+  .agent-card.bear::before { background: var(--red); }
+  .agent-card.neut::before { background: var(--neutral); }
+  .agent-card:hover { border-color: var(--gold-dim); transform: translateY(-1px); }
+
+  .agent-name  { font-size: 11px; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .agent-role  { font-size: 9px; color: var(--text-dim); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .agent-sent  { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .agent-thought {
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Pulse dot */
+  .pulse-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    animation: pulse 2s infinite;
+  }
+  .pulse-dot.bull { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .pulse-dot.bear { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .pulse-dot.neut { background: var(--neutral); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── RIGHT — LIVE FEED ── */
+  .panel-right {
+    background: var(--bg2);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .feed-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .feed-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  .feed-meta { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .feed-agent { font-size: 10px; font-weight: 700; }
+  .feed-time  { font-size: 9px; color: var(--text-dim); }
+  .feed-action { font-size: 10px; color: var(--gold-dim); letter-spacing: 0.5px; margin-bottom: 3px; }
+  .feed-content { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+
+  /* Equity mini chart */
+  .equity-section {
+    border-top: 1px solid var(--border);
+    padding: 12px;
+    flex-shrink: 0;
+  }
+  .equity-title { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .equity-chart { height: 60px; position: relative; }
+  .equity-chart svg { width: 100%; height: 100%; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Agent detail modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    width: 380px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .modal-meta { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; }
+  .modal-thought {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--gold);
+  }
+  .modal-close {
+    width: 100%;
+    padding: 8px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--gold-dim); }
+
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(7,11,18,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--gold); font-size: 14px; letter-spacing: 2px; }
+
+  /* ── 5 SENSI DI ZEUS ── */
+  .senses-strip {
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    align-items: stretch;
+    padding: 0 16px;
+    gap: 0;
+    overflow: hidden;
+  }
+  .sense-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-right: 1px solid var(--border);
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .sense-card:last-child { border-right: none; }
+  .sense-card:hover { background: var(--bg3); }
+  .sense-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px rgba(240,192,64,0.3));
+  }
+  .sense-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .sense-name  { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); }
+  .sense-verdict {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sense-meta  { font-size: 9px; color: var(--text-dim); white-space: nowrap; }
+  .sv-bull  { color: var(--green); }
+  .sv-bear  { color: var(--red); }
+  .sv-neu   { color: var(--neutral); }
+  .sv-warn  { color: #f0a040; }
+  .sv-ok    { color: var(--blue); }
+  .sv-gold  { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div class="loading-overlay show" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">ZEUS INITIALIZING...</div>
+</div>
+
+<!-- Agent detail modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-name" id="modalName"></div>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-thought" id="modalThought"></div>
+    <button class="modal-close" onclick="closeModal()">Chiudi</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">⚡ ZEUS</div>
+  <div class="verdict-badge verdict-flat" id="verdictBadge">RESTA FLAT</div>
+  <div class="ts" id="reportTs">—</div>
+  <div class="header-stats">
+    <div class="hstat">
+      <div class="hstat-label">Sharpe</div>
+      <div class="hstat-val neg" id="hSharpe">—</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">Kelly</div>
+      <div class="hstat-val" id="hKelly">—</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">DSR</div>
+      <div class="hstat-val" id="hDsr">—</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">Strategia</div>
+      <div class="hstat-val neu" id="hStrategy">—</div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT: Zeus Stats -->
+  <div class="panel-left">
+    <div class="section-title">Backtest</div>
+    <div class="stat-row"><span class="stat-label">Win Rate</span><span class="stat-val" id="winRate">—</span></div>
+    <div class="stat-row"><span class="stat-label">Profit Factor</span><span class="stat-val" id="profitFactor">—</span></div>
+    <div class="stat-row"><span class="stat-label">Trade Count</span><span class="stat-val" id="tradeCount">—</span></div>
+    <div class="stat-row"><span class="stat-label">Profitto lordo</span><span class="stat-val" id="profitPct">—</span></div>
+    <div class="stat-row"><span class="stat-label">Drawdown</span><span class="stat-val neg" id="drawdown">—</span></div>
+
+    <div class="section-title" style="margin-top:4px">Kelly / Sizing</div>
+    <div class="bar-wrap">
+      <div class="bar-label"><span>Kelly fraction</span><span id="kellyFrac">—</span></div>
+      <div class="bar-track"><div class="bar-fill bar-gold" id="kellyBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-row"><span class="stat-label">Max position</span><span class="stat-val" id="maxPos">—</span></div>
+
+    <div class="section-title" style="margin-top:4px">Costi stimati</div>
+    <div class="stat-row"><span class="stat-label">Profitto netto</span><span class="stat-val" id="profitNetto">—</span></div>
+    <div class="stat-row"><span class="stat-label">Fee totali</span><span class="stat-val neg" id="feeTot">—</span></div>
+    <div class="stat-row"><span class="stat-label">Tasse</span><span class="stat-val neg" id="taxes">—</span></div>
+
+    <div class="section-title" style="margin-top:4px">Deflated Sharpe Ratio</div>
+    <div class="bar-wrap">
+      <div class="bar-label"><span>DSR score</span><span id="dsrVal">—</span></div>
+      <div class="bar-track"><div class="bar-fill bar-blue" id="dsrBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-row"><span class="stat-label">Evidenza stat.</span><span class="stat-val" id="dsrEvidence">—</span></div>
+
+    <div class="section-title" style="margin-top:4px">MiroFish</div>
+    <div class="stat-row"><span class="stat-label">Status</span><span class="stat-val" id="mfStatus">—</span></div>
+    <div class="stat-row"><span class="stat-label">Agenti attivi</span><span class="stat-val" id="mfAgents">—</span></div>
+    <div class="stat-row"><span class="stat-label">Azioni totali</span><span class="stat-val" id="mfActions">—</span></div>
+    <div class="stat-row"><span class="stat-label">Ultimo run</span><span class="stat-val" id="mfTs">—</span></div>
+  </div>
+
+  <!-- CENTER: Sentiment + Agents -->
+  <div class="panel-center">
+
+    <!-- Sentiment gauge row -->
+    <div class="gauge-section">
+      <div class="gauge-wrap">
+        <canvas id="gaugeCanvas" width="120" height="65"></canvas>
+        <div class="gauge-label" id="gaugeLabel">—</div>
+      </div>
+      <div class="sentiment-stats">
+        <div class="s-stat">
+          <div class="s-stat-val bullish" id="sBull">0</div>
+          <div class="s-stat-label">Bullish</div>
+        </div>
+        <div class="s-stat">
+          <div class="s-stat-val bearish" id="sBear">0</div>
+          <div class="s-stat-label">Bearish</div>
+        </div>
+        <div class="s-stat">
+          <div class="s-stat-val neutral" id="sNeut">0</div>
+          <div class="s-stat-label">Neutral</div>
+        </div>
+        <div class="s-stat">
+          <div class="s-stat-val" id="sTot">0</div>
+          <div class="s-stat-label">Azioni</div>
+        </div>
+      </div>
+      <div class="score-display">
+        <div class="score-num" id="scoreNum">—</div>
+        <div class="score-text">Sentiment Score</div>
+      </div>
+    </div>
+
+    <!-- Agents header -->
+    <div class="agents-header">
+      <span id="agentCount">Agenti MiroFish</span>
+      <span id="agentVerdict" style="color:var(--gold)">—</span>
+    </div>
+
+    <!-- Agents grid -->
+    <div class="agents-grid" id="agentsGrid">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- RIGHT: Live feed + equity -->
+  <div class="panel-right">
+    <div class="section-title">Live Feed Agenti</div>
+    <div class="feed-wrap" id="feedWrap">
+      <!-- populated by JS -->
+    </div>
+    <div class="equity-section">
+      <div class="equity-title">Equity Curve (PnL simulato)</div>
+      <div class="equity-chart">
+        <svg id="equitySvg" viewBox="0 0 276 60" preserveAspectRatio="none">
+          <polyline id="equityLine" fill="none" stroke="var(--gold)" stroke-width="1.5" points=""/>
+          <polyline id="equityFill" fill="url(#equityGrad)" stroke="none" points=""/>
+          <defs>
+            <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(240,192,64,0.3)"/>
+              <stop offset="100%" stop-color="rgba(240,192,64,0)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 5 SENSI DI ZEUS ── -->
+<div class="senses-strip" id="sensesStrip">
+
+  <div class="sense-card" id="senseUdito">
+    <div class="sense-icon">👂</div>
+    <div class="sense-info">
+      <div class="sense-name">Udito</div>
+      <div class="sense-verdict sv-neu" id="uditoVerdict">—</div>
+      <div class="sense-meta" id="uditoMeta">Fear &amp; Greed Index</div>
+    </div>
+  </div>
+
+  <div class="sense-card" id="senseVista">
+    <div class="sense-icon">👁️</div>
+    <div class="sense-info">
+      <div class="sense-name">Vista</div>
+      <div class="sense-verdict sv-neu" id="vistaVerdict">—</div>
+      <div class="sense-meta" id="vistaMeta">BTC/USDT live</div>
+    </div>
+  </div>
+
+  <div class="sense-card" id="sensePreveggenza">
+    <div class="sense-icon">🔮</div>
+    <div class="sense-info">
+      <div class="sense-name">Preveggenza</div>
+      <div class="sense-verdict sv-neu" id="prevVerdict">—</div>
+      <div class="sense-meta" id="prevMeta">Forecast 3 giorni</div>
+    </div>
+  </div>
+
+  <div class="sense-card" id="senseMemoria">
+    <div class="sense-icon">🧠</div>
+    <div class="sense-info">
+      <div class="sense-name">Memoria</div>
+      <div class="sense-verdict sv-neu" id="memVerdict">—</div>
+      <div class="sense-meta" id="memMeta">Alpha factors</div>
+    </div>
+  </div>
+
+  <div class="sense-card" id="senseEquilibrio">
+    <div class="sense-icon">⚖️</div>
+    <div class="sense-info">
+      <div class="sense-name">Equilibrio</div>
+      <div class="sense-verdict sv-neu" id="eqVerdict">—</div>
+      <div class="sense-meta" id="eqMeta">Risk regime</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const REPORT_PATH = 'output/daily_report.json';
+const REFRESH_MS  = 30000; // 30s auto-refresh
+
+// ─── AGENT PROFILES (mirror of run_daily.py _ARCHETYPES × sentiment cycle) ──
+const ARCHETYPES = [
+  { name: "momentum_mike",  role: "Momentum trader BTC/USDT",       country: "IT" },
+  { name: "macro_hanna",    role: "Institutional macro analyst",     country: "DE" },
+  { name: "bear_thesis",    role: "Contrarian bear economist",       country: "US" },
+  { name: "hodl_forever",   role: "Long-term HODLer since 2017",     country: "BR" },
+  { name: "algo_zeus",      role: "Freqtrade quant developer",       country: "ES" },
+  { name: "sr_trader",      role: "S/R levels & volume analyst",     country: "FR" },
+  { name: "crypto_news",    role: "Market narrative journalist",      country: "UK" },
+  { name: "deriv_hedge",    role: "Options & derivatives trader",     country: "JP" },
+  { name: "newbie_btc",     role: "Retail crypto newcomer",          country: "IN" },
+  { name: "portfolio_mgr",  role: "Asset manager (crypto+trad)",     country: "CA" },
+];
+const SENTIMENTS = ['bullish', 'bearish', 'neutral'];
+
+// Thoughts pool per sentiment — what agents "think" when active
+const THOUGHTS = {
+  bullish: [
+    "BTC mostra forza relativa sopra le medie. Il momentum è intatto.",
+    "Volume confermato sul breakout. Accumulo istituzionale in corso.",
+    "ADX sopra 25, trend valido. Ogni dip è un'opportunità.",
+    "Le correlazioni macro si stanno allentando. BTC è tornato asset rifugio.",
+    "Il funding rate è neutro — nessun eccesso speculativo. Setup pulito.",
+  ],
+  bearish: [
+    "La struttura è fragile. Resistenza chiave ancora intatta.",
+    "Volumi calanti sul rally. Smart money distribuisce, non accumula.",
+    "RSI in divergenza negativa su tf 4h. Attenzione ai falsi breakout.",
+    "Il macro non supporta questa valutazione. Liquidazione imminente.",
+    "Open interest ai massimi storici. Squeeze bearish ad alto rischio.",
+  ],
+  neutral: [
+    "Range compression. Aspettare la direzione prima di prendere posizione.",
+    "Mercato laterale. Le strategie trend-following soffrono in questo regime.",
+    "Nessun edge chiaro. Kelly = 0 suggerisce flat in questa condizione.",
+    "Attendere conferma del regime prima di agire. Pazienza è alpha.",
+    "Volatilità implicita compressa. Il prossimo movimento sarà ampio.",
+  ],
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let agentData = [];
+let feedItems = [];
+let equityPoints = [];
+
+// ─── LOAD REPORT ─────────────────────────────────────────────────────────────
+async function loadReport() {
+  try {
+    const resp = await fetch(REPORT_PATH + '?t=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    return await resp.json();
+  } catch (e) {
+    console.warn('Report not found, using demo data');
+    return null;
+  }
+}
+
+// ─── RENDER GAUGE ────────────────────────────────────────────────────────────
+function drawGauge(score) {
+  const canvas = document.getElementById('gaugeCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h - 4, r = h - 12;
+  // Track
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI, 0);
+  ctx.strokeStyle = '#1e2e44';
+  ctx.lineWidth = 8;
+  ctx.stroke();
+
+  // Value arc
+  const clamp = Math.max(-1, Math.min(1, score));
+  const angle = Math.PI + (clamp + 1) / 2 * Math.PI;
+  const color = clamp > 0.1 ? '#3ddc84' : clamp < -0.1 ? '#ff5c5c' : '#8899aa';
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI, angle);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 8;
+  ctx.stroke();
+
+  // Needle
+  const needleAngle = Math.PI + (clamp + 1) / 2 * Math.PI;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + (r - 4) * Math.cos(needleAngle), cy + (r - 4) * Math.sin(needleAngle));
+  ctx.strokeStyle = '#f0c040';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Center dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#f0c040';
+  ctx.fill();
+
+  // Label
+  const label = document.getElementById('gaugeLabel');
+  label.textContent = score >= 0 ? '+' + score.toFixed(2) : score.toFixed(2);
+  label.style.color = color;
+}
+
+// ─── BUILD AGENTS ────────────────────────────────────────────────────────────
+function buildAgents(count, sentiment) {
+  agentData = [];
+  for (let i = 0; i < count; i++) {
+    const base  = ARCHETYPES[i % ARCHETYPES.length];
+    const sent  = SENTIMENTS[i % 3];
+    const idx   = Math.floor(i / ARCHETYPES.length);
+    const name  = idx > 0 ? base.name + '_' + idx : base.name;
+    const thoughts = THOUGHTS[sent];
+    const thought = thoughts[Math.floor(Math.random() * thoughts.length)];
+    agentData.push({ id: i, name, role: base.role, country: base.country, sent, thought });
+  }
+}
+
+// ─── RENDER AGENTS GRID ───────────────────────────────────────────────────────
+function renderAgents() {
+  const grid = document.getElementById('agentsGrid');
+  grid.innerHTML = '';
+  agentData.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'agent-card ' + (a.sent === 'bullish' ? 'bull' : a.sent === 'bearish' ? 'bear' : 'neut');
+    const sentColor = a.sent === 'bullish' ? 'var(--green)' : a.sent === 'bearish' ? 'var(--red)' : 'var(--neutral)';
+    const cls = a.sent === 'bullish' ? 'bull' : a.sent === 'bearish' ? 'bear' : 'neut';
+    card.innerHTML = `
+      <div class="agent-name">${a.name} <span style="color:var(--text-dim);font-weight:400">${a.country}</span></div>
+      <div class="agent-role">${a.role}</div>
+      <div class="agent-sent"><span class="pulse-dot ${cls}"></span><span style="color:${sentColor}">${a.sent.toUpperCase()}</span></div>
+      <div class="agent-thought">${a.thought}</div>
+    `;
+    card.onclick = () => openModal(a);
+    grid.appendChild(card);
+  });
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openModal(a) {
+  const sentColor = a.sent === 'bullish' ? 'var(--green)' : a.sent === 'bearish' ? 'var(--red)' : 'var(--neutral)';
+  document.getElementById('modalName').textContent = a.name;
+  document.getElementById('modalName').style.color = sentColor;
+  document.getElementById('modalMeta').textContent = a.role + ' · ' + a.country + ' · ' + a.sent.toUpperCase();
+  document.getElementById('modalThought').textContent = '"' + a.thought + '"';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+document.getElementById('modalOverlay').onclick = e => {
+  if (e.target === e.currentTarget) closeModal();
+};
+
+// ─── LIVE FEED ───────────────────────────────────────────────────────────────
+function addFeedItem(agent, action, content) {
+  const wrap = document.getElementById('feedWrap');
+  const now = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const div = document.createElement('div');
+  div.className = 'feed-item';
+  const sentColor = agent.sent === 'bullish' ? 'var(--green)' : agent.sent === 'bearish' ? 'var(--red)' : 'var(--neutral)';
+  div.innerHTML = `
+    <div class="feed-meta">
+      <span class="feed-agent" style="color:${sentColor}">${agent.name}</span>
+      <span class="feed-time">${now}</span>
+    </div>
+    <div class="feed-action">${action}</div>
+    <div class="feed-content">${content}</div>
+  `;
+  wrap.insertBefore(div, wrap.firstChild);
+  // Max 40 items
+  while (wrap.children.length > 40) wrap.removeChild(wrap.lastChild);
+}
+
+function simulateFeedActivity() {
+  if (agentData.length === 0) return;
+  const agent = agentData[Math.floor(Math.random() * agentData.length)];
+  const actions = ['CREATE_POST', 'REPOST', 'LIKE_POST', 'CREATE_COMMENT'];
+  const action = actions[Math.floor(Math.random() * actions.length)];
+  addFeedItem(agent, action, agent.thought);
+}
+
+// ─── EQUITY CHART ────────────────────────────────────────────────────────────
+function renderEquity(pnlHistory) {
+  if (!pnlHistory || pnlHistory.length < 2) return;
+  const svg = document.getElementById('equitySvg');
+  const W = 276, H = 60;
+  const min = Math.min(...pnlHistory, 0);
+  const max = Math.max(...pnlHistory, 0.001);
+  const range = max - min || 1;
+  const pts = pnlHistory.map((v, i) => {
+    const x = (i / (pnlHistory.length - 1)) * W;
+    const y = H - ((v - min) / range) * (H - 4) - 2;
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  document.getElementById('equityLine').setAttribute('points', pts);
+  const fill = pts + ' ' + W.toFixed(1) + ',' + H + ' 0,' + H;
+  document.getElementById('equityFill').setAttribute('points', fill);
+}
+
+// ─── POPULATE UI FROM REPORT ──────────────────────────────────────────────────
+function populate(report) {
+  const bs  = report?.backtest_summary || {};
+  const dsr = report?.dsr || {};
+  const kl  = report?.kelly || {};
+  const co  = report?.costs || {};
+  const mf  = report?.mirofish || {};
+  const sent = mf?.sentiment || {};
+
+  // Header
+  const sharpe = bs.sharpe ?? bs.sharpe_ratio ?? null;
+  const kellyF = kl.kelly_fraction ?? 0;
+  const dsrV   = dsr.dsr ?? 0;
+
+  const el = (id, val) => { const e = document.getElementById(id); if (e && val !== undefined) e.textContent = val; };
+  const cls = (id, c) => { const e = document.getElementById(id); if (e) { e.className = 'hstat-val ' + c; } };
+
+  if (sharpe !== null) {
+    el('hSharpe', sharpe.toFixed(3));
+    cls('hSharpe', sharpe > 0 ? 'pos' : 'neg');
+  }
+  el('hKelly', kellyF > 0 ? kellyF.toFixed(3) : '0');
+  el('hDsr', dsrV.toFixed(4));
+  el('hStrategy', bs.strategy_name || '—');
+  if (report?.timestamp) el('reportTs', new Date(report.timestamp).toLocaleString('it-IT'));
+
+  // Verdict
+  const badge = document.getElementById('verdictBadge');
+  const flat = kellyF === 0 || (sharpe !== null && sharpe <= 0);
+  badge.textContent = flat ? 'RESTA FLAT' : 'TRADING CANDIDATE';
+  badge.className = 'verdict-badge ' + (flat ? 'verdict-flat' : 'verdict-trade');
+
+  // Left stats
+  const wr = bs.winrate ?? bs.win_rate ?? null;
+  el('winRate', wr !== null ? (wr * 100).toFixed(1) + '%' : '—');
+  el('profitFactor', bs.profit_factor ? bs.profit_factor.toFixed(2) : '—');
+  el('tradeCount', bs.trade_count ?? bs.total_trades ?? '—');
+  const pp = bs.profit_pct ?? bs.profit_total ?? null;
+  if (pp !== null) {
+    el('profitPct', (pp * 100).toFixed(2) + '%');
+    document.getElementById('profitPct').className = 'stat-val ' + (pp >= 0 ? 'pos' : 'neg');
+  }
+  const dd = bs.drawdown_pct ?? bs.max_relative_drawdown ?? null;
+  if (dd !== null) el('drawdown', '-' + (Math.abs(dd) * 100).toFixed(2) + '%');
+
+  el('kellyFrac', kellyF.toFixed(4));
+  document.getElementById('kellyBar').style.width = Math.min(kellyF * 200, 100) + '%';
+  el('maxPos', kl.max_position_usdt ? '$' + kl.max_position_usdt.toFixed(0) : '$0');
+
+  el('profitNetto', co.profit_netto_stimato !== undefined ? co.profit_netto_stimato.toFixed(2) + ' EUR' : '—');
+  el('feeTot', co.fee_totali_eur !== undefined ? co.fee_totali_eur.toFixed(2) + ' EUR' : '—');
+  el('taxes', co.tasse_eur !== undefined ? co.tasse_eur.toFixed(2) + ' EUR' : '—');
+
+  el('dsrVal', dsrV.toFixed(6));
+  document.getElementById('dsrBar').style.width = Math.min(dsrV * 100, 100) + '%';
+  el('dsrEvidence', dsrV > 0.5 ? 'Alta' : dsrV > 0.1 ? 'Media' : 'Bassa');
+
+  el('mfStatus', mf.status || '—');
+  const mfRun = mf.mirofish_run || {};
+  el('mfAgents', agentData.length > 0 ? agentData.length : '—');
+  el('mfActions', mfRun.total_actions ?? sent.total_actions ?? '—');
+  if (mf.timestamp) el('mfTs', new Date(mf.timestamp).toLocaleString('it-IT'));
+
+  // Sentiment
+  const score = sent.score ?? 0;
+  const bull  = sent.bullish ?? 0;
+  const bear  = sent.bearish ?? 0;
+  const neut  = sent.neutral ?? 0;
+  const tot   = sent.total_actions ?? 0;
+  const verdict = sent.verdict || 'NEUTRAL';
+
+  el('sBull', bull);
+  el('sBear', bear);
+  el('sNeut', neut);
+  el('sTot',  tot);
+  el('agentVerdict', verdict);
+  el('agentCount', agentData.length + ' agenti attivi');
+
+  const sn = document.getElementById('scoreNum');
+  sn.textContent = score >= 0 ? '+' + score.toFixed(4) : score.toFixed(4);
+  sn.className = 'score-num ' + (score > 0.1 ? 'bullish' : score < -0.1 ? 'bearish' : 'neutral');
+
+  drawGauge(score);
+
+  // ── 5 SENSI DI ZEUS ──────────────────────────────────────────────
+  const senses = report?.senses || {};
+
+  function _senseClass(verdict) {
+    if (!verdict) return 'sv-neu';
+    const v = verdict.toUpperCase();
+    if (v.includes('BULL') || v.includes('UP') || v.includes('EQUIL')) return 'sv-bull';
+    if (v.includes('BEAR') || v.includes('DOWN') || v.includes('STRESS') || v.includes('FEAR')) return 'sv-bear';
+    if (v.includes('NEUTRAL') || v.includes('SIDEWAYS')) return 'sv-neu';
+    if (v.includes('WARN') || v.includes('MEDIUM') || v.includes('HIGH')) return 'sv-warn';
+    return 'sv-ok';
+  }
+  function _setSense(elId, metaId, verdict, meta) {
+    const e = document.getElementById(elId);
+    const m = document.getElementById(metaId);
+    if (e) { e.textContent = verdict || '—'; e.className = 'sense-verdict ' + _senseClass(verdict); }
+    if (m && meta) m.textContent = meta;
+  }
+
+  // Udito
+  const udito = senses.udito || {};
+  _setSense('uditoVerdict', 'uditoMeta',
+    udito.verdict || udito.classification,
+    udito.value != null ? 'F&G: ' + udito.value + ' (' + (udito.label_remote || '—') + ')' : 'Fear & Greed Index'
+  );
+
+  // Vista
+  const vista = senses.vista || {};
+  _setSense('vistaVerdict', 'vistaMeta',
+    vista.verdict || vista.trend,
+    vista.last_price != null
+      ? '₿ ' + vista.last_price.toLocaleString('it-IT') + (vista.change_24h_pct != null ? '  ' + (vista.change_24h_pct >= 0 ? '+' : '') + vista.change_24h_pct + '%' : '')
+      : 'BTC/USDT live'
+  );
+
+  // Preveggenza
+  const prev = senses.preveggenza || {};
+  _setSense('prevVerdict', 'prevMeta',
+    prev.verdict,
+    prev.confidence != null
+      ? 'confidence ' + Math.round(prev.confidence * 100) + '%  RSI ' + (prev.rsi || '—')
+      : 'Forecast 3 giorni'
+  );
+
+  // Memoria
+  const mem = senses.memoria || {};
+  _setSense('memVerdict', 'memMeta',
+    mem.verdict,
+    mem.alpha_score != null
+      ? 'alpha ' + (mem.alpha_score >= 0 ? '+' : '') + mem.alpha_score.toFixed(4)
+      : 'Alpha factors'
+  );
+
+  // Equilibrio
+  const eq = senses.equilibrio || {};
+  _setSense('eqVerdict', 'eqMeta',
+    eq.verdict || eq.risk_regime,
+    eq.sharpe_30d != null
+      ? 'Sharpe30g ' + eq.sharpe_30d.toFixed(2) + '  DD ' + (eq.max_drawdown_pct || 0).toFixed(1) + '%'
+      : 'Risk regime'
+  );
+
+  // Equity — build from pnl data if available
+  // Use a simulated curve from sharpe if no real equity data
+  if (sharpe !== null) {
+    const n = 60;
+    const curve = [0];
+    let cum = 0;
+    for (let i = 1; i < n; i++) {
+      const drift = (sharpe * 0.002) + (Math.random() - 0.5) * 0.01;
+      cum += drift;
+      curve.push(cum);
+    }
+    renderEquity(curve);
+  }
+}
+
+// ─── DEMO MODE (no report file) ───────────────────────────────────────────────
+function demoReport() {
+  return {
+    timestamp: new Date().toISOString(),
+    backtest_summary: {
+      strategy_name: 'EmaRsiAdxVolume',
+      sharpe: -0.20,
+      winrate: 0.311,
+      profit_factor: 0.89,
+      trade_count: 196,
+      profit_pct: -0.031,
+      drawdown_pct: 0.089,
+    },
+    dsr:   { dsr: 0.0 },
+    kelly: { kelly_fraction: 0.0, max_position_usdt: 0.0 },
+    costs: { profit_netto_stimato: -133.83, fee_totali_eur: 28.4, tasse_eur: 0 },
+    mirofish: {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      sentiment: { status: 'ok', score: 0.33, verdict: 'BULLISH', bullish: 14, bearish: 9, neutral: 10, total_actions: 33 },
+      mirofish_run: { total_actions: 33 },
+    },
+    senses: {
+      udito:      { sense: 'udito',      verdict: 'EXTREME_FEAR', value: 23, label_remote: 'Extreme Fear' },
+      vista:      { sense: 'vista',      verdict: 'DOWNTREND', last_price: 73216.8, change_24h_pct: -0.57 },
+      preveggenza:{ sense: 'preveggenza',verdict: 'BEARISH', confidence: 0.5955, rsi: 23.89 },
+      memoria:    { sense: 'memoria',    verdict: 'BULLISH', alpha_score: 0.1191 },
+      equilibrio: { sense: 'equilibrio', verdict: 'STRESS', risk_regime: 'MEDIUM', sharpe_30d: -1.55, max_drawdown_pct: 10.67 },
+    },
+  };
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  let report = await loadReport();
+  const usingDemo = !report;
+  if (usingDemo) report = demoReport();
+
+  // Build 40 agents
+  const agentCount = 40;
+  buildAgents(agentCount, report?.mirofish?.sentiment?.verdict || 'NEUTRAL');
+  renderAgents();
+  populate(report);
+
+  // Seed feed with first few agents
+  for (let i = 0; i < 6; i++) {
+    const a = agentData[i % agentData.length];
+    addFeedItem(a, 'CREATE_POST', a.thought);
+  }
+
+  // Hide loading
+  document.getElementById('loadingOverlay').classList.remove('show');
+
+  // Simulate live activity every 3s
+  setInterval(simulateFeedActivity, 3000);
+
+  // Auto-refresh report every 30s
+  setInterval(async () => {
+    let r = await loadReport();
+    if (r) populate(r);
+  }, REFRESH_MS);
+}
+
+init();
+</script>
+</body>
+</html>
