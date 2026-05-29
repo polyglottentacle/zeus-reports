@@ -598,6 +598,15 @@
     </div>
   </div>
 
+  <div class="sense-card" id="senseOcchi">
+    <div class="sense-icon">🤖</div>
+    <div class="sense-info">
+      <div class="sense-name">Occhi</div>
+      <div class="sense-verdict sv-neu" id="occhiVerdict">—</div>
+      <div class="sense-meta" id="occhiMeta">TradingAgents LLM</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -950,6 +959,15 @@ function populate(report) {
       : 'Risk regime'
   );
 
+  // Occhi (TradingAgents)
+  const oc = senses.occhi || {};
+  _setSense('occhiVerdict', 'occhiMeta',
+    oc.verdict || oc.status,
+    oc.decision
+      ? 'Decision: ' + oc.decision + (oc.trade_date ? '  ' + oc.trade_date : '')
+      : (oc.status === 'setup_required' ? 'Setup: cd ochi && bash setup_venv.sh' : 'TradingAgents LLM')
+  );
+
   // Equity — build from pnl data if available
   // Use a simulated curve from sharpe if no real equity data
   if (sharpe !== null) {
@@ -993,6 +1011,7 @@ function demoReport() {
       preveggenza:{ sense: 'preveggenza',verdict: 'BEARISH', confidence: 0.5955, rsi: 23.89 },
       memoria:    { sense: 'memoria',    verdict: 'BULLISH', alpha_score: 0.1191 },
       equilibrio: { sense: 'equilibrio', verdict: 'STRESS', risk_regime: 'MEDIUM', sharpe_30d: -1.55, max_drawdown_pct: 10.67 },
+      occhi:      { sense: 'occhi', status: 'setup_required', verdict: null, decision: null },
     },
   };
 }

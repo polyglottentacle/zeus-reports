@@ -19,6 +19,13 @@ MiroFish/node_modules/
 MiroFish/**/__pycache__/
 hostinger credenziali.txt
 
+# TradingAgents (ochi) — venv e cache locali
+ochi/venv/
+ochi/.cache/
+ochi/.results/
+ochi/__pycache__/
+ochi/**/__pycache__/
+
 # SECRETS — chiavi API, mai su GitHub
 .env
 *.env

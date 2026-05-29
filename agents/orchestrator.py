@@ -5,7 +5,7 @@ import zipfile
 from agents.agent2_dsr import compute_dsr
 from agents.agent3_kelly import compute_kelly_fraction
 from agents.agent4_costs import estimate_costs
-from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio
+from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi
 from mirofish_runner.run_daily import run_daily_scenarios
 
 
@@ -303,6 +303,12 @@ def build_report() -> dict:
     except Exception as exc:
         senses["equilibrio"] = {"sense": "equilibrio", "status": "error", "error": str(exc)}
 
+    try:
+        # Occhi: TradingAgents multi-agent — piu' lento, timeout gestito internamente
+        senses["occhi"] = agent_occhi.look()
+    except Exception as exc:
+        senses["occhi"] = {"sense": "occhi", "status": "error", "error": str(exc)}
+
     mirofish_forecast = None
     latest_forecast_path = find_latest_mirofish_forecast()
     if latest_forecast_path is not None:
@@ -345,6 +351,7 @@ def build_report() -> dict:
             "preveggenza": senses.get("preveggenza", {}).get("verdict"),
             "memoria": senses.get("memoria", {}).get("verdict"),
             "equilibrio": senses.get("equilibrio", {}).get("verdict"),
+            "occhi": senses.get("occhi", {}).get("verdict"),
         },
         "summary": summary,
     }

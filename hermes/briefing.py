@@ -110,6 +110,8 @@ def format_message(report: dict) -> str:
     prev_v    = (senses.get("preveggenza") or {}).get("verdict") or senses.get("preveggenza") if isinstance(senses.get("preveggenza"), str) else "n/d"
     mem_v     = (senses.get("memoria") or {}).get("verdict") or senses.get("memoria") if isinstance(senses.get("memoria"), str) else "n/d"
     eq_v      = (senses.get("equilibrio") or {}).get("verdict") or senses.get("equilibrio") if isinstance(senses.get("equilibrio"), str) else "n/d"
+    oc_v      = (senses.get("occhi") or {}).get("verdict") or senses.get("occhi") if isinstance(senses.get("occhi"), str) else None
+    oc_dec    = (senses.get("occhi") or {}).get("decision") if isinstance(senses.get("occhi"), dict) else None
     btc_price = (senses.get("vista") or {}).get("last_price") if isinstance(senses.get("vista"), dict) else None
     fng_val   = (senses.get("udito") or {}).get("value") if isinstance(senses.get("udito"), dict) else None
 
@@ -141,6 +143,7 @@ def format_message(report: dict) -> str:
         f"  {_sense_icon(prev_v)} Preveggenza: `{prev_v}`\n"
         f"  {_sense_icon(mem_v)} Memoria: `{mem_v}`\n"
         f"  {_sense_icon(eq_v)} Equilibrio: `{eq_v}`\n"
+        f"  {_sense_icon(oc_v)} Occhi (TradingAgents): `{oc_dec or oc_v or 'n/d'}`\n"
         f"\n"
         f"📊 *Backtest: {strategy}*\n"
         f"  Sharpe: `{sharpe}` | Profit: `{profit_pct}%`\n"
