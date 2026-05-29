@@ -1,0 +1,13 @@
+[Unit]
+Description=Zeus Orchestrator — esegui ogni giorno alle 07:30 UTC
+Requires=zeus-orchestrator.service
+
+[Timer]
+# Ogni giorno alle 07:30 UTC (09:30 ora italiana, prima dell'apertura EU)
+OnCalendar=*-*-* 07:30:00 UTC
+# Se il server era spento, esegui appena torna online
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

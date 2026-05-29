@@ -367,6 +367,23 @@ def write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+def _push_report_if_cloud() -> None:
+    """Se siamo in cloud (deploy/push_report.sh esiste), pusha il report su GitHub."""
+    push_script = BASE_DIR / "deploy" / "push_report.sh"
+    if push_script.exists():
+        import subprocess
+        try:
+            result = subprocess.run(
+                ["bash", str(push_script)],
+                capture_output=True, text=True, timeout=60
+            )
+            print(result.stdout.strip() or "[push] ok")
+            if result.returncode != 0:
+                print(f"[push] warning: {result.stderr.strip()}")
+        except Exception as exc:
+            print(f"[push] skip: {exc}")
+
+
 def main() -> None:
     report = build_report()
     write_json(OUTPUT_DIR / "daily_report.json", report)
@@ -375,6 +392,7 @@ def main() -> None:
         print("daily_report.json aggiornato con backtest result.")
     else:
         print("daily_report.json aggiornato: nessun dato disponibile.")
+    _push_report_if_cloud()
 
 
 if __name__ == "__main__":

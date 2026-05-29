@@ -1,0 +1,20 @@
+[Unit]
+Description=Zeus Orchestrator — daily report + 5 senses
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=zeus
+WorkingDirectory=/opt/zeus
+EnvironmentFile=/opt/zeus/.env
+ExecStart=/opt/zeus/venv/bin/python -m agents.orchestrator
+StandardOutput=append:/opt/zeus/log/orchestrator.log
+StandardError=append:/opt/zeus/log/orchestrator.log
+
+# Sicurezza: nessun accesso a rete privata, solo output/log
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

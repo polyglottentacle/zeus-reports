@@ -91,6 +91,28 @@ def format_message(report: dict) -> str:
     mf_actions = mf.get("mirofish_run", {}).get("total_actions") or mf.get("total_actions") or "n/d"
     mf_scenarios = mf.get("scenario_count", "n/d")
 
+    # ── 5 Sensi di Zeus
+    senses = report.get("senses", {})
+    def _sense_icon(verdict):
+        if not verdict:
+            return "⚪"
+        v = str(verdict).upper()
+        if "BULL" in v or "UP" in v or "EQUIL" in v:
+            return "🟢"
+        if "BEAR" in v or "DOWN" in v or "STRESS" in v or "EXTREME_FEAR" in v or "FEAR" in v:
+            return "🔴"
+        if "NEUTRAL" in v or "SIDEWAYS" in v:
+            return "🟡"
+        return "🔵"
+
+    udito_v   = (senses.get("udito")  or {}).get("verdict") or senses.get("udito") if isinstance(senses.get("udito"), str) else "n/d"
+    vista_v   = (senses.get("vista")  or {}).get("verdict") or senses.get("vista") if isinstance(senses.get("vista"), str) else "n/d"
+    prev_v    = (senses.get("preveggenza") or {}).get("verdict") or senses.get("preveggenza") if isinstance(senses.get("preveggenza"), str) else "n/d"
+    mem_v     = (senses.get("memoria") or {}).get("verdict") or senses.get("memoria") if isinstance(senses.get("memoria"), str) else "n/d"
+    eq_v      = (senses.get("equilibrio") or {}).get("verdict") or senses.get("equilibrio") if isinstance(senses.get("equilibrio"), str) else "n/d"
+    btc_price = (senses.get("vista") or {}).get("last_price") if isinstance(senses.get("vista"), dict) else None
+    fng_val   = (senses.get("udito") or {}).get("value") if isinstance(senses.get("udito"), dict) else None
+
     # Icona stato MiroFish
     mf_icon = "✅" if mf_status == "ok" else ("⚠️" if mf_status == "disabled" else "❌")
 
@@ -107,8 +129,18 @@ def format_message(report: dict) -> str:
     except (TypeError, ValueError):
         verdict = "⚪ Dati insufficienti"
 
+    btc_line = f"₿ `{btc_price:,.0f}` USDT" if btc_price else ""
+    fng_line = f"F&G: `{fng_val}`" if fng_val else ""
+
     msg = (
-        f"🤖 *Zeus Morning Briefing* — {ts} UTC\n"
+        f"🔱 *Zeus Morning Briefing* — {ts} UTC\n"
+        f"\n"
+        f"👁 *5 Sensi — Mercato adesso*\n"
+        f"  {_sense_icon(udito_v)} Udito: `{udito_v}` {fng_line}\n"
+        f"  {_sense_icon(vista_v)} Vista: `{vista_v}` {btc_line}\n"
+        f"  {_sense_icon(prev_v)} Preveggenza: `{prev_v}`\n"
+        f"  {_sense_icon(mem_v)} Memoria: `{mem_v}`\n"
+        f"  {_sense_icon(eq_v)} Equilibrio: `{eq_v}`\n"
         f"\n"
         f"📊 *Backtest: {strategy}*\n"
         f"  Sharpe: `{sharpe}` | Profit: `{profit_pct}%`\n"
