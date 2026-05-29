@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-29T03:07:52.595642+00:00",
+  "timestamp": "2026-05-29T06:00:03.246412+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -27,7 +27,7 @@
     "trade_count": 196,
     "profit_pct": -0.04987716714,
     "drawdown_pct": 0.054275120309599044,
-    "timestamp": "2026-05-29T03:07:52.595642+00:00"
+    "timestamp": "2026-05-29T06:00:03.246412+00:00"
   },
   "dsr": {
     "dsr": 0.0,
@@ -96,6 +96,37 @@
     },
     "loaded_from": "2026-05-29_030742.json"
   },
+  "senses": {
+    "udito": {
+      "sense": "udito",
+      "source": "alternative.me/fng",
+      "timestamp": "2026-05-29T06:00:03.258164+00:00",
+      "status": "ok",
+      "value": 23,
+      "classification": "EXTREME_FEAR",
+      "verdict": "EXTREME_FEAR",
+      "message": "Fear & Greed Index = 23 (EXTREME_FEAR).",
+      "label_remote": "Extreme Fear"
+    },
+    "vista": {
+      "sense": "vista",
+      "symbol": "BTC/USDT",
+      "timeframe": "1d",
+      "timestamp": "2026-05-29T06:00:03.616519+00:00",
+      "status": "ok",
+      "exchange": "kraken",
+      "last_price": 73682.2,
+      "change_24h_pct": 0.06,
+      "change_period_pct": -3.48,
+      "volatility_pct": 1.38,
+      "trend": "DOWNTREND",
+      "verdict": "DOWNTREND",
+      "message": "BTC visto su kraken: 73682.2 USDT.",
+      "candles": 30,
+      "high_period": 82811.2,
+      "low_period": 72595.4
+    }
+  },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
     "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
@@ -141,6 +172,10 @@
         "total_actions": 2
       }
     },
+    "senses": {
+      "udito": "EXTREME_FEAR",
+      "vista": "DOWNTREND"
+    },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
       "strategy_name": "EmaRsiAdxVolumePlusStrategy",
@@ -167,7 +202,7 @@
       "trade_count": 196,
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
-      "timestamp": "2026-05-29T03:07:52.595642+00:00"
+      "timestamp": "2026-05-29T06:00:03.246412+00:00"
     }
   }
 }
