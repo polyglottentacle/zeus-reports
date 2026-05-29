@@ -29,7 +29,9 @@ MIROFISH_SIMULATION_SCRIPT = MIROFISH_BACKEND / "scripts" / "run_parallel_simula
 MIROFISH_RUN_DIR = FORECAST_HISTORY_DIR / "mirofish_runs"
 MIROFISH_RUN_DIR.mkdir(parents=True, exist_ok=True)
 FREQTRADE_DATA_FILE = BASE_DIR.parent / "freqtrade" / "user_data" / "data" / "binance" / "BTC_USDT-1h.feather"
-MAX_MIROFISH_AGENTS = 100
+MAX_MIROFISH_AGENTS = 40
+MAX_MIROFISH_ROUNDS = int(os.environ.get("MAX_MIROFISH_ROUNDS", "20"))
+MIROFISH_TIMEOUT_SECONDS = int(os.environ.get("MIROFISH_TIMEOUT_SECONDS", "900"))
 
 
 def _load_env_value(name: str) -> Optional[str]:
@@ -135,10 +137,11 @@ def _build_simulation_config() -> Dict:
         "graph_id": "zeus_graph",
         "simulation_requirement": (
             "Generate a daily Zeus market forecast using the last 30 days of BTC/USDT data "
-            "from Freqtrade, keeping the simulation under 40 rounds and within the Zeus agent limit."
+            f"from Freqtrade, keeping the simulation under {MAX_MIROFISH_ROUNDS} rounds "
+            "and within the Zeus agent limit."
         ),
         "time_config": {
-            "total_simulation_hours": 40,
+            "total_simulation_hours": MAX_MIROFISH_ROUNDS,
             "minutes_per_round": 60,
             "agents_per_hour_min": 20,
             "agents_per_hour_max": 60,
@@ -163,7 +166,7 @@ def _build_simulation_config() -> Dict:
             ],
             "hot_topics": ["BTC/USDT", "crypto", "market sentiment", "risk", "volatility"],
             "narrative_direction": (
-                "Focus on a low-budget forecast using 30 days of BTC/USDT input, constrained to 40 simulation rounds "
+                f"Focus on a low-budget forecast using 30 days of BTC/USDT input, constrained to {MAX_MIROFISH_ROUNDS} simulation rounds "
                 "and a maximum of 500 agents."
             ),
             "source_data_reference": _get_data_reference(),
@@ -200,6 +203,75 @@ def _load_simulation_summary(simulation_dir: Path) -> Dict:
         "twitter_actions": _count_jsonl_records(twitter_actions_path),
         "reddit_actions": _count_jsonl_records(reddit_actions_path),
         "total_actions": _count_jsonl_records(twitter_actions_path) + _count_jsonl_records(reddit_actions_path),
+    }
+
+
+def _extract_sentiment_from_run(run_dir: Path) -> Dict:
+    """
+    Legge twitter/actions.jsonl e reddit/actions.jsonl e calcola un sentiment
+    aggregato basato sul profilo degli agenti.
+
+    Mapping agent_id -> sentiment (coerente con _generate_agent_profiles):
+        agent_id % 3 == 0  → bullish
+        agent_id % 3 == 1  → bearish
+        agent_id % 3 == 2  → neutral
+
+    Azioni contate: CREATE_POST, LIKE_POST, REPOST, CREATE_COMMENT.
+    Score = (bullish - bearish) / total
+    Verdict: BULLISH se score > 0.10, BEARISH se score < -0.10, altrimenti NEUTRAL.
+    """
+    _SENTIMENT_MAP = {0: "bullish", 1: "bearish", 2: "neutral"}
+    _COUNTED_ACTIONS = {"CREATE_POST", "LIKE_POST", "REPOST", "CREATE_COMMENT"}
+
+    counts: Dict[str, int] = {"bullish": 0, "bearish": 0, "neutral": 0}
+    total = 0
+
+    for platform in ("twitter", "reddit"):
+        actions_path = run_dir / platform / "actions.jsonl"
+        if not actions_path.exists():
+            continue
+        try:
+            with actions_path.open("r", encoding="utf-8") as fh:
+                for raw_line in fh:
+                    raw_line = raw_line.strip()
+                    if not raw_line:
+                        continue
+                    try:
+                        ev = json.loads(raw_line)
+                    except json.JSONDecodeError:
+                        continue
+                    if ev.get("action_type") not in _COUNTED_ACTIONS:
+                        continue
+                    agent_id = ev.get("agent_id")
+                    if agent_id is None:
+                        continue
+                    sentiment = _SENTIMENT_MAP.get(int(agent_id) % 3, "neutral")
+                    counts[sentiment] += 1
+                    total += 1
+        except Exception:
+            continue
+
+    if total == 0:
+        return {
+            "status": "no_data",
+            "score": 0.0,
+            "verdict": "NEUTRAL",
+            "bullish": 0,
+            "bearish": 0,
+            "neutral": 0,
+            "total_actions": 0,
+        }
+
+    score = round((counts["bullish"] - counts["bearish"]) / total, 4)
+    verdict = "BULLISH" if score > 0.10 else "BEARISH" if score < -0.10 else "NEUTRAL"
+    return {
+        "status": "ok",
+        "score": score,
+        "verdict": verdict,
+        "bullish": counts["bullish"],
+        "bearish": counts["bearish"],
+        "neutral": counts["neutral"],
+        "total_actions": total,
     }
 
 
@@ -301,33 +373,57 @@ def _run_mirofish_simulation() -> Dict:
         str(config_path),
         "--no-wait",
         "--max-rounds",
-        "40",
+        str(MAX_MIROFISH_ROUNDS),
     ]
 
-    result = subprocess.run(
-        command,
-        cwd=str(MIROFISH_BACKEND),
-        capture_output=True,
-        text=True,
-        env=env,
-        timeout=900,
-    )
+    _MAX_LOG = 500
+    try:
+        result = subprocess.run(
+            command,
+            cwd=str(MIROFISH_BACKEND),
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=MIROFISH_TIMEOUT_SECONDS,
+        )
+        stdout_raw = result.stdout.strip()
+        stderr_raw = result.stderr.strip()
+    except subprocess.TimeoutExpired as exc:
+        stdout_raw = (exc.stdout or "")
+        stderr_raw = (exc.stderr or "")
+        if isinstance(stdout_raw, bytes):
+            stdout_raw = stdout_raw.decode("utf-8", errors="replace")
+        if isinstance(stderr_raw, bytes):
+            stderr_raw = stderr_raw.decode("utf-8", errors="replace")
+        summary = {
+            "returncode": None,
+            "timed_out": True,
+            "timeout_seconds": MIROFISH_TIMEOUT_SECONDS,
+            "stdout": (stdout_raw[:_MAX_LOG] + " [truncated]") if len(stdout_raw) > _MAX_LOG else stdout_raw,
+            "stderr": (stderr_raw[:_MAX_LOG] + " [truncated]") if len(stderr_raw) > _MAX_LOG else stderr_raw,
+            "command": " ".join(command),
+        }
+        summary.update(_load_simulation_summary(run_dir))
+        summary["sentiment"] = _extract_sentiment_from_run(run_dir)
+        return summary
 
     summary = {
         "returncode": result.returncode,
-        "stdout": result.stdout.strip(),
-        "stderr": result.stderr.strip(),
+        "timed_out": False,
+        "stdout": (stdout_raw[:_MAX_LOG] + " [truncated]") if len(stdout_raw) > _MAX_LOG else stdout_raw,
+        "stderr": (stderr_raw[:_MAX_LOG] + " [truncated]") if len(stderr_raw) > _MAX_LOG else stderr_raw,
         "command": " ".join(command),
     }
 
     if result.returncode != 0:
         raise RuntimeError(
             f"MiroFish simulation failed with return code {result.returncode}.\n"
-            f"stdout: {result.stdout.strip()}\n"
-            f"stderr: {result.stderr.strip()}"
+            f"stdout: {stdout_raw[:_MAX_LOG]}\n"
+            f"stderr: {stderr_raw[:_MAX_LOG]}"
         )
 
     summary.update(_load_simulation_summary(run_dir))
+    summary["sentiment"] = _extract_sentiment_from_run(run_dir)
     return summary
 
 
@@ -351,12 +447,22 @@ def _build_mirofish_forecast(existing_scenarios: List[Dict]) -> Dict:
 
     try:
         simulation_summary = _run_mirofish_simulation()
+        timed_out = bool(simulation_summary.get("timed_out"))
         forecast.update(
             {
                 "enabled": True,
-                "status": "ok",
-                "message": "MiroFish forecast generated successfully.",
+                "status": "partial" if timed_out else "ok",
+                "message": (
+                    "MiroFish timed out; partial actions and sentiment extracted."
+                    if timed_out else
+                    "MiroFish forecast generated successfully."
+                ),
                 "mirofish_run": simulation_summary,
+                "sentiment": simulation_summary.get(
+                    "sentiment",
+                    {"status": "no_data", "score": 0.0, "verdict": "NEUTRAL",
+                     "bullish": 0, "bearish": 0, "neutral": 0, "total_actions": 0},
+                ),
             }
         )
     except Exception as exc:

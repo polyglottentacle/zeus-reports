@@ -260,6 +260,7 @@ def build_report() -> dict:
             "status": mirofish_forecast.get("status"),
             "scenario_count": mirofish_forecast.get("scenario_count"),
             "message": mirofish_forecast.get("message"),
+            "sentiment": mirofish_forecast.get("sentiment"),
         },
         "summary": summary,
     }
