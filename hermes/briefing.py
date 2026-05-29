@@ -112,38 +112,62 @@ def format_message(report: dict) -> str:
     eq_v      = (senses.get("equilibrio") or {}).get("verdict") or senses.get("equilibrio") if isinstance(senses.get("equilibrio"), str) else "n/d"
     oc_v      = (senses.get("occhi") or {}).get("verdict") or senses.get("occhi") if isinstance(senses.get("occhi"), str) else None
     oc_dec    = (senses.get("occhi") or {}).get("decision") if isinstance(senses.get("occhi"), dict) else None
+    wal_data  = senses.get("wal") or {}
+    wal_status = wal_data.get("status", "n/d")
+    wal_verdict= wal_data.get("verdict", "n/d")
+    wal_comb  = wal_data.get("combined", {})
+    wal_wr    = wal_comb.get("win_rate_7d", 0)
+    wal_pnl   = wal_comb.get("pnl_today", 0)
     btc_price = (senses.get("vista") or {}).get("last_price") if isinstance(senses.get("vista"), dict) else None
     fng_val   = (senses.get("udito") or {}).get("value") if isinstance(senses.get("udito"), dict) else None
+
+    # ── Zeus Verdict (sintesi) ──
+    zv_data    = report.get("zeus_verdict") or (report.get("strategy_status") or {}).get("zeus_verdict") or {}
+    zv_verdict = zv_data.get("zeus_verdict", "—")
+    zv_score   = zv_data.get("zeus_score", 0.0)
+    zv_conf    = zv_data.get("zeus_confidence", 0.0)
+    zv_msg     = zv_data.get("message", "")
+    try:
+        zv_conf_str = f"{float(zv_conf)*100:.0f}%"
+    except Exception:
+        zv_conf_str = "n/d"
+
+    ZV_EMOJI = {"LONG": "🟢", "SHORT": "🔴", "FLAT": "🟡", "CAUTION": "🟠"}
+    zv_icon = ZV_EMOJI.get(str(zv_verdict).upper(), "⚪")
 
     # Icona stato MiroFish
     mf_icon = "✅" if mf_status == "ok" else ("⚠️" if mf_status == "disabled" else "❌")
 
-    # Valutazione complessiva
-    try:
-        sharpe_val = float(bs.get("sharpe", -99))
-        kelly_val = float(kelly_data.get("kelly_fraction", 0))
-        if sharpe_val > 0.5 and kelly_val > 0:
-            verdict = "🟢 STRATEGIA ATTIVA — posizione consentita"
-        elif sharpe_val > 0:
-            verdict = "🟡 STRATEGIA DEBOLE — size ridotto"
-        else:
-            verdict = "🔴 STRATEGIA PERDENTE — size zero, aspetta miglioramento"
-    except (TypeError, ValueError):
-        verdict = "⚪ Dati insufficienti"
+    # Icona WAL
+    wal_icon = "✅" if wal_status == "ok" else ("⚠️" if wal_status == "unavailable" else "❌")
 
     btc_line = f"₿ `{btc_price:,.0f}` USDT" if btc_price else ""
     fng_line = f"F&G: `{fng_val}`" if fng_val else ""
 
+    # WAL line
+    if wal_status == "ok":
+        wal_line = f"  Win 7d: `{wal_wr*100:.1f}%` | PnL oggi: `{wal_pnl:+.2f}` USDT | Apollo: `{wal_verdict}`"
+    else:
+        wal_line = f"  ⚠️ APOLLO_WAL_PATH non configurato — connetti Zeus al VPS"
+
     msg = (
         f"🔱 *Zeus Morning Briefing* — {ts} UTC\n"
         f"\n"
-        f"👁 *5 Sensi — Mercato adesso*\n"
+        f"━━━━━━━━━━━━━━━━\n"
+        f"{zv_icon} *ZEUS VERDICT: {zv_verdict}*\n"
+        f"  Score: `{zv_score:+.3f}` | Conf: `{zv_conf_str}`\n"
+        f"  {zv_msg}\n"
+        f"━━━━━━━━━━━━━━━━\n"
+        f"\n"
+        f"👁 *7 Sensi — Mercato adesso*\n"
         f"  {_sense_icon(udito_v)} Udito: `{udito_v}` {fng_line}\n"
         f"  {_sense_icon(vista_v)} Vista: `{vista_v}` {btc_line}\n"
         f"  {_sense_icon(prev_v)} Preveggenza: `{prev_v}`\n"
         f"  {_sense_icon(mem_v)} Memoria: `{mem_v}`\n"
         f"  {_sense_icon(eq_v)} Equilibrio: `{eq_v}`\n"
         f"  {_sense_icon(oc_v)} Occhi (TradingAgents): `{oc_dec or oc_v or 'n/d'}`\n"
+        f"  {wal_icon} WAL Apollo: `{wal_verdict}`\n"
+        f"{wal_line}\n"
         f"\n"
         f"📊 *Backtest: {strategy}*\n"
         f"  Sharpe: `{sharpe}` | Profit: `{profit_pct}%`\n"
@@ -160,8 +184,7 @@ def format_message(report: dict) -> str:
         f"{mf_icon} *MiroFish sentiment*\n"
         f"  Status: `{mf_status}` | Azioni: `{mf_actions}` | Scenari: `{mf_scenarios}`\n"
         f"\n"
-        f"━━━━━━━━━━━━━━━━\n"
-        f"{verdict}"
+        f"🖥 MODE=PAPER · CONFIRM\\_LIVE\\_TRADING=NO"
     )
     return msg
 

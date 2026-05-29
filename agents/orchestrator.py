@@ -5,7 +5,8 @@ import zipfile
 from agents.agent2_dsr import compute_dsr
 from agents.agent3_kelly import compute_kelly_fraction
 from agents.agent4_costs import estimate_costs
-from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi
+from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi, agent_wal
+from agents.agent_verdict import synthesize as compute_zeus_verdict
 from mirofish_runner.run_daily import run_daily_scenarios
 
 
@@ -309,6 +310,12 @@ def build_report() -> dict:
     except Exception as exc:
         senses["occhi"] = {"sense": "occhi", "status": "error", "error": str(exc)}
 
+    try:
+        # WAL: legge il blockchain di trade di Apollo (win rate reale, PnL live)
+        senses["wal"] = agent_wal.read()
+    except Exception as exc:
+        senses["wal"] = {"sense": "wal", "status": "error", "error": str(exc)}
+
     mirofish_forecast = None
     latest_forecast_path = find_latest_mirofish_forecast()
     if latest_forecast_path is not None:
@@ -332,6 +339,24 @@ def build_report() -> dict:
                 "scenarios": [],
             }
 
+    # ── ZEUS VERDICT: sintesi finale di tutti i sensi ──
+    # Assembla un report parziale per il synthesizer (include mirofish e senses)
+    _partial_report = {
+        "senses": senses,
+        "mirofish": mirofish_forecast or {},
+    }
+    try:
+        zeus_verdict_data = compute_zeus_verdict(_partial_report)
+    except Exception as exc:
+        zeus_verdict_data = {
+            "zeus_verdict": "FLAT",
+            "zeus_score": 0.0,
+            "zeus_confidence": 0.0,
+            "active_senses": 0,
+            "error": str(exc),
+            "message": f"Verdict error: {exc}",
+        }
+
     strategy_status = {
         "backtest_file": summary["meta_file"],
         "run_id": summary.get("run_id"),
@@ -346,13 +371,15 @@ def build_report() -> dict:
             "sentiment": mirofish_forecast.get("sentiment"),
         },
         "senses": {
-            "udito": senses.get("udito", {}).get("verdict"),
-            "vista": senses.get("vista", {}).get("verdict"),
+            "udito":       senses.get("udito",       {}).get("verdict"),
+            "vista":       senses.get("vista",       {}).get("verdict"),
             "preveggenza": senses.get("preveggenza", {}).get("verdict"),
-            "memoria": senses.get("memoria", {}).get("verdict"),
-            "equilibrio": senses.get("equilibrio", {}).get("verdict"),
-            "occhi": senses.get("occhi", {}).get("verdict"),
+            "memoria":     senses.get("memoria",     {}).get("verdict"),
+            "equilibrio":  senses.get("equilibrio",  {}).get("verdict"),
+            "occhi":       senses.get("occhi",       {}).get("verdict"),
+            "wal":         senses.get("wal",         {}).get("verdict"),
         },
+        "zeus_verdict": zeus_verdict_data,
         "summary": summary,
     }
 
@@ -365,6 +392,7 @@ def build_report() -> dict:
         "costs": costs,
         "mirofish": mirofish_forecast,
         "senses": senses,
+        "zeus_verdict": zeus_verdict_data,
         "strategy_status": strategy_status,
     }
     return report
