@@ -60,8 +60,10 @@
     font-size: 11px;
     letter-spacing: 1.5px;
   }
-  .verdict-flat  { background: rgba(255,92,92,0.15); color: var(--red); border: 1px solid rgba(255,92,92,0.3); }
-  .verdict-trade { background: rgba(61,220,132,0.15); color: var(--green); border: 1px solid rgba(61,220,132,0.3); }
+  .verdict-flat    { background: rgba(240,192,64,0.10); color: var(--gold);    border: 1px solid rgba(240,192,64,0.3); }
+  .verdict-trade   { background: rgba(61,220,132,0.15); color: var(--green);   border: 1px solid rgba(61,220,132,0.3); }
+  .verdict-short   { background: rgba(255,92,92,0.15);  color: var(--red);     border: 1px solid rgba(255,92,92,0.3); }
+  .verdict-caution { background: rgba(240,144,48,0.15); color: #f09030;        border: 1px solid rgba(240,144,48,0.3); }
 
   .header-stats { display: flex; gap: 28px; margin-left: auto; }
   .hstat { text-align: right; }
@@ -839,11 +841,24 @@ function populate(report) {
   el('hStrategy', bs.strategy_name || '—');
   if (report?.timestamp) el('reportTs', new Date(report.timestamp).toLocaleString('it-IT'));
 
-  // Verdict
+  // Verdict — usa zeus_verdict se disponibile, altrimenti fallback Kelly/Sharpe
   const badge = document.getElementById('verdictBadge');
-  const flat = kellyF === 0 || (sharpe !== null && sharpe <= 0);
-  badge.textContent = flat ? 'RESTA FLAT' : 'TRADING CANDIDATE';
-  badge.className = 'verdict-badge ' + (flat ? 'verdict-flat' : 'verdict-trade');
+  const zv = report?.zeus_verdict || {};
+  const zvVerdict = zv.zeus_verdict || null;
+  const zvScore   = zv.zeus_score;
+  const zvConf    = zv.zeus_confidence;
+  if (zvVerdict) {
+    const scoreStr = typeof zvScore === 'number' ? (zvScore > 0 ? '+' : '') + zvScore.toFixed(3) : '';
+    const confStr  = typeof zvConf  === 'number' ? ` ${(zvConf*100).toFixed(0)}%` : '';
+    badge.textContent = `⚡ ${zvVerdict}${scoreStr ? ' ' + scoreStr : ''}${confStr}`;
+    const colorMap = { LONG:'verdict-trade', SHORT:'verdict-short', FLAT:'verdict-flat', CAUTION:'verdict-caution' };
+    badge.className = 'verdict-badge ' + (colorMap[zvVerdict] || 'verdict-flat');
+    badge.title = zv.message || '';
+  } else {
+    const flat = kellyF === 0 || (sharpe !== null && sharpe <= 0);
+    badge.textContent = flat ? 'RESTA FLAT' : 'TRADING CANDIDATE';
+    badge.className = 'verdict-badge ' + (flat ? 'verdict-flat' : 'verdict-trade');
+  }
 
   // Left stats
   const wr = bs.winrate ?? bs.win_rate ?? null;
