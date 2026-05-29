@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Zeus — Mappa di Sistema</title>
+<style>
+  :root {
+    --bg:     #060a10;
+    --bg2:    #0c1420;
+    --bg3:    #111c2e;
+    --border: #1e2e44;
+    --gold:   #f0c040;
+    --green:  #3ddc84;
+    --red:    #ff5c5c;
+    --blue:   #4ab3f4;
+    --orange: #f09030;
+    --purple: #a070f0;
+    --neutral:#8899aa;
+    --text:   #ccddf0;
+    --dim:    #445566;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  h1 {
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+    text-shadow: 0 0 20px rgba(240,192,64,0.4);
+  }
+  .subtitle { color: var(--neutral); font-size: 11px; letter-spacing: 2px; margin-bottom: 28px; }
+
+  /* ── GOAL BAR ── */
+  .goal-bar {
+    background: var(--bg2);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .goal-label { color: var(--gold); font-weight: 700; letter-spacing: 2px; font-size: 11px; }
+  .goal-item { display:flex; flex-direction:column; gap:2px; }
+  .goal-val { font-size: 18px; font-weight: 800; color: var(--green); }
+  .goal-desc { font-size: 10px; color: var(--neutral); }
+  .goal-sep { color: var(--dim); font-size: 20px; }
+
+  /* ── MAIN GRID ── */
+  .map-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  /* ── LAYER ── */
+  .layer {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .layer-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .layer-intel .layer-title { color: var(--gold); border-color: rgba(240,192,64,0.2); }
+  .layer-exec  .layer-title { color: var(--blue); border-color: rgba(74,179,244,0.2); }
+  .layer-ext   .layer-title { color: var(--purple); border-color: rgba(160,112,240,0.2); }
+
+  /* ── MODULE BOX ── */
+  .mod {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    position: relative;
+  }
+  .mod-name {
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mod-desc { font-size: 10px; color: var(--neutral); line-height: 1.5; }
+  .mod-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .tag-ok      { background: rgba(61,220,132,0.15); color: var(--green); border:1px solid rgba(61,220,132,0.2); }
+  .tag-warn    { background: rgba(240,144,48,0.15); color: var(--orange); border:1px solid rgba(240,144,48,0.2); }
+  .tag-off     { background: rgba(136,153,170,0.1); color: var(--neutral); border:1px solid rgba(136,153,170,0.2); }
+  .tag-missing { background: rgba(255,92,92,0.1); color: var(--red); border:1px solid rgba(255,92,92,0.2); }
+  .tag-shadow  { background: rgba(74,179,244,0.1); color: var(--blue); border:1px solid rgba(74,179,244,0.2); }
+
+  /* ── CONNECTIONS ── */
+  .connections {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .conn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .conn-ok      { background: rgba(61,220,132,0.07); color: var(--green); }
+  .conn-missing { background: rgba(255,92,92,0.07); color: var(--red); }
+  .conn-partial { background: rgba(240,144,48,0.07); color: var(--orange); }
+  .conn-arrow { font-size: 12px; flex-shrink:0; }
+
+  /* ── GAP TABLE ── */
+  .gap-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .gap-title { color: var(--red); font-size: 11px; letter-spacing: 2px; font-weight:700; margin-bottom: 12px; }
+  .gap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .gap-item {
+    background: var(--bg3);
+    border: 1px solid rgba(255,92,92,0.15);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .gap-item.solved {
+    border-color: rgba(61,220,132,0.2);
+    background: rgba(61,220,132,0.03);
+  }
+  .gap-item-title { font-size: 11px; font-weight:700; margin-bottom:4px; }
+  .gap-item.solved .gap-item-title { color: var(--green); }
+  .gap-item:not(.solved) .gap-item-title { color: var(--red); }
+  .gap-item-desc { font-size: 10px; color: var(--neutral); line-height:1.5; }
+
+  /* ── ROADMAP ── */
+  .roadmap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .roadmap-title { color: var(--gold); font-size: 11px; letter-spacing: 2px; font-weight:700; margin-bottom: 12px; }
+  .phase { margin-bottom: 12px; }
+  .phase-header {
+    display: flex; align-items:center; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .phase-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items:center; justify-content:center;
+    font-size: 10px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .ph1 { background: rgba(61,220,132,0.2); color: var(--green); }
+  .ph2 { background: rgba(74,179,244,0.2); color: var(--blue); }
+  .ph3 { background: rgba(240,192,64,0.2); color: var(--gold); }
+  .ph4 { background: rgba(160,112,240,0.2); color: var(--purple); }
+  .phase-name { font-weight:700; font-size: 12px; }
+  .phase-items { padding-left: 32px; display:flex; flex-direction:column; gap:3px; }
+  .phase-item { font-size: 10px; color: var(--neutral); }
+  .phase-item::before { content: "→ "; color: var(--dim); }
+
+  /* ── WIN RATE BAR ── */
+  .wr-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .wr-title { color: var(--gold); font-size: 11px; letter-spacing: 2px; font-weight:700; margin-bottom: 12px; }
+  .wr-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .wr-label { font-size: 10px; width: 200px; flex-shrink:0; color: var(--text); }
+  .wr-track { flex:1; height: 10px; background: var(--bg3); border-radius:5px; overflow:hidden; }
+  .wr-fill { height:100%; border-radius:5px; transition: width 0.5s; }
+  .wr-val { font-size: 11px; font-weight:700; width:45px; text-align:right; }
+  .wr-target { color: var(--gold); }
+  .wr-current-low { color: var(--red); }
+  .wr-good { color: var(--green); }
+</style>
+</head>
+<body>
+
+<h1>🔱 ZEUS — MAPPA DI SISTEMA</h1>
+<div class="subtitle">VISTA DALL'ALTO — STATO ATTUALE + OBIETTIVO + PERCORSO</div>
+
+<!-- GOAL -->
+<div class="goal-bar">
+  <div class="goal-label">🎯 OBIETTIVO</div>
+  <div class="goal-item">
+    <div class="goal-val">&gt; 75%</div>
+    <div class="goal-desc">Win rate</div>
+  </div>
+  <div class="goal-sep">OPPURE</div>
+  <div class="goal-item">
+    <div class="goal-val">$200/giorno</div>
+    <div class="goal-desc">Profitto netto</div>
+  </div>
+  <div class="goal-sep">SU</div>
+  <div class="goal-item">
+    <div class="goal-val">Crypto + Azioni + Polymarket</div>
+    <div class="goal-desc">Multi-mercato</div>
+  </div>
+  <div class="goal-sep">—</div>
+  <div class="goal-item">
+    <div class="goal-val" style="color:var(--orange)">PAPER sempre</div>
+    <div class="goal-desc">finché win rate non è provato</div>
+  </div>
+</div>
+
+<!-- 3 LAYER MAP -->
+<div class="map-grid">
+
+  <!-- LAYER 1: ZEUS INTELLIGENCE -->
+  <div class="layer layer-intel">
+    <div class="layer-title">🧠 LAYER 1 — ZEUS (Intelligenza)</div>
+
+    <div class="mod">
+      <div class="mod-name">📊 Freqtrade Backtest</div>
+      <div class="mod-desc">Testa strategie su dati storici. Seleziona la migliore per Sharpe.</div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">ATTIVO</span>
+        <span class="tag tag-warn">Best sharpe: −0.20</span>
+        <span class="tag tag-warn">Win rate: 31%</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">📐 Agenti Quant (DSR / Kelly / Costi)</div>
+      <div class="mod-desc">Deflated Sharpe Ratio, dimensionamento Kelly, stima commissioni+tasse.</div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">ATTIVO</span>
+        <span class="tag tag-warn">Kelly = 0 (strategia perdente)</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">👁️ 6 Sensi di Zeus</div>
+      <div class="mod-desc">
+        <b>👂 Udito</b> — Fear&amp;Greed (23 = Extreme Fear)<br>
+        <b>👁 Vista</b> — BTC live da Kraken<br>
+        <b>🔮 Preveggenza</b> — Forecast 3g (Kronos-inspired)<br>
+        <b>🧠 Memoria</b> — Alpha factors (Qlib-inspired)<br>
+        <b>⚖️ Equilibrio</b> — Risk regime (mlfinlab-inspired)<br>
+        <b>🤖 Occhi</b> — TradingAgents LLM (setup pending)
+      </div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">5/6 ATTIVI</span>
+        <span class="tag tag-warn">Occhi: setup_required</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">🐟 MiroFish (40 agenti LLM)</div>
+      <div class="mod-desc">Simulazione social: agenti twittano/postano su BTC. Produce sentiment aggregato.</div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">ATTIVO</span>
+        <span class="tag tag-ok">Sentiment oggi: BULLISH</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">🪽 Hermes (Briefing Telegram)</div>
+      <div class="mod-desc">Ogni mattina 08:05 UTC manda su Telegram il report con tutti i 6 sensi.</div>
+      <div class="mod-tags">
+        <span class="tag tag-warn">Deploy cloud: pending</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">📋 Output: daily_report.json</div>
+      <div class="mod-desc">Il prodotto finale di Zeus. Contiene tutto: backtest, sensi, sentiment.</div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">Su GitHub (auto-push)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LAYER 2: APOLLO EXECUTION -->
+  <div class="layer layer-exec">
+    <div class="layer-title">⚡ LAYER 2 — APOLLO (Esecuzione)</div>
+
+    <div class="mod">
+      <div class="mod-name">⚫ Black Apollo (VPS)</div>
+      <div class="mod-desc">
+        Bot BTC/USDT 5m — Futures. 6 plugin strategia:<br>
+        <b>FVG</b>, <b>Momentum</b>, <b>TrendAccel</b>, <b>ExtremeReversal</b>, <b>Reclaim</b>, <b>ApolloAlpha</b>
+      </div>
+      <div class="mod-tags">
+        <span class="tag tag-shadow">SHADOW MODE</span>
+        <span class="tag tag-ok">VPS 24/7</span>
+        <span class="tag tag-ok">AI Model adattivo</span>
+        <span class="tag tag-ok">WAL blockchain log</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">⚪ White Apollo (VPS)</div>
+      <div class="mod-desc">
+        Clone di Black con parametri diversi. Strategia alternativa, confronto parallelo.
+      </div>
+      <div class="mod-tags">
+        <span class="tag tag-shadow">SHADOW MODE</span>
+        <span class="tag tag-ok">VPS 24/7</span>
+        <span class="tag tag-ok">WAL blockchain log</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">🧬 Cerbero (sistema interno Apollo)</div>
+      <div class="mod-desc">
+        <b>Brain</b> — segnali e scoring<br>
+        <b>Regime</b> — stato di mercato (trend/range/volatile)<br>
+        <b>Router</b> — instrada segnali al plugin giusto<br>
+        <b>Memory</b> — storico trade<br>
+        <b>Hydra</b> — multi-symbol monitoring<br>
+        <b>HydraAlert</b> — Telegram alert<br>
+        <b>WAL</b> — audit trail con hash chain
+      </div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">TUTTO INTERNO AD APOLLO</span>
+      </div>
+    </div>
+
+    <div class="mod" style="border-color: rgba(255,92,92,0.3);">
+      <div class="mod-name" style="color:var(--red)">❌ DISCONNESSO DA ZEUS</div>
+      <div class="mod-desc" style="color:var(--red)">
+        Apollo non legge daily_report.json.<br>
+        Zeus non legge il WAL di Apollo.<br>
+        I due sistemi non si parlano.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LAYER 3: EXTERNAL -->
+  <div class="layer layer-ext">
+    <div class="layer-title">🌐 LAYER 3 — Moduli Esterni</div>
+
+    <div class="mod">
+      <div class="mod-name">🤖 TradingAgents (ochi/)</div>
+      <div class="mod-desc">Framework multi-agente LLM. Analisti market+social+news → decisione Buy/Hold/Sell su BTC-USD.</div>
+      <div class="mod-tags">
+        <span class="tag tag-warn">Setup venv pending</span>
+        <span class="tag tag-ok">Adapter pronto</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">🏟️ AI-Trader (occhio_ai_trader/)</div>
+      <div class="mod-desc">Arena di trading: pubblica segnali, leaderboard, copy-trading. Non un cervello, ma una piazza.</div>
+      <div class="mod-tags">
+        <span class="tag tag-off">IN VALUTAZIONE</span>
+        <span class="tag tag-off">Non integrato</span>
+      </div>
+    </div>
+
+    <div class="mod" style="border-color: rgba(255,92,92,0.2);">
+      <div class="mod-name" style="color:var(--red)">❌ Polymarket</div>
+      <div class="mod-desc">Prediction market su eventi reali. Alto potenziale. Nessun modulo ancora.</div>
+      <div class="mod-tags">
+        <span class="tag tag-missing">NON INTEGRATO</span>
+        <span class="tag tag-ok">API pubblica disponibile</span>
+      </div>
+    </div>
+
+    <div class="mod" style="border-color: rgba(255,92,92,0.2);">
+      <div class="mod-name" style="color:var(--red)">❌ Azioni (Stock)</div>
+      <div class="mod-desc">Mercato azionario. TradingAgents supporta già stock oltre crypto.</div>
+      <div class="mod-tags">
+        <span class="tag tag-missing">NON INTEGRATO</span>
+        <span class="tag tag-warn">TradingAgents pronto</span>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod-name">☁️ Cloud (VPS Hostinger)</div>
+      <div class="mod-desc">Apollo già lì. Zeus ha il deploy kit pronto. Basta un comando: bash setup.sh</div>
+      <div class="mod-tags">
+        <span class="tag tag-ok">Apollo: LIVE</span>
+        <span class="tag tag-warn">Zeus: pending deploy</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONNECTIONS -->
+<div class="gap-section">
+  <div class="gap-title">🔗 CONNESSIONI — cosa parla con cosa</div>
+  <div class="connections">
+    <div class="conn conn-ok"><span class="conn-arrow">✅</span> Freqtrade Backtest → Orchestrator Zeus → daily_report.json</div>
+    <div class="conn conn-ok"><span class="conn-arrow">✅</span> 6 Sensi → Orchestrator Zeus → daily_report.json</div>
+    <div class="conn conn-ok"><span class="conn-arrow">✅</span> MiroFish → Orchestrator Zeus → daily_report.json</div>
+    <div class="conn conn-ok"><span class="conn-arrow">✅</span> daily_report.json → GitHub (auto-push in cloud)</div>
+    <div class="conn conn-ok"><span class="conn-arrow">✅</span> GitHub → Hermes → Telegram (briefing)</div>
+    <div class="conn conn-missing"><span class="conn-arrow">❌</span> Zeus verdict → Apollo (non collegati — Apollo ignora Zeus)</div>
+    <div class="conn conn-missing"><span class="conn-arrow">❌</span> Apollo WAL → Zeus (Zeus non vede le performance reali di Apollo)</div>
+    <div class="conn conn-missing"><span class="conn-arrow">❌</span> Zeus → Polymarket (nessun modulo)</div>
+    <div class="conn conn-missing"><span class="conn-arrow">❌</span> Zeus → Azioni (nessun modulo)</div>
+    <div class="conn conn-partial"><span class="conn-arrow">🔧</span> Occhi (TradingAgents) → Zeus senses (adapter pronto, venv da installare)</div>
+    <div class="conn conn-partial"><span class="conn-arrow">🔧</span> Zeus → Cloud (deploy kit pronto, comando da eseguire)</div>
+  </div>
+</div>
+
+<!-- GAP ANALYSIS -->
+<div class="gap-section">
+  <div class="gap-title">⚠️ GAP ANALYSIS — dove sei vs dove vuoi arrivare</div>
+  <div class="gap-grid">
+    <div class="gap-item">
+      <div class="gap-item-title">Win Rate: 31% → obiettivo 75%</div>
+      <div class="gap-item-desc">Il backtest migliore dà 31% win rate e Sharpe negativo. Le strategie attuali perdono. Servono: strategie migliori + filtro zeus che blocca entrate quando le condizioni sono negative.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-item-title">Zeus non parla ad Apollo</div>
+      <div class="gap-item-desc">Zeus dice "RESTA FLAT" ma Apollo continua ad operare ignorandolo. Il ponte Zeus→Apollo è il collegamento più critico da costruire.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-item-title">Apollo non alimenta Zeus</div>
+      <div class="gap-item-desc">Apollo ha un WAL con ogni trade in SHADOW mode. Zeus non lo legge. Zeus non sa se Apollo sta guadagnando o perdendo nella realtà.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-item-title">Tutto locale (PC si spegne = tutto muore)</div>
+      <div class="gap-item-desc">Apollo è sul VPS (ok). Zeus è sul PC (muore). Il deploy cloud di Zeus è pronto ma non eseguito.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-item-title">Polymarket: zero</div>
+      <div class="gap-item-desc">Prediction market ad alto potenziale di edge. API pubblica gratuita. Nessun modulo. Sarebbe il terzo fronte di profitto.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-item-title">Azioni: zero</div>
+      <div class="gap-item-desc">TradingAgents già supporta stock oltre crypto. Espandere occhi alle azioni è quasi gratuito.</div>
+    </div>
+    <div class="gap-item solved">
+      <div class="gap-item-title">✅ Sensi di mercato: OK</div>
+      <div class="gap-item-desc">Vista, Udito, Preveggenza, Memoria, Equilibrio operativi. Occhi (TradingAgents) pronto al 90%.</div>
+    </div>
+    <div class="gap-item solved">
+      <div class="gap-item-title">✅ Intelligenza sociale: OK</div>
+      <div class="gap-item-desc">MiroFish 40 agenti LLM, sentiment aggregato, integrato nel report.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROADMAP -->
+<div class="roadmap">
+  <div class="roadmap-title">🗺️ PERCORSO VERSO L'OBIETTIVO</div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num ph1">1</div>
+      <div class="phase-name" style="color:var(--green)">FASE 1 — Fondamenta (adesso, questa settimana)</div>
+    </div>
+    <div class="phase-items">
+      <div class="phase-item">Deploy Zeus su VPS cloud (bash setup.sh — 10 minuti)</div>
+      <div class="phase-item">Setup venv Occhi → TradingAgents attivo (bash ochi/setup_venv.sh)</div>
+      <div class="phase-item">Leggere WAL Apollo → capire le performance reali in SHADOW</div>
+      <div class="phase-item">Hermes Telegram configurato con BOT_TOKEN + CHAT_ID</div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num ph2">2</div>
+      <div class="phase-name" style="color:var(--blue)">FASE 2 — Ponte Zeus↔Apollo (settimana 2)</div>
+    </div>
+    <div class="phase-items">
+      <div class="phase-item">agent_wal.py: Zeus legge WAL Apollo → win rate reale, PnL giornaliero nel report</div>
+      <div class="phase-item">Apollo legge zeus_signal.json: se Zeus dice BEARISH/FLAT → Apollo riduce size o salta</div>
+      <div class="phase-item">Filtraggio entrate: Zeus + 4/6 sensi negativi → Apollo non entra</div>
+      <div class="phase-item">Questo da solo potrebbe aumentare il win rate (evitare trade in condizioni negative)</div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num ph3">3</div>
+      <div class="phase-name" style="color:var(--gold)">FASE 3 — Multi-mercato (settimana 3-4)</div>
+    </div>
+    <div class="phase-items">
+      <div class="phase-item">agent_polymarket.py: legge mercati Polymarket su crypto/macro, vota con probabilità</div>
+      <div class="phase-item">Occhi espanso a stock: TradingAgents già supporta SPY, NVDA, ecc.</div>
+      <div class="phase-item">AI-Trader come arena: pubblicare segnali Zeus, confronto con altri</div>
+      <div class="phase-item">Strategia migliore Freqtrade con filtro Zeus integrato</div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num ph4">4</div>
+      <div class="phase-name" style="color:var(--purple)">FASE 4 — Live (solo dopo: win rate >75% provato in PAPER)</div>
+    </div>
+    <div class="phase-items">
+      <div class="phase-item">Solo dopo 30+ giorni di PAPER con win rate documentato >75%</div>
+      <div class="phase-item">Size iniziale: 1% del capitale. Poi scala.</div>
+      <div class="phase-item">CONFIRM_LIVE_TRADING="YES" solo allora</div>
+    </div>
+  </div>
+</div>
+
+<!-- WIN RATE BARS -->
+<div class="wr-section">
+  <div class="wr-title">📊 WIN RATE — STATO ATTUALE vs OBIETTIVO</div>
+
+  <div class="wr-row">
+    <div class="wr-label">🎯 Obiettivo</div>
+    <div class="wr-track"><div class="wr-fill" style="width:75%; background:var(--gold)"></div></div>
+    <div class="wr-val wr-target">75%</div>
+  </div>
+  <div class="wr-row">
+    <div class="wr-label">📊 Freqtrade (backtest migliore)</div>
+    <div class="wr-track"><div class="wr-fill" style="width:31%; background:var(--red)"></div></div>
+    <div class="wr-val wr-current-low">31%</div>
+  </div>
+  <div class="wr-row">
+    <div class="wr-label">⚫ Apollo (SHADOW — dato WAL non letto)</div>
+    <div class="wr-track"><div class="wr-fill" style="width:0%; background:var(--neutral)"></div></div>
+    <div class="wr-val" style="color:var(--neutral)">?%</div>
+  </div>
+  <div class="wr-row">
+    <div class="wr-label">🎯 Con filtro Zeus attivo (stimato)</div>
+    <div class="wr-track"><div class="wr-fill" style="width:50%; background:var(--orange)"></div></div>
+    <div class="wr-val" style="color:var(--orange)">~50%</div>
+  </div>
+  <div class="wr-row">
+    <div class="wr-label">🎯 Zeus+Apollo+Polymarket (Fase 3 stimato)</div>
+    <div class="wr-track"><div class="wr-fill" style="width:65%; background:var(--blue)"></div></div>
+    <div class="wr-val" style="color:var(--blue)">~65%</div>
+  </div>
+
+  <div style="margin-top:12px; padding:10px; background:var(--bg3); border-radius:6px; font-size:10px; color:var(--neutral); line-height:1.6;">
+    <b style="color:var(--gold)">Nota:</b> 75% win rate su un singolo mercato è molto difficile. La via più realistica al $200/giorno è:
+    combinare 3 mercati (crypto + stock + Polymarket) con win rate del 55-60% su ognuno,
+    e usare Kelly corretto per il sizing. Con $5.000 capitale e 55% win rate ben calibrato,
+    $200/giorno è raggiungibile. Il salto dalla strategia attuale (31%) richiede il filtro Zeus-Apollo.
+  </div>
+</div>
+
+<div style="margin-top:20px; text-align:center; color:var(--dim); font-size:10px; letter-spacing:2px;">
+  Zeus System Map — generato il {{DATE}} — MODE=PAPER — CONFIRM_LIVE_TRADING=NO
+</div>
+
+<script>
+  document.querySelector('div:last-child').textContent =
+    document.querySelector('div:last-child').textContent.replace('{{DATE}}',
+      new Date().toLocaleString('it-IT'));
+</script>
+</body>
+</html>
