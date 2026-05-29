@@ -5,7 +5,7 @@ import zipfile
 from agents.agent2_dsr import compute_dsr
 from agents.agent3_kelly import compute_kelly_fraction
 from agents.agent4_costs import estimate_costs
-from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi, agent_wal
+from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi, agent_wal, agent_polymarket
 from agents.agent_verdict import synthesize as compute_zeus_verdict
 from mirofish_runner.run_daily import run_daily_scenarios
 
@@ -316,6 +316,12 @@ def build_report() -> dict:
     except Exception as exc:
         senses["wal"] = {"sense": "wal", "status": "error", "error": str(exc)}
 
+    try:
+        # Polymarket: mercati predittivi su BTC/crypto — 7° senso
+        senses["polymarket"] = agent_polymarket.sense()
+    except Exception as exc:
+        senses["polymarket"] = {"sense": "polymarket", "status": "error", "error": str(exc)}
+
     mirofish_forecast = None
     latest_forecast_path = find_latest_mirofish_forecast()
     if latest_forecast_path is not None:
@@ -378,6 +384,7 @@ def build_report() -> dict:
             "equilibrio":  senses.get("equilibrio",  {}).get("verdict"),
             "occhi":       senses.get("occhi",       {}).get("verdict"),
             "wal":         senses.get("wal",         {}).get("verdict"),
+            "polymarket":  senses.get("polymarket",  {}).get("verdict"),
         },
         "zeus_verdict": zeus_verdict_data,
         "summary": summary,

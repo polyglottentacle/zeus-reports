@@ -128,7 +128,7 @@
     },
     "wal": {
       "sense": "wal",
-      "timestamp": "2026-05-29T23:37:18.198200+00:00",
+      "timestamp": "2026-05-29T23:58:10.484065+00:00",
       "source": "none",
       "status": "unavailable",
       "apollo": {
@@ -165,6 +165,25 @@
       },
       "verdict": "SHADOW",
       "message": "WAL non disponibile. Imposta APOLLO_WAL_PATH (path al file WAL) o APOLLO_API_URL_BLACK / APOLLO_API_URL_WHITE (REST API Apollo)."
+    },
+    "polymarket": {
+      "sense": "polymarket",
+      "source": "gamma-api.polymarket.com",
+      "timestamp": "2026-05-29T23:58:10.288166+00:00",
+      "status": "ok",
+      "verdict": "BULLISH",
+      "message": "Polymarket: 1 mercati BTC | p_bull media = 99.6% → BULLISH",
+      "markets": [
+        {
+          "question": "Will the price of Bitcoin be between $64,000 and $66,000 on June 4?",
+          "p_yes": 0.0045,
+          "effective_bullish_prob": 0.9955,
+          "framing": "bearish_framing",
+          "volume": "9.989082"
+        }
+      ],
+      "avg_bullish_prob": 0.9955,
+      "market_count": 1
     }
   },
   "strategy_status": {
@@ -214,7 +233,8 @@
     },
     "senses": {
       "udito": "EXTREME_FEAR",
-      "vista": "DOWNTREND"
+      "vista": "DOWNTREND",
+      "polymarket": "BULLISH"
     },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -245,31 +265,38 @@
       "timestamp": "2026-05-29T06:00:03.246412+00:00"
     },
     "zeus_verdict": {
-      "zeus_verdict": "SHORT",
-      "zeus_score": -0.1563,
-      "zeus_confidence": 0.4469,
-      "active_senses": 3,
-      "timestamp": "2026-05-29T23:37:18.198200+00:00",
+      "zeus_verdict": "FLAT",
+      "zeus_score": -0.0282,
+      "zeus_confidence": 0.437,
+      "active_senses": 4,
+      "timestamp": "2026-05-29T23:58:10.484065+00:00",
       "reasoning": [
         {
           "sense": "vista",
           "verdict": "DOWNTREND",
           "score": -0.6376,
-          "weight": 0.2,
+          "weight": 0.19,
           "detail": "BTC DOWNTREND | Δ24h +0.06%"
         },
         {
           "sense": "udito",
           "verdict": "EXTREME_FEAR",
           "score": 0.1,
-          "weight": 0.15,
+          "weight": 0.143,
           "detail": "F&G = 23 (EXTREME_FEAR)"
+        },
+        {
+          "sense": "polymarket",
+          "verdict": "BULLISH",
+          "score": 0.9964,
+          "weight": 0.048,
+          "detail": "Prediction markets: BULLISH | p_bull 99.6%"
         },
         {
           "sense": "mirofish",
           "verdict": "BULLISH",
           "score": 1.0,
-          "weight": 0.05,
+          "weight": 0.048,
           "detail": "Social sim: BULLISH | score 1.00"
         }
       ],
@@ -278,35 +305,42 @@
         "long": 0.15,
         "short": -0.15
       },
-      "message": "Zeus dice SHORT (score=-0.156, conf=45%, sensi attivi=3/7)"
+      "message": "Zeus dice FLAT (score=-0.028, conf=44%, sensi attivi=4/8)"
     }
   },
   "zeus_verdict": {
-    "zeus_verdict": "SHORT",
-    "zeus_score": -0.1563,
-    "zeus_confidence": 0.4469,
-    "active_senses": 3,
-    "timestamp": "2026-05-29T23:37:18.198200+00:00",
+    "zeus_verdict": "FLAT",
+    "zeus_score": -0.0282,
+    "zeus_confidence": 0.437,
+    "active_senses": 4,
+    "timestamp": "2026-05-29T23:58:10.484065+00:00",
     "reasoning": [
       {
         "sense": "vista",
         "verdict": "DOWNTREND",
         "score": -0.6376,
-        "weight": 0.2,
+        "weight": 0.19,
         "detail": "BTC DOWNTREND | Δ24h +0.06%"
       },
       {
         "sense": "udito",
         "verdict": "EXTREME_FEAR",
         "score": 0.1,
-        "weight": 0.15,
+        "weight": 0.143,
         "detail": "F&G = 23 (EXTREME_FEAR)"
+      },
+      {
+        "sense": "polymarket",
+        "verdict": "BULLISH",
+        "score": 0.9964,
+        "weight": 0.048,
+        "detail": "Prediction markets: BULLISH | p_bull 99.6%"
       },
       {
         "sense": "mirofish",
         "verdict": "BULLISH",
         "score": 1.0,
-        "weight": 0.05,
+        "weight": 0.048,
         "detail": "Social sim: BULLISH | score 1.00"
       }
     ],
@@ -315,6 +349,6 @@
       "long": 0.15,
       "short": -0.15
     },
-    "message": "Zeus dice SHORT (score=-0.156, conf=45%, sensi attivi=3/7)"
+    "message": "Zeus dice FLAT (score=-0.028, conf=44%, sensi attivi=4/8)"
   }
 }

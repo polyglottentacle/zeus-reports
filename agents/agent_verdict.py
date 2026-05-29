@@ -40,9 +40,10 @@ W_MEMORIA      = float(os.environ.get("ZEUS_W_MEM",         "0.15"))
 W_EQUILIBRIO   = float(os.environ.get("ZEUS_W_EQUIL",       "0.15"))
 W_OCCHI        = float(os.environ.get("ZEUS_W_OCCHI",       "0.10"))
 W_MIROFISH     = float(os.environ.get("ZEUS_W_MIRO",        "0.05"))
+W_POLYMARKET   = float(os.environ.get("ZEUS_W_POLY",        "0.05"))
 
 # Normalizza automaticamente i pesi a somma 1.0
-_W_SUM = W_VISTA + W_UDITO + W_PREVEGGENZA + W_MEMORIA + W_EQUILIBRIO + W_OCCHI + W_MIROFISH
+_W_SUM = W_VISTA + W_UDITO + W_PREVEGGENZA + W_MEMORIA + W_EQUILIBRIO + W_OCCHI + W_MIROFISH + W_POLYMARKET
 if _W_SUM > 0:
     W_VISTA       /= _W_SUM
     W_UDITO       /= _W_SUM
@@ -51,6 +52,7 @@ if _W_SUM > 0:
     W_EQUILIBRIO  /= _W_SUM
     W_OCCHI       /= _W_SUM
     W_MIROFISH    /= _W_SUM
+    W_POLYMARKET  /= _W_SUM
 
 LONG_THRESHOLD  = float(os.environ.get("ZEUS_LONG_THR",  "0.15"))
 SHORT_THRESHOLD = float(os.environ.get("ZEUS_SHORT_THR", "-0.15"))
@@ -121,6 +123,15 @@ def _occhi_score(verdict: str) -> float:
         "NEUTRAL":      0.0,
     }
     return mapping.get(verdict.upper() if verdict else "", 0.0)
+
+
+def _polymarket_score(verdict: str, avg_prob: float = 0.5) -> float:
+    """Prediction market: mappa BULLISH/BEARISH/NEUTRAL + probabilità media."""
+    mapping = {"BULLISH": +1.0, "BEARISH": -1.0, "NEUTRAL": 0.0}
+    base = mapping.get(verdict.upper() if verdict else "", 0.0)
+    # Amplifica con la distanza dalla soglia 0.5
+    signal = (avg_prob - 0.5) * 2.0  # range [-1, +1]
+    return round(base * 0.6 + signal * 0.4, 4)
 
 
 def _mirofish_score(verdict: str, score: float = 0.5) -> float:
@@ -231,6 +242,20 @@ def synthesize(report: Dict[str, Any]) -> Dict[str, Any]:
             "detail": f"TradingAgents: {o_verdict}"
         })
 
+    # ── POLYMARKET ──
+    poly = senses.get("polymarket", {})
+    po_verdict  = poly.get("verdict", "")
+    po_avg_prob = poly.get("avg_bullish_prob", 0.5) or 0.5
+    if poly.get("status") == "ok" and po_verdict:
+        s = _polymarket_score(po_verdict, po_avg_prob)
+        weighted_score += s * W_POLYMARKET
+        active_weights += W_POLYMARKET
+        reasoning.append({
+            "sense": "polymarket", "verdict": po_verdict,
+            "score": s, "weight": round(W_POLYMARKET, 3),
+            "detail": f"Prediction markets: {po_verdict} | p_bull {po_avg_prob:.1%}"
+        })
+
     # ── MIROFISH ──
     mf_sentiment = mirofish.get("sentiment", {}) or {}
     mf_verdict   = mf_sentiment.get("verdict", "")
@@ -295,7 +320,7 @@ def synthesize(report: Dict[str, Any]) -> Dict[str, Any]:
         "message": (
             f"Zeus dice {final_verdict} "
             f"(score={score_clamped:+.3f}, conf={confidence:.0%}, "
-            f"sensi attivi={len(reasoning)}/7)"
+            f"sensi attivi={len(reasoning)}/8)"
         ),
     }
 

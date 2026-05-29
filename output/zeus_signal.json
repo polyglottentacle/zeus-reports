@@ -1,12 +1,12 @@
 {
-  "verdict": "SHORT",
-  "score": -0.1563,
-  "confidence": 0.4469,
-  "timestamp": "2026-05-29T23:37:18.198200+00:00",
+  "verdict": "FLAT",
+  "score": -0.0282,
+  "confidence": 0.437,
+  "timestamp": "2026-05-29T23:58:10.484065+00:00",
   "allow_long": false,
-  "allow_short": true,
-  "allow_any": true,
-  "active_senses": 3,
-  "message": "Zeus dice SHORT (score=-0.156, conf=45%, sensi attivi=3/7)",
+  "allow_short": false,
+  "allow_any": false,
+  "active_senses": 4,
+  "message": "Zeus dice FLAT (score=-0.028, conf=44%, sensi attivi=4/8)",
   "_info": "Generato da Zeus. Apollo: leggi allow_any prima di aprire trade."
 }
