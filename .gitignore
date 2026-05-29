@@ -4,9 +4,10 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Ignore output files except the daily report
+# Ignore output files except the daily report and zeus_signal
 output/*
 !output/daily_report.json
+!output/zeus_signal.json
 
 # Ignore generated scheduler/runtime files
 output/scheduler.log

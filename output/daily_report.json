@@ -125,6 +125,46 @@
       "candles": 30,
       "high_period": 82811.2,
       "low_period": 72595.4
+    },
+    "wal": {
+      "sense": "wal",
+      "timestamp": "2026-05-29T23:37:18.198200+00:00",
+      "source": "none",
+      "status": "unavailable",
+      "apollo": {
+        "black": {
+          "win_rate_7d": 0.0,
+          "win_rate_30d": 0.0,
+          "pnl_today": 0.0,
+          "pnl_30d": 0.0,
+          "trades_7d": 0,
+          "trades_30d": 0,
+          "open_positions": 0,
+          "drawdown_live": 0.0,
+          "mode": "SHADOW",
+          "last_trade": null
+        },
+        "white": {
+          "win_rate_7d": 0.0,
+          "win_rate_30d": 0.0,
+          "pnl_today": 0.0,
+          "pnl_30d": 0.0,
+          "trades_7d": 0,
+          "trades_30d": 0,
+          "open_positions": 0,
+          "drawdown_live": 0.0,
+          "mode": "SHADOW",
+          "last_trade": null
+        }
+      },
+      "combined": {
+        "win_rate_7d": 0.0,
+        "pnl_today": 0.0,
+        "total_trades": 0,
+        "verdict": "SHADOW"
+      },
+      "verdict": "SHADOW",
+      "message": "WAL non disponibile. Imposta APOLLO_WAL_PATH (path al file WAL) o APOLLO_API_URL_BLACK / APOLLO_API_URL_WHITE (REST API Apollo)."
     }
   },
   "strategy_status": {
@@ -203,6 +243,78 @@
       "profit_pct": -0.04987716714,
       "drawdown_pct": 0.054275120309599044,
       "timestamp": "2026-05-29T06:00:03.246412+00:00"
+    },
+    "zeus_verdict": {
+      "zeus_verdict": "SHORT",
+      "zeus_score": -0.1563,
+      "zeus_confidence": 0.4469,
+      "active_senses": 3,
+      "timestamp": "2026-05-29T23:37:18.198200+00:00",
+      "reasoning": [
+        {
+          "sense": "vista",
+          "verdict": "DOWNTREND",
+          "score": -0.6376,
+          "weight": 0.2,
+          "detail": "BTC DOWNTREND | Δ24h +0.06%"
+        },
+        {
+          "sense": "udito",
+          "verdict": "EXTREME_FEAR",
+          "score": 0.1,
+          "weight": 0.15,
+          "detail": "F&G = 23 (EXTREME_FEAR)"
+        },
+        {
+          "sense": "mirofish",
+          "verdict": "BULLISH",
+          "score": 1.0,
+          "weight": 0.05,
+          "detail": "Social sim: BULLISH | score 1.00"
+        }
+      ],
+      "penalties": [],
+      "thresholds": {
+        "long": 0.15,
+        "short": -0.15
+      },
+      "message": "Zeus dice SHORT (score=-0.156, conf=45%, sensi attivi=3/7)"
     }
+  },
+  "zeus_verdict": {
+    "zeus_verdict": "SHORT",
+    "zeus_score": -0.1563,
+    "zeus_confidence": 0.4469,
+    "active_senses": 3,
+    "timestamp": "2026-05-29T23:37:18.198200+00:00",
+    "reasoning": [
+      {
+        "sense": "vista",
+        "verdict": "DOWNTREND",
+        "score": -0.6376,
+        "weight": 0.2,
+        "detail": "BTC DOWNTREND | Δ24h +0.06%"
+      },
+      {
+        "sense": "udito",
+        "verdict": "EXTREME_FEAR",
+        "score": 0.1,
+        "weight": 0.15,
+        "detail": "F&G = 23 (EXTREME_FEAR)"
+      },
+      {
+        "sense": "mirofish",
+        "verdict": "BULLISH",
+        "score": 1.0,
+        "weight": 0.05,
+        "detail": "Social sim: BULLISH | score 1.00"
+      }
+    ],
+    "penalties": [],
+    "thresholds": {
+      "long": 0.15,
+      "short": -0.15
+    },
+    "message": "Zeus dice SHORT (score=-0.156, conf=45%, sensi attivi=3/7)"
   }
 }

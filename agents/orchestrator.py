@@ -402,6 +402,35 @@ def write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+def write_zeus_signal(verdict_data: dict) -> None:
+    """
+    Scrive zeus_signal.json — il file che Apollo potrà leggere in futuro
+    per filtrare le sue entrate in base al verdetto Zeus.
+
+    Formato compatto leggibile da qualsiasi bot senza dipendenze extra:
+      { "verdict": "FLAT", "score": -0.156, "confidence": 0.45,
+        "timestamp": "...", "allow_long": false, "allow_short": false }
+    """
+    v = str(verdict_data.get("zeus_verdict", "FLAT")).upper()
+    score = verdict_data.get("zeus_score", 0.0) or 0.0
+    conf  = verdict_data.get("zeus_confidence", 0.0) or 0.0
+    signal = {
+        "verdict":     v,
+        "score":       round(float(score), 4),
+        "confidence":  round(float(conf), 4),
+        "timestamp":   verdict_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
+        "allow_long":  v == "LONG",
+        "allow_short": v == "SHORT",
+        "allow_any":   v not in ("FLAT",),
+        "active_senses": verdict_data.get("active_senses", 0),
+        "message":     verdict_data.get("message", ""),
+        # Istruzione per Apollo (commento leggibile dal bot):
+        "_info": "Generato da Zeus. Apollo: leggi 'allow_any' prima di aprire trade.",
+    }
+    signal_path = OUTPUT_DIR / "zeus_signal.json"
+    write_json(signal_path, signal)
+
+
 def _push_report_if_cloud() -> None:
     """Se siamo in cloud (deploy/push_report.sh esiste), pusha il report su GitHub."""
     push_script = BASE_DIR / "deploy" / "push_report.sh"
@@ -423,6 +452,13 @@ def main() -> None:
     report = build_report()
     write_json(OUTPUT_DIR / "daily_report.json", report)
     write_json(OUTPUT_DIR / "strategy_status.json", report.get("strategy_status", {}))
+
+    # Scrivi zeus_signal.json — ponte verso Apollo (Apollo lo leggerà in futuro)
+    zv = report.get("zeus_verdict", {})
+    if zv:
+        write_zeus_signal(zv)
+        print(f"zeus_signal.json → {zv.get('zeus_verdict')} (score={zv.get('zeus_score',0):+.3f})")
+
     if report["status"] == "ok":
         print("daily_report.json aggiornato con backtest result.")
     else:
