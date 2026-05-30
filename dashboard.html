@@ -279,6 +279,33 @@
   .feed-action { font-size: 10px; color: var(--gold-dim); letter-spacing: 0.5px; margin-bottom: 3px; }
   .feed-content { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
 
+  /* ── REASONING BARS ── */
+  .rb-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 5px; font-size: 10px;
+  }
+  .rb-label { width: 78px; flex-shrink: 0; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rb-track { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; position: relative; }
+  .rb-fill  { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+  .rb-fill.bull { background: var(--green); }
+  .rb-fill.bear { background: var(--red); }
+  .rb-fill.neu  { background: var(--neutral); }
+  .rb-score { width: 42px; flex-shrink: 0; text-align: right; font-weight: 700; font-size: 10px; }
+  .rb-verdict { width: 54px; flex-shrink: 0; text-align: right; font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rb-score.bull { color: var(--green); }
+  .rb-score.bear { color: var(--red); }
+  .rb-score.neu  { color: var(--neutral); }
+
+  .zv-summary {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg3); border-radius: 6px; padding: 7px 10px;
+    margin-bottom: 8px; border: 1px solid var(--border);
+  }
+  .zv-big { font-size: 16px; font-weight: 900; letter-spacing: 2px; }
+  .zv-score { font-size: 11px; font-weight: 700; }
+  .zv-conf { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
+  .zv-penalty { font-size: 9px; color: #f09030; margin-top: 4px; }
+
   /* Equity mini chart */
   .equity-section {
     border-top: 1px solid var(--border);
@@ -527,8 +554,19 @@
     </div>
   </div>
 
-  <!-- RIGHT: Live feed + equity -->
+  <!-- RIGHT: Zeus Reasoning + Live feed + equity -->
   <div class="panel-right">
+
+    <!-- ── ZEUS REASONING PANEL ── -->
+    <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>⚡ Zeus Reasoning</span>
+      <span id="zvActiveSenses" style="font-weight:700;color:var(--gold)">—/8</span>
+    </div>
+    <div id="reasoningPanel" style="padding:10px 12px 6px;border-bottom:1px solid var(--border);flex-shrink:0">
+      <!-- populated by JS -->
+      <div style="color:var(--text-dim);font-size:10px;text-align:center;padding:8px 0">Nessun dato</div>
+    </div>
+
     <div class="section-title">Live Feed Agenti</div>
     <div class="feed-wrap" id="feedWrap">
       <!-- populated by JS -->
@@ -606,6 +644,15 @@
       <div class="sense-name">Occhi</div>
       <div class="sense-verdict sv-neu" id="occhiVerdict">—</div>
       <div class="sense-meta" id="occhiMeta">TradingAgents LLM</div>
+    </div>
+  </div>
+
+  <div class="sense-card" id="sense-poly">
+    <div class="sense-icon">🎯</div>
+    <div class="sense-info">
+      <div class="sense-name">Polymarket</div>
+      <div class="sense-verdict sv-neu" id="polyVerdict">—</div>
+      <div class="sense-meta" id="polyMeta">Prediction markets</div>
     </div>
   </div>
 
@@ -982,6 +1029,69 @@ function populate(report) {
       ? 'Decision: ' + oc.decision + (oc.trade_date ? '  ' + oc.trade_date : '')
       : (oc.status === 'setup_required' ? 'Setup: cd ochi && bash setup_venv.sh' : 'TradingAgents LLM')
   );
+
+  // Polymarket (prediction markets)
+  const poly = senses.polymarket || {};
+  _setSense('polyVerdict', 'polyMeta',
+    poly.verdict,
+    poly.avg_bullish_prob != null
+      ? 'p_bull ' + Math.round(poly.avg_bullish_prob * 100) + '%  (' + (poly.market_count || 0) + ' mercati)'
+      : 'Prediction markets'
+  );
+
+  // ── ZEUS REASONING PANEL ──
+  const zv = report?.zeus_verdict || {};
+  const zvV  = zv.zeus_verdict || null;
+  const zvS  = typeof zv.zeus_score     === 'number' ? zv.zeus_score     : null;
+  const zvC  = typeof zv.zeus_confidence=== 'number' ? zv.zeus_confidence: null;
+  const zvN  = zv.active_senses != null ? zv.active_senses : null;
+  const zvR  = Array.isArray(zv.reasoning) ? zv.reasoning : [];
+  const zvP  = Array.isArray(zv.penalties) ? zv.penalties : [];
+
+  if (zvN != null) document.getElementById('zvActiveSenses').textContent = zvN + '/8';
+
+  const rPanel = document.getElementById('reasoningPanel');
+  if (rPanel && zvV) {
+    const VC = { LONG:'var(--green)', SHORT:'var(--red)', FLAT:'var(--gold)', CAUTION:'#f09030' };
+    const scoreColor = zvS > 0.05 ? 'var(--green)' : zvS < -0.05 ? 'var(--red)' : 'var(--gold)';
+
+    let html = `
+      <div class="zv-summary">
+        <div>
+          <div class="zv-big" style="color:${VC[zvV]||'var(--gold)'}">${zvV}</div>
+          ${zvP.length ? `<div class="zv-penalty">⚠ ${zvP[0].replace(/BLOCCO:|PENALTY:/g,'').trim()}</div>` : ''}
+        </div>
+        <div style="text-align:right">
+          <div class="zv-score" style="color:${scoreColor}">${zvS!=null?(zvS>0?'+':'')+zvS.toFixed(3):'—'}</div>
+          <div class="zv-conf">${zvC!=null?Math.round(zvC*100)+'% conf':'—'}</div>
+        </div>
+      </div>`;
+
+    const ICONS = { vista:'👁', udito:'👂', preveggenza:'🔮', memoria:'🧠',
+                    equilibrio:'⚖️', occhi:'🤖', polymarket:'🎯', mirofish:'🐟', wal:'🔗' };
+    for (const r of zvR) {
+      const abs   = Math.abs(r.score);
+      const pct   = Math.round(abs * 100);
+      const cls   = r.score > 0.05 ? 'bull' : r.score < -0.05 ? 'bear' : 'neu';
+      const icon  = ICONS[r.sense] || '•';
+      const label = icon + ' ' + r.sense;
+      const scoreStr = (r.score > 0 ? '+' : '') + r.score.toFixed(3);
+      html += `
+        <div class="rb-row" title="${r.detail || ''}">
+          <div class="rb-label">${label}</div>
+          <div class="rb-track">
+            <div class="rb-fill ${cls}" style="width:${pct}%"></div>
+          </div>
+          <div class="rb-score ${cls}">${scoreStr}</div>
+          <div class="rb-verdict">${(r.verdict||'').substring(0,10)}</div>
+        </div>`;
+    }
+
+    if (zvR.length === 0) {
+      html += `<div style="color:var(--text-dim);font-size:10px;text-align:center;padding:4px">Nessun senso attivo</div>`;
+    }
+    rPanel.innerHTML = html;
+  }
 
   // Equity — build from pnl data if available
   // Use a simulated curve from sharpe if no real equity data
