@@ -105,13 +105,21 @@ def format_message(report: dict) -> str:
             return "🟡"
         return "🔵"
 
-    udito_v   = (senses.get("udito")  or {}).get("verdict") or senses.get("udito") if isinstance(senses.get("udito"), str) else "n/d"
-    vista_v   = (senses.get("vista")  or {}).get("verdict") or senses.get("vista") if isinstance(senses.get("vista"), str) else "n/d"
-    prev_v    = (senses.get("preveggenza") or {}).get("verdict") or senses.get("preveggenza") if isinstance(senses.get("preveggenza"), str) else "n/d"
-    mem_v     = (senses.get("memoria") or {}).get("verdict") or senses.get("memoria") if isinstance(senses.get("memoria"), str) else "n/d"
-    eq_v      = (senses.get("equilibrio") or {}).get("verdict") or senses.get("equilibrio") if isinstance(senses.get("equilibrio"), str) else "n/d"
-    oc_v      = (senses.get("occhi") or {}).get("verdict") or senses.get("occhi") if isinstance(senses.get("occhi"), str) else None
-    oc_dec    = (senses.get("occhi") or {}).get("decision") if isinstance(senses.get("occhi"), dict) else None
+    def _v(key):
+        """Estrae verdict da senses[key] sia dict che stringa."""
+        s = senses.get(key)
+        if isinstance(s, dict):  return s.get("verdict") or s.get("classification") or "n/d"
+        if isinstance(s, str):   return s
+        return "n/d"
+
+    udito_v = _v("udito")
+    vista_v = _v("vista")
+    prev_v  = _v("preveggenza")
+    mem_v   = _v("memoria")
+    eq_v    = _v("equilibrio")
+    oc_v    = _v("occhi")
+    oc_dec  = (senses.get("occhi") or {}).get("decision") if isinstance(senses.get("occhi"), dict) else None
+    poly_v  = _v("polymarket")
     wal_data  = senses.get("wal") or {}
     wal_status = wal_data.get("status", "n/d")
     wal_verdict= wal_data.get("verdict", "n/d")
@@ -159,14 +167,15 @@ def format_message(report: dict) -> str:
         f"  {zv_msg}\n"
         f"━━━━━━━━━━━━━━━━\n"
         f"\n"
-        f"👁 *7 Sensi — Mercato adesso*\n"
-        f"  {_sense_icon(udito_v)} Udito: `{udito_v}` {fng_line}\n"
-        f"  {_sense_icon(vista_v)} Vista: `{vista_v}` {btc_line}\n"
-        f"  {_sense_icon(prev_v)} Preveggenza: `{prev_v}`\n"
-        f"  {_sense_icon(mem_v)} Memoria: `{mem_v}`\n"
-        f"  {_sense_icon(eq_v)} Equilibrio: `{eq_v}`\n"
-        f"  {_sense_icon(oc_v)} Occhi (TradingAgents): `{oc_dec or oc_v or 'n/d'}`\n"
-        f"  {wal_icon} WAL Apollo: `{wal_verdict}`\n"
+        f"👁 *8 Sensi — Mercato adesso*\n"
+        f"  {_sense_icon(udito_v)} 👂 Udito: `{udito_v}` {fng_line}\n"
+        f"  {_sense_icon(vista_v)} 👁 Vista: `{vista_v}` {btc_line}\n"
+        f"  {_sense_icon(prev_v)} 🔮 Preveggenza: `{prev_v}`\n"
+        f"  {_sense_icon(mem_v)} 🧠 Memoria: `{mem_v}`\n"
+        f"  {_sense_icon(eq_v)} ⚖️ Equilibrio: `{eq_v}` ({(senses.get('equilibrio') or {}).get('risk_regime','?')})\n"
+        f"  {_sense_icon(oc_v)} 🤖 Occhi: `{oc_dec or oc_v or 'n/d'}`\n"
+        f"  {_sense_icon(poly_v)} 🎯 Polymarket: `{poly_v}` ({(senses.get('polymarket') or {}).get('market_count',0)} mercati)\n"
+        f"  {wal_icon} 🔗 WAL Apollo: `{wal_verdict}`\n"
         f"{wal_line}\n"
         f"\n"
         f"📊 *Backtest: {strategy}*\n"
