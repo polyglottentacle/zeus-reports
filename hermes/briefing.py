@@ -16,6 +16,7 @@ Cron (08:05 UTC ogni giorno):
 import json
 import os
 import sys
+from pathlib import Path
 from datetime import datetime, timezone
 
 try:
@@ -23,6 +24,25 @@ try:
 except ImportError:
     print("ERROR: 'requests' non installato. Esegui: pip install requests")
     sys.exit(1)
+
+
+def _load_dotenv(path: Path) -> None:
+    """Carica .env in os.environ (robusto: ignora commenti/righe vuote,
+    valori con '='). Non sovrascrive variabili già impostate."""
+    if not path.exists():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, val = line.split("=", 1)
+        key, val = key.strip(), val.strip()
+        if key and key not in os.environ:
+            os.environ[key] = val
+
+
+# Cerca .env nella root di Zeus (parent di hermes/)
+_load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ── Configurazione ─────────────────────────────────────────────────────────────
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")

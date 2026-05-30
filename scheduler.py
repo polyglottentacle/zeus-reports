@@ -15,6 +15,35 @@ PYTHON_EXECUTABLE = (
 
 BASE_DIR = Path(__file__).resolve().parent
 LOG_FILE = BASE_DIR / "output" / "scheduler.log"
+
+
+def load_dotenv(path: Path) -> int:
+    """Carica un file .env in os.environ. Robusto: ignora commenti, righe vuote,
+    e valori che contengono '='. Non sovrascrive variabili già impostate.
+    Ritorna il numero di chiavi caricate."""
+    if not path.exists():
+        return 0
+    loaded = 0
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, val = line.split("=", 1)
+        key = key.strip()
+        val = val.strip()
+        if not key:
+            continue
+        if key not in os.environ:  # rispetta env già presente
+            os.environ[key] = val
+            loaded += 1
+    return loaded
+
+
+# Carica .env all'avvio (prima di leggere REMOTE_URL e di lanciare l'orchestrator)
+load_dotenv(BASE_DIR / ".env")
+
 REMOTE_URL = os.environ.get("GIT_REMOTE_URL", "https://github.com/polyglottentacle/zeus-reports.git")
 
 

@@ -409,37 +409,91 @@ def write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
-def write_zeus_signal(verdict_data: dict) -> None:
+def _build_component_status(senses: dict) -> dict:
+    """
+    Calcola lo stato operativo di ogni componente Zeus.
+    Valori possibili: LIVE | SHADOW | UNAVAILABLE | SETUP_REQUIRED
+    """
+    import os
+
+    def _sense_status(key: str) -> str:
+        s = senses.get(key)
+        if not s:
+            return "UNAVAILABLE"
+        st = s.get("status", "") if isinstance(s, dict) else ""
+        if st == "ok":
+            return "LIVE"
+        if st in ("unavailable", "disabled"):
+            return "UNAVAILABLE"
+        return "SHADOW"
+
+    # Apollo bridge: SHADOW se WAL ok, SETUP_REQUIRED se WAL unavailable
+    wal_status = _sense_status("wal")
+    apollo_bridge = "SHADOW" if wal_status == "LIVE" else "SETUP_REQUIRED"
+
+    # Telegram: LIVE se entrambe le variabili impostate
+    tg_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    tg_chat  = os.environ.get("TELEGRAM_CHAT_ID", "")
+    telegram = "LIVE" if (tg_token and tg_chat) else "SETUP_REQUIRED"
+
+    return {
+        "trading_mode":  "PAPER",                # fisso finché CONFIRM_LIVE_TRADING=YES
+        "apollo_bridge": apollo_bridge,           # Zeus→Apollo bridge via zeus_signal.json
+        "apollo_wal":    wal_status,              # WAL Apollo performance feed
+        "telegram":      telegram,                # Hermes Morning Briefing
+        "sense_vista":        _sense_status("vista"),
+        "sense_udito":        _sense_status("udito"),
+        "sense_preveggenza":  _sense_status("preveggenza"),
+        "sense_memoria":      _sense_status("memoria"),
+        "sense_equilibrio":   _sense_status("equilibrio"),
+        "sense_occhi":        _sense_status("occhi"),
+        "sense_polymarket":   _sense_status("polymarket"),
+        "sense_wal":          wal_status,
+    }
+
+
+def write_zeus_signal(verdict_data: dict, senses: dict | None = None) -> None:
     """
     Scrive zeus_signal.json — il file che Apollo potrà leggere in futuro
     per filtrare le sue entrate in base al verdetto Zeus.
 
-    Formato compatto leggibile da qualsiasi bot senza dipendenze extra:
-      { "verdict": "FLAT", "score": -0.156, "confidence": 0.45,
-        "timestamp": "...", "allow_long": false, "allow_short": false }
+    Formato compatto leggibile da qualsiasi bot senza dipendenze extra.
+    Include component_status per trasparenza LIVE/SHADOW/UNAVAILABLE/SETUP_REQUIRED.
     """
+    senses = senses or {}
     v = str(verdict_data.get("zeus_verdict", "FLAT")).upper()
     score = verdict_data.get("zeus_score", 0.0) or 0.0
     conf  = verdict_data.get("zeus_confidence", 0.0) or 0.0
     signal = {
-        "verdict":     v,
-        "score":       round(float(score), 4),
-        "confidence":  round(float(conf), 4),
-        "timestamp":   verdict_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
-        "allow_long":  v == "LONG",
-        "allow_short": v == "SHORT",
-        "allow_any":   v not in ("FLAT",),
+        "verdict":      v,
+        "score":        round(float(score), 4),
+        "confidence":   round(float(conf), 4),
+        "timestamp":    verdict_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
+        "allow_long":   v == "LONG",
+        "allow_short":  v == "SHORT",
+        "allow_any":    v not in ("FLAT",),
         "active_senses": verdict_data.get("active_senses", 0),
-        "message":     verdict_data.get("message", ""),
-        # Istruzione per Apollo (commento leggibile dal bot):
-        "_info": "Generato da Zeus. Apollo: leggi 'allow_any' prima di aprire trade.",
+        "message":      verdict_data.get("message", ""),
+        # ── Stato operativo (LIVE/SHADOW/UNAVAILABLE/SETUP_REQUIRED) ──
+        "component_status": _build_component_status(senses),
+        # Istruzione per Apollo:
+        "_info": (
+            "Generato da Zeus (MODE=PAPER). "
+            "Apollo: leggi 'allow_any' prima di aprire trade. "
+            "Controlla 'component_status.apollo_bridge' per sapere se il bridge e' attivo."
+        ),
     }
     signal_path = OUTPUT_DIR / "zeus_signal.json"
     write_json(signal_path, signal)
 
 
 def _push_report_if_cloud() -> None:
-    """Se siamo in cloud (deploy/push_report.sh esiste), pusha il report su GitHub."""
+    """Se siamo su VPS Linux (deploy/push_report.sh esiste), pusha il report su GitHub.
+    Su Windows il push lo gestisce scheduler.py (loader git nativo): evitiamo
+    di lanciare bash su un path Windows (errore non-fatale ma sporca il log)."""
+    import os
+    if os.name == "nt":
+        return  # su Windows il push è gestito da scheduler.py
     push_script = BASE_DIR / "deploy" / "push_report.sh"
     if push_script.exists():
         import subprocess
@@ -462,9 +516,13 @@ def main() -> None:
 
     # Scrivi zeus_signal.json — ponte verso Apollo (Apollo lo leggerà in futuro)
     zv = report.get("zeus_verdict", {})
+    senses = report.get("senses", {})
     if zv:
-        write_zeus_signal(zv)
+        write_zeus_signal(zv, senses=senses)
         print(f"zeus_signal.json → {zv.get('zeus_verdict')} (score={zv.get('zeus_score',0):+.3f})")
+
+    # Aggiungi component_status anche al report principale
+    report["component_status"] = _build_component_status(senses)
 
     if report["status"] == "ok":
         print("daily_report.json aggiornato con backtest result.")
