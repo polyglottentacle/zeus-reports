@@ -1,12 +1,12 @@
 {
   "verdict": "SHORT",
-  "score": -0.2644,
+  "score": -0.2566,
   "confidence": 1.0,
-  "timestamp": "2026-05-30T00:20:11.961838+00:00",
+  "timestamp": "2026-05-30T03:47:13.337711+00:00",
   "allow_long": false,
   "allow_short": true,
   "allow_any": true,
   "active_senses": 8,
-  "message": "Zeus dice SHORT (score=-0.264, conf=100%, sensi attivi=8/8)",
-  "_info": "Generato da Zeus. Apollo: leggi allow_any prima di aprire trade."
+  "message": "Zeus dice SHORT (score=-0.257, conf=100%, sensi attivi=8/8)",
+  "_info": "Generato da Zeus. Apollo: leggi 'allow_any' prima di aprire trade."
 }

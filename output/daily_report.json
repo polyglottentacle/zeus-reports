@@ -1,63 +1,63 @@
 {
-  "timestamp": "2026-05-29T06:00:03.246412+00:00",
+  "timestamp": "2026-05-30T03:40:05.025899+00:00",
   "status": "ok",
   "backtest_summary": {
-    "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
-    "strategy_name": "EmaRsiAdxVolumePlusStrategy",
-    "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
+    "meta_file": "backtest-result-2026-05-26_12-15-57.meta.json",
+    "strategy_name": "EmaRsiAdxVolumeStrategy",
+    "run_id": "f6c0a2d8d18ff7d1dd211ab1e02e411261afc80e",
     "backtest_start_time": "2024-01-02T06:00:00+00:00",
     "backtest_end_time": "2026-05-26T10:00:00+00:00",
-    "profit_total": -0.04987716714,
-    "profit_total_abs": -49.87716714,
-    "max_relative_drawdown": 0.054275120309599044,
-    "max_drawdown_abs": 54.527518700000016,
-    "total_trades": 196,
-    "trade_count_long": 196,
+    "profit_total": -0.01680734894999999,
+    "profit_total_abs": -16.80734894999999,
+    "max_relative_drawdown": 0.02682565366491476,
+    "max_drawdown_abs": 26.986503700000004,
+    "total_trades": 206,
+    "trade_count_long": 206,
     "trade_count_short": 0,
-    "winrate": 0.3112244897959184,
-    "cagr": -0.021116555519132274,
-    "sortino": -1.2404819551069126,
-    "sharpe": -0.6426911459260518,
-    "profit_factor": 0.6789643828235471,
-    "profit_mean": -0.0025502615449799057,
+    "winrate": 0.3155339805825243,
+    "cagr": -0.007045714633382438,
+    "sortino": -0.4259057535093624,
+    "sharpe": -0.19798843795444654,
+    "profit_factor": 0.8974995613242153,
+    "profit_mean": -0.0008161936478384788,
     "stake_amount": 100,
     "starting_balance": 1000,
     "backtest_start": "2024-01-02 06:00:00",
     "backtest_end": "2026-05-26 10:00:00",
-    "trade_count": 196,
-    "profit_pct": -0.04987716714,
-    "drawdown_pct": 0.054275120309599044,
-    "timestamp": "2026-05-29T06:00:03.246412+00:00"
+    "trade_count": 206,
+    "profit_pct": -0.01680734894999999,
+    "drawdown_pct": 0.02682565366491476,
+    "timestamp": "2026-05-30T03:40:05.025899+00:00"
   },
   "dsr": {
-    "dsr": 0.0,
-    "skew": 0.94931,
-    "kurtosis": 4.804289,
+    "dsr": 0.003704,
+    "skew": 0.544303,
+    "kurtosis": 2.306308,
     "benchmark_sharpe": 0.0,
-    "trades_used": 196,
+    "trades_used": 206,
     "note": "Deflated Sharpe Ratio calcolato con formula di López de Prado."
   },
   "kelly": {
     "kelly_fraction": 0.0,
     "half_kelly": 0.0,
     "max_position_usdt": 0.0,
-    "win_rate": 0.311224,
-    "avg_win_ratio": 0.017345,
-    "avg_loss_ratio": 0.01154,
+    "win_rate": 0.315534,
+    "avg_win_ratio": 0.02271,
+    "avg_loss_ratio": 0.011661,
     "note": "Kelly fraction calcolata con la formula f=(p*b-q)/b, dove p è la probabilità di successo e b è avg_win/avg_loss."
   },
   "costs": {
-    "commissioni_stimate": 39.05,
-    "slippage_stimato": 19.52,
+    "commissioni_stimate": 41.04,
+    "slippage_stimato": 20.52,
     "funding_rate": 0.0001,
-    "funding_stimato": 3.78,
+    "funding_stimato": 3.44,
     "tassa_box3_stimata": 21.6,
     "tassa_box1_rischio": 0.0,
-    "profit_netto_stimato": -133.83,
+    "profit_netto_stimato": -103.4,
     "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
   },
   "mirofish": {
-    "timestamp": "2026-05-29T03:06:46.539817+00:00",
+    "timestamp": "2026-05-30T03:43:03.333930+00:00",
     "source": "mirofish",
     "enabled": true,
     "status": "ok",
@@ -68,39 +68,38 @@
     "mirofish_run": {
       "returncode": 0,
       "timed_out": false,
-      "stdout": "已加载环境配置: C:\\Users\\docum\\Desktop\\zeus\\MiroFish\\.env\n[Twitter] 初始化...\n[通用LLM] model=deepseek-chat, base_url=https://api.deepseek.com...\ndb_path C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260529_030646\\twitter_simulation.db\n[Reddit] 初始化...\n[通用LLM] model=deepseek-chat, base_url=https://api.deepseek.com...\n{'user_profile': 'Retail crypto trader focused on momentum and trend following in BTC/USDT markets. Current market sentiment: bullish.', 'mbti': 'ENFP', 'gende [truncated]",
-      "stderr": "[05:07:38] ============================================================\n[05:07:38] OASIS 双平台并行模拟\n[05:07:38] 配置文件: C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260529_030646\\simulation_config.json\n[05:07:38] 模拟ID: zeus_mirofish_20260529_030646\n[05:07:38] 等待命令模式: 禁用\n[05:07:38] ============================================================\n[05:07:38] 模拟参数:\n[05:07:38]   - 总模拟时长: 2小时\n[05:07:38]   - 每轮时间: 60分钟\n[05:07:38]   - 配置总轮数: 2\n[05:07:38]   - 最大轮数限制: 2\n[05:07:38 [truncated]",
-      "command": "C:\\Users\\docum\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe C:\\Users\\docum\\Desktop\\zeus\\MiroFish\\backend\\scripts\\run_parallel_simulation.py --config C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260529_030646\\simulation_config.json --no-wait --max-rounds 2",
-      "simulation_dir": "C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260529_030646",
-      "twitter_actions": 9,
-      "reddit_actions": 9,
-      "total_actions": 18,
+      "stdout": "已加载环境配置: C:\\Users\\docum\\Desktop\\zeus\\MiroFish\\.env\n[Twitter] 初始化...\n[通用LLM] model=deepseek-chat, base_url=https://api.deepseek.com...\ndb_path C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260530_034303\\twitter_simulation.db\n[Reddit] 初始化...\n[通用LLM] model=deepseek-chat, base_url=https://api.deepseek.com...\n{'user_profile': 'Retail crypto trader focused on momentum and trend following in BTC/USDT markets. Current market sentiment: bullish.', 'mbti': 'ENFP', 'gende [truncated]",
+      "stderr": "[05:43:38] ============================================================\n[05:43:38] OASIS 双平台并行模拟\n[05:43:38] 配置文件: C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260530_034303\\simulation_config.json\n[05:43:38] 模拟ID: zeus_mirofish_20260530_034303\n[05:43:38] 等待命令模式: 禁用\n[05:43:38] ============================================================\n[05:43:38] 模拟参数:\n[05:43:38]   - 总模拟时长: 20小时\n[05:43:38]   - 每轮时间: 60分钟\n[05:43:38]   - 配置总轮数: 20\n[05:43:38]   - 最大轮数限制: 20\n[05:43 [truncated]",
+      "command": "C:\\Users\\docum\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe C:\\Users\\docum\\Desktop\\zeus\\MiroFish\\backend\\scripts\\run_parallel_simulation.py --config C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260530_034303\\simulation_config.json --no-wait --max-rounds 20",
+      "simulation_dir": "C:\\Users\\docum\\Desktop\\zeus\\mirofish_runner\\forecast_history\\mirofish_runs\\run_20260530_034303",
+      "twitter_actions": 319,
+      "reddit_actions": 461,
+      "total_actions": 780,
       "sentiment": {
         "status": "ok",
-        "score": 1.0,
-        "verdict": "BULLISH",
-        "bullish": 2,
-        "bearish": 0,
-        "neutral": 0,
-        "total_actions": 2
+        "score": 0.0444,
+        "verdict": "NEUTRAL",
+        "bullish": 97,
+        "bearish": 85,
+        "neutral": 88,
+        "total_actions": 270
       }
     },
     "sentiment": {
       "status": "ok",
-      "score": 1.0,
-      "verdict": "BULLISH",
-      "bullish": 2,
-      "bearish": 0,
-      "neutral": 0,
-      "total_actions": 2
-    },
-    "loaded_from": "2026-05-29_030742.json"
+      "score": 0.0444,
+      "verdict": "NEUTRAL",
+      "bullish": 97,
+      "bearish": 85,
+      "neutral": 88,
+      "total_actions": 270
+    }
   },
   "senses": {
     "udito": {
       "sense": "udito",
       "source": "alternative.me/fng",
-      "timestamp": "2026-05-29T06:00:03.258164+00:00",
+      "timestamp": "2026-05-30T03:40:05.137584+00:00",
       "status": "ok",
       "value": 23,
       "classification": "EXTREME_FEAR",
@@ -112,23 +111,90 @@
       "sense": "vista",
       "symbol": "BTC/USDT",
       "timeframe": "1d",
-      "timestamp": "2026-05-29T06:00:03.616519+00:00",
+      "timestamp": "2026-05-30T03:40:05.481613+00:00",
       "status": "ok",
       "exchange": "kraken",
-      "last_price": 73682.2,
-      "change_24h_pct": 0.06,
-      "change_period_pct": -3.48,
-      "volatility_pct": 1.38,
+      "last_price": 73605.3,
+      "change_24h_pct": 0.18,
+      "change_period_pct": -5.94,
+      "volatility_pct": 1.29,
       "trend": "DOWNTREND",
       "verdict": "DOWNTREND",
-      "message": "BTC visto su kraken: 73682.2 USDT.",
+      "message": "BTC visto su kraken: 73605.3 USDT.",
       "candles": 30,
       "high_period": 82811.2,
-      "low_period": 72595.4
+      "low_period": 72525.7
+    },
+    "preveggenza": {
+      "sense": "preveggenza",
+      "symbol": "BTC/USDT",
+      "horizon_days": 3,
+      "timestamp": "2026-05-30T03:40:10.776912+00:00",
+      "status": "ok",
+      "verdict": "BEARISH",
+      "confidence": 0.5269,
+      "rsi": 27.36,
+      "trend": "DOWN",
+      "momentum": -0.59,
+      "pattern_score": -0.175,
+      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 53%, RSI 27.36, trend DOWN).",
+      "composite_score": -0.5269,
+      "trend_strength": 1.0,
+      "last_price": 73605.3
+    },
+    "memoria": {
+      "sense": "memoria",
+      "symbol": "BTC/USDT",
+      "timestamp": "2026-05-30T03:40:10.776912+00:00",
+      "status": "ok",
+      "verdict": "NEUTRAL",
+      "alpha_score": 0.0656,
+      "factors": {
+        "mom_5d": -0.049682,
+        "mom_20d": -0.110036,
+        "mean_rev": -1.5523,
+        "vol_momentum": -0.2194,
+        "vol_regime": 0.6746,
+        "hl_efficiency": 0.4028
+      },
+      "message": "Memoria storica BTC/USDT: alpha=+0.0656 → NEUTRAL. Momentum 5g=-0.049682, mean_rev=-1.5523.",
+      "candles_used": 60
+    },
+    "equilibrio": {
+      "sense": "equilibrio",
+      "symbol": "BTC/USDT",
+      "timestamp": "2026-05-30T03:40:10.776912+00:00",
+      "status": "ok",
+      "verdict": "STRESS",
+      "risk_regime": "MEDIUM",
+      "sharpe_30d": -2.5871,
+      "calmar_30d": -4.9629,
+      "max_drawdown_pct": 10.58,
+      "max_drawdown_abs": 8696.5,
+      "pain_index": 0.041621,
+      "volatility_ann_pct": 26.52,
+      "message": "Equilibrio BTC/USDT: regime MEDIUM, Sharpe30g=-2.5871, maxDD=10.6%, vol=26.52% ann. → STRESS.",
+      "candles_used": 60
+    },
+    "occhi": {
+      "sense": "occhi",
+      "status": "ok",
+      "symbol": "BTC-USD",
+      "trade_date": "2026-05-30",
+      "timestamp": "2026-05-30T03:40:10.868010+00:00",
+      "decision": "Hold",
+      "verdict": "NEUTRAL",
+      "message": "TradingAgents su BTC-USD (2026-05-30): Hold → NEUTRAL.",
+      "raw_report": {
+        "market_report": "Now let me get the most recent close price for analysis. I need to check the most recent trading day:\n\nThe last trading day with data is **2026-05-28** with a Close of **73,536.55**.\n\nLet me compile a comprehensive analysis.\n\n---\n\n# 📊 BTC-USD Comprehensive Technical Analysis Report\n**Current Date:** 2026-05-30 | **Last Trading Day Analyzed:** 2026-05-28 | **Close Price:** $73,536.55\n\n---\n\n## 1️⃣ Trend Analysis (Moving Averages)\n\n### 50-Day SMA (Medium-Term Trend)\n- **Current (2026-05-28):** $77,…",
+        "sentiment_report": "I have received your instruction to produce a comprehensive sentiment report for BTC-USD based on the period from 2026-05-23 to 2026-05-30. I have the data sources (News, StockTwits placeholder, Reddit placeholder) and will now proceed with the analysis.\n\n***\n\n## Sentiment Report for BTC-USD (2026-05-23 to 2026-05-30)\n\n### 1. Overall Sentiment Direction\n\n**Bearish / Mixed with a Bearish Tilt**\n\n**Confidence: Medium-Low.** The sentiment read is supported by a substantial news flow. However, the c…",
+        "news_report": "Now I have comprehensive data. Let me compile the full report.\n\n---\n\n# Comprehensive News & Macroeconomic Report for BTC-USD — Week of May 20–30, 2026\n\n## Executive Summary\n\nBitcoin (BTC-USD) ended May down approximately **4%** on the month, underperforming soaring equity markets. While the S&P 500 logged its **ninth consecutive weekly gain** (longest streak since Dec 2023) and the Nasdaq posted its **best 2-month stretch in decades** (+25% in April & May), crypto assets have been \"sinking\" with…",
+        "final_decision": "**Rating**: Hold\n\n**Executive Summary**: Maintain current BTC-USD position at current weighting with no additions or trims. Replace the original extreme triggers with tighter, data-driven levels: buy at $70,000 (RSI below 30, psychological support) and add at $77,500 (50 SMA reclaim on volume). Set a 2-4 week monitoring window for a resolution—either a capitulatory washout to the buy trigger or a catalyst-driven reclaim of the 50-day MA. No shorting is permitted given medium-term institutional tailwinds.\n\n**Investment Thesis**: The debate confirms a genuinely balanced risk/reward that favors inaction over aggression. The Aggressive Analyst's structural case (CFTC perpetual futures approval, Texas sovereign adoption, Morgan Stanley 13F) is powerful but medium-term—the market has priced the …"
+      }
     },
     "wal": {
       "sense": "wal",
-      "timestamp": "2026-05-30T00:20:11.961838+00:00",
+      "timestamp": "2026-05-30T03:43:03.159720+00:00",
       "source": "none",
       "status": "unavailable",
       "apollo": {
@@ -169,254 +235,36 @@
     "polymarket": {
       "sense": "polymarket",
       "source": "gamma-api.polymarket.com",
-      "timestamp": "2026-05-30T00:20:11.741860+00:00",
+      "timestamp": "2026-05-30T03:43:03.159720+00:00",
       "status": "ok",
       "verdict": "BULLISH",
-      "message": "Polymarket: 1 mercati BTC | p_bull media = 99.6% → BULLISH",
+      "message": "Polymarket: 1 mercati BTC | p_bull media = 99.7% → BULLISH",
       "markets": [
         {
           "question": "Will the price of Bitcoin be between $64,000 and $66,000 on June 4?",
-          "p_yes": 0.004,
-          "effective_bullish_prob": 0.996,
+          "p_yes": 0.0035,
+          "effective_bullish_prob": 0.9965,
           "framing": "bearish_framing",
           "volume": "9.989082"
         }
       ],
-      "avg_bullish_prob": 0.996,
+      "avg_bullish_prob": 0.9965,
       "market_count": 1
-    },
-    "preveggenza": {
-      "sense": "preveggenza",
-      "symbol": "BTC/USDT",
-      "horizon_days": 3,
-      "timestamp": "2026-05-30T00:20:11.741860+00:00",
-      "status": "ok",
-      "verdict": "BEARISH",
-      "confidence": 0.5042,
-      "rsi": 26.89,
-      "trend": "DOWN",
-      "momentum": -0.5953,
-      "pattern_score": -0.0884,
-      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 50%, RSI 26.89, trend DOWN).",
-      "composite_score": -0.5042,
-      "trend_strength": 1.0,
-      "last_price": 73540.7
-    },
-    "memoria": {
-      "sense": "memoria",
-      "symbol": "BTC/USDT",
-      "timestamp": "2026-05-30T00:20:11.741860+00:00",
-      "status": "ok",
-      "verdict": "NEUTRAL",
-      "alpha_score": 0.0652,
-      "factors": {
-        "mom_5d": -0.05056,
-        "mom_20d": -0.110914,
-        "mean_rev": -1.5752,
-        "vol_momentum": -0.2362,
-        "vol_regime": 0.6571,
-        "hl_efficiency": 0.4316
-      },
-      "message": "Memoria storica BTC/USDT: alpha=+0.0652 → NEUTRAL. Momentum 5g=-0.05056, mean_rev=-1.5752.",
-      "candles_used": 60
-    },
-    "equilibrio": {
-      "sense": "equilibrio",
-      "symbol": "BTC/USDT",
-      "timestamp": "2026-05-30T00:20:11.741860+00:00",
-      "status": "ok",
-      "verdict": "STRESS",
-      "risk_regime": "MEDIUM",
-      "sharpe_30d": -2.6259,
-      "calmar_30d": -5.0105,
-      "max_drawdown_pct": 10.58,
-      "max_drawdown_abs": 8696.5,
-      "pain_index": 0.041647,
-      "volatility_ann_pct": 26.52,
-      "message": "Equilibrio BTC/USDT: regime MEDIUM, Sharpe30g=-2.6259, maxDD=10.6%, vol=26.52% ann. → STRESS.",
-      "candles_used": 60
-    },
-    "occhi": {
-      "sense": "occhi",
-      "status": "ok",
-      "symbol": "BTC-USD",
-      "trade_date": "2026-05-30",
-      "decision": "Underweight",
-      "verdict": "BEARISH",
-      "message": "TradingAgents BTC-USD: Underweight → BEARISH. Death cross confermato, 200SMA declining, supporto 65-67k Q3.",
-      "raw_report": {
-        "final_decision": "Underweight. Reduce 25% on bounce 76-77k. Stop 69500. Scale-in 65-67k."
-      }
-    }
-  },
-  "strategy_status": {
-    "backtest_file": "backtest-result-2026-05-26_12-17-42.meta.json",
-    "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
-    "strategy_name": "EmaRsiAdxVolumePlusStrategy",
-    "dsr": {
-      "dsr": 0.0,
-      "skew": 0.94931,
-      "kurtosis": 4.804289,
-      "benchmark_sharpe": 0.0,
-      "trades_used": 196,
-      "note": "Deflated Sharpe Ratio calcolato con formula di López de Prado."
-    },
-    "kelly": {
-      "kelly_fraction": 0.0,
-      "half_kelly": 0.0,
-      "max_position_usdt": 0.0,
-      "win_rate": 0.311224,
-      "avg_win_ratio": 0.017345,
-      "avg_loss_ratio": 0.01154,
-      "note": "Kelly fraction calcolata con la formula f=(p*b-q)/b, dove p è la probabilità di successo e b è avg_win/avg_loss."
-    },
-    "costs": {
-      "commissioni_stimate": 39.05,
-      "slippage_stimato": 19.52,
-      "funding_rate": 0.0001,
-      "funding_stimato": 3.78,
-      "tassa_box3_stimata": 21.6,
-      "tassa_box1_rischio": 0.0,
-      "profit_netto_stimato": -133.83,
-      "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
-    },
-    "mirofish": {
-      "status": "ok",
-      "scenario_count": 0,
-      "message": "MiroFish forecast generated successfully.",
-      "sentiment": {
-        "status": "ok",
-        "score": 1.0,
-        "verdict": "BULLISH",
-        "bullish": 2,
-        "bearish": 0,
-        "neutral": 0,
-        "total_actions": 2
-      }
-    },
-    "senses": {
-      "udito": "EXTREME_FEAR",
-      "vista": "DOWNTREND",
-      "polymarket": "BULLISH",
-      "preveggenza": "BEARISH",
-      "memoria": "NEUTRAL",
-      "equilibrio": "STRESS",
-      "wal": "SHADOW",
-      "occhi": "BEARISH"
-    },
-    "summary": {
-      "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
-      "strategy_name": "EmaRsiAdxVolumePlusStrategy",
-      "run_id": "75e74ce8dec1b7bd69a367f203ed14dfefd779fb",
-      "backtest_start_time": "2024-01-02T06:00:00+00:00",
-      "backtest_end_time": "2026-05-26T10:00:00+00:00",
-      "profit_total": -0.04987716714,
-      "profit_total_abs": -49.87716714,
-      "max_relative_drawdown": 0.054275120309599044,
-      "max_drawdown_abs": 54.527518700000016,
-      "total_trades": 196,
-      "trade_count_long": 196,
-      "trade_count_short": 0,
-      "winrate": 0.3112244897959184,
-      "cagr": -0.021116555519132274,
-      "sortino": -1.2404819551069126,
-      "sharpe": -0.6426911459260518,
-      "profit_factor": 0.6789643828235471,
-      "profit_mean": -0.0025502615449799057,
-      "stake_amount": 100,
-      "starting_balance": 1000,
-      "backtest_start": "2024-01-02 06:00:00",
-      "backtest_end": "2026-05-26 10:00:00",
-      "trade_count": 196,
-      "profit_pct": -0.04987716714,
-      "drawdown_pct": 0.054275120309599044,
-      "timestamp": "2026-05-29T06:00:03.246412+00:00"
-    },
-    "zeus_verdict": {
-      "zeus_verdict": "SHORT",
-      "zeus_score": -0.2644,
-      "zeus_confidence": 1.0,
-      "active_senses": 8,
-      "timestamp": "2026-05-30T00:20:11.961838+00:00",
-      "reasoning": [
-        {
-          "sense": "vista",
-          "verdict": "DOWNTREND",
-          "score": -0.6376,
-          "weight": 0.19,
-          "detail": "BTC DOWNTREND | Δ24h +0.06%"
-        },
-        {
-          "sense": "udito",
-          "verdict": "EXTREME_FEAR",
-          "score": 0.1,
-          "weight": 0.143,
-          "detail": "F&G = 23 (EXTREME_FEAR)"
-        },
-        {
-          "sense": "preveggenza",
-          "verdict": "BEARISH",
-          "score": -0.5042,
-          "weight": 0.19,
-          "detail": "Pattern: BEARISH | conf 50%"
-        },
-        {
-          "sense": "memoria",
-          "verdict": "NEUTRAL",
-          "score": 0.0391,
-          "weight": 0.143,
-          "detail": "Alpha = +0.0652 (NEUTRAL)"
-        },
-        {
-          "sense": "equilibrio",
-          "verdict": "STRESS",
-          "score": -0.6,
-          "weight": 0.143,
-          "detail": "Rischio: MEDIUM | STRESS"
-        },
-        {
-          "sense": "occhi",
-          "verdict": "BEARISH",
-          "score": -0.8,
-          "weight": 0.095,
-          "detail": "TradingAgents: BEARISH"
-        },
-        {
-          "sense": "polymarket",
-          "verdict": "BULLISH",
-          "score": 0.9968,
-          "weight": 0.048,
-          "detail": "Prediction markets: BULLISH | p_bull 99.6%"
-        },
-        {
-          "sense": "mirofish",
-          "verdict": "BULLISH",
-          "score": 1.0,
-          "weight": 0.048,
-          "detail": "Social sim: BULLISH | score 1.00"
-        }
-      ],
-      "penalties": [],
-      "thresholds": {
-        "long": 0.15,
-        "short": -0.15
-      },
-      "message": "Zeus dice SHORT (score=-0.264, conf=100%, sensi attivi=8/8)"
     }
   },
   "zeus_verdict": {
     "zeus_verdict": "SHORT",
-    "zeus_score": -0.2644,
+    "zeus_score": -0.2566,
     "zeus_confidence": 1.0,
     "active_senses": 8,
-    "timestamp": "2026-05-30T00:20:11.961838+00:00",
+    "timestamp": "2026-05-30T03:47:13.337711+00:00",
     "reasoning": [
       {
         "sense": "vista",
         "verdict": "DOWNTREND",
-        "score": -0.6376,
+        "score": -0.6328,
         "weight": 0.19,
-        "detail": "BTC DOWNTREND | Δ24h +0.06%"
+        "detail": "BTC DOWNTREND | Δ24h +0.18%"
       },
       {
         "sense": "udito",
@@ -428,16 +276,16 @@
       {
         "sense": "preveggenza",
         "verdict": "BEARISH",
-        "score": -0.5042,
+        "score": -0.5269,
         "weight": 0.19,
-        "detail": "Pattern: BEARISH | conf 50%"
+        "detail": "Pattern: BEARISH | conf 53%"
       },
       {
         "sense": "memoria",
         "verdict": "NEUTRAL",
-        "score": 0.0391,
+        "score": 0.0394,
         "weight": 0.143,
-        "detail": "Alpha = +0.0652 (NEUTRAL)"
+        "detail": "Alpha = +0.0656 (NEUTRAL)"
       },
       {
         "sense": "equilibrio",
@@ -448,24 +296,24 @@
       },
       {
         "sense": "occhi",
-        "verdict": "BEARISH",
-        "score": -0.8,
+        "verdict": "NEUTRAL",
+        "score": 0.0,
         "weight": 0.095,
-        "detail": "TradingAgents: BEARISH"
+        "detail": "TradingAgents: NEUTRAL"
       },
       {
         "sense": "polymarket",
         "verdict": "BULLISH",
-        "score": 0.9968,
+        "score": 0.9972,
         "weight": 0.048,
-        "detail": "Prediction markets: BULLISH | p_bull 99.6%"
+        "detail": "Prediction markets: BULLISH | p_bull 99.7%"
       },
       {
         "sense": "mirofish",
-        "verdict": "BULLISH",
-        "score": 1.0,
+        "verdict": "NEUTRAL",
+        "score": -0.3645,
         "weight": 0.048,
-        "detail": "Social sim: BULLISH | score 1.00"
+        "detail": "Social sim: NEUTRAL | score 0.04"
       }
     ],
     "penalties": [],
@@ -473,6 +321,161 @@
       "long": 0.15,
       "short": -0.15
     },
-    "message": "Zeus dice SHORT (score=-0.264, conf=100%, sensi attivi=8/8)"
+    "message": "Zeus dice SHORT (score=-0.257, conf=100%, sensi attivi=8/8)"
+  },
+  "strategy_status": {
+    "backtest_file": "backtest-result-2026-05-26_12-15-57.meta.json",
+    "run_id": "f6c0a2d8d18ff7d1dd211ab1e02e411261afc80e",
+    "strategy_name": "EmaRsiAdxVolumeStrategy",
+    "dsr": {
+      "dsr": 0.003704,
+      "skew": 0.544303,
+      "kurtosis": 2.306308,
+      "benchmark_sharpe": 0.0,
+      "trades_used": 206,
+      "note": "Deflated Sharpe Ratio calcolato con formula di López de Prado."
+    },
+    "kelly": {
+      "kelly_fraction": 0.0,
+      "half_kelly": 0.0,
+      "max_position_usdt": 0.0,
+      "win_rate": 0.315534,
+      "avg_win_ratio": 0.02271,
+      "avg_loss_ratio": 0.011661,
+      "note": "Kelly fraction calcolata con la formula f=(p*b-q)/b, dove p è la probabilità di successo e b è avg_win/avg_loss."
+    },
+    "costs": {
+      "commissioni_stimate": 41.04,
+      "slippage_stimato": 20.52,
+      "funding_rate": 0.0001,
+      "funding_stimato": 3.44,
+      "tassa_box3_stimata": 21.6,
+      "tassa_box1_rischio": 0.0,
+      "profit_netto_stimato": -103.4,
+      "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
+    },
+    "mirofish": {
+      "status": "ok",
+      "scenario_count": 0,
+      "message": "MiroFish forecast generated successfully.",
+      "sentiment": {
+        "status": "ok",
+        "score": 0.0444,
+        "verdict": "NEUTRAL",
+        "bullish": 97,
+        "bearish": 85,
+        "neutral": 88,
+        "total_actions": 270
+      }
+    },
+    "senses": {
+      "udito": "EXTREME_FEAR",
+      "vista": "DOWNTREND",
+      "preveggenza": "BEARISH",
+      "memoria": "NEUTRAL",
+      "equilibrio": "STRESS",
+      "occhi": "NEUTRAL",
+      "wal": "SHADOW",
+      "polymarket": "BULLISH"
+    },
+    "zeus_verdict": {
+      "zeus_verdict": "SHORT",
+      "zeus_score": -0.2566,
+      "zeus_confidence": 1.0,
+      "active_senses": 8,
+      "timestamp": "2026-05-30T03:47:13.337711+00:00",
+      "reasoning": [
+        {
+          "sense": "vista",
+          "verdict": "DOWNTREND",
+          "score": -0.6328,
+          "weight": 0.19,
+          "detail": "BTC DOWNTREND | Δ24h +0.18%"
+        },
+        {
+          "sense": "udito",
+          "verdict": "EXTREME_FEAR",
+          "score": 0.1,
+          "weight": 0.143,
+          "detail": "F&G = 23 (EXTREME_FEAR)"
+        },
+        {
+          "sense": "preveggenza",
+          "verdict": "BEARISH",
+          "score": -0.5269,
+          "weight": 0.19,
+          "detail": "Pattern: BEARISH | conf 53%"
+        },
+        {
+          "sense": "memoria",
+          "verdict": "NEUTRAL",
+          "score": 0.0394,
+          "weight": 0.143,
+          "detail": "Alpha = +0.0656 (NEUTRAL)"
+        },
+        {
+          "sense": "equilibrio",
+          "verdict": "STRESS",
+          "score": -0.6,
+          "weight": 0.143,
+          "detail": "Rischio: MEDIUM | STRESS"
+        },
+        {
+          "sense": "occhi",
+          "verdict": "NEUTRAL",
+          "score": 0.0,
+          "weight": 0.095,
+          "detail": "TradingAgents: NEUTRAL"
+        },
+        {
+          "sense": "polymarket",
+          "verdict": "BULLISH",
+          "score": 0.9972,
+          "weight": 0.048,
+          "detail": "Prediction markets: BULLISH | p_bull 99.7%"
+        },
+        {
+          "sense": "mirofish",
+          "verdict": "NEUTRAL",
+          "score": -0.3645,
+          "weight": 0.048,
+          "detail": "Social sim: NEUTRAL | score 0.04"
+        }
+      ],
+      "penalties": [],
+      "thresholds": {
+        "long": 0.15,
+        "short": -0.15
+      },
+      "message": "Zeus dice SHORT (score=-0.257, conf=100%, sensi attivi=8/8)"
+    },
+    "summary": {
+      "meta_file": "backtest-result-2026-05-26_12-15-57.meta.json",
+      "strategy_name": "EmaRsiAdxVolumeStrategy",
+      "run_id": "f6c0a2d8d18ff7d1dd211ab1e02e411261afc80e",
+      "backtest_start_time": "2024-01-02T06:00:00+00:00",
+      "backtest_end_time": "2026-05-26T10:00:00+00:00",
+      "profit_total": -0.01680734894999999,
+      "profit_total_abs": -16.80734894999999,
+      "max_relative_drawdown": 0.02682565366491476,
+      "max_drawdown_abs": 26.986503700000004,
+      "total_trades": 206,
+      "trade_count_long": 206,
+      "trade_count_short": 0,
+      "winrate": 0.3155339805825243,
+      "cagr": -0.007045714633382438,
+      "sortino": -0.4259057535093624,
+      "sharpe": -0.19798843795444654,
+      "profit_factor": 0.8974995613242153,
+      "profit_mean": -0.0008161936478384788,
+      "stake_amount": 100,
+      "starting_balance": 1000,
+      "backtest_start": "2024-01-02 06:00:00",
+      "backtest_end": "2026-05-26 10:00:00",
+      "trade_count": 206,
+      "profit_pct": -0.01680734894999999,
+      "drawdown_pct": 0.02682565366491476,
+      "timestamp": "2026-05-30T03:40:05.025899+00:00"
+    }
   }
 }
