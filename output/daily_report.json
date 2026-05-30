@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-30T08:51:57.602988+00:00",
+  "timestamp": "2026-05-30T13:08:57.189922+00:00",
   "status": "ok",
   "backtest_summary": {
     "meta_file": "backtest-result-2026-05-26_12-15-57.meta.json",
@@ -27,7 +27,7 @@
     "trade_count": 206,
     "profit_pct": -0.01680734894999999,
     "drawdown_pct": 0.02682565366491476,
-    "timestamp": "2026-05-30T08:51:57.602988+00:00"
+    "timestamp": "2026-05-30T13:08:57.189922+00:00"
   },
   "dsr": {
     "dsr": 0.003704,
@@ -100,7 +100,7 @@
     "udito": {
       "sense": "udito",
       "source": "alternative.me/fng",
-      "timestamp": "2026-05-30T08:51:57.661029+00:00",
+      "timestamp": "2026-05-30T13:08:57.327167+00:00",
       "status": "ok",
       "value": 23,
       "classification": "EXTREME_FEAR",
@@ -112,16 +112,16 @@
       "sense": "vista",
       "symbol": "BTC/USDT",
       "timeframe": "1d",
-      "timestamp": "2026-05-30T08:51:58.031310+00:00",
+      "timestamp": "2026-05-30T13:08:57.803672+00:00",
       "status": "ok",
       "exchange": "kraken",
-      "last_price": 73522.1,
-      "change_24h_pct": 0.07,
-      "change_period_pct": -6.05,
+      "last_price": 73728.3,
+      "change_24h_pct": 0.35,
+      "change_period_pct": -5.78,
       "volatility_pct": 1.29,
       "trend": "DOWNTREND",
       "verdict": "DOWNTREND",
-      "message": "BTC visto su kraken: 73522.1 USDT.",
+      "message": "BTC visto su kraken: 73728.3 USDT.",
       "candles": 30,
       "high_period": 82811.2,
       "low_period": 72525.7
@@ -130,51 +130,51 @@
       "sense": "preveggenza",
       "symbol": "BTC/USDT",
       "horizon_days": 3,
-      "timestamp": "2026-05-30T08:52:03.780747+00:00",
+      "timestamp": "2026-05-30T13:09:04.161321+00:00",
       "status": "ok",
       "verdict": "BEARISH",
-      "confidence": 0.5636,
-      "rsi": 26.76,
+      "confidence": 0.5124,
+      "rsi": 28.24,
       "trend": "DOWN",
-      "momentum": -0.5968,
-      "pattern_score": -0.2835,
-      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 56%, RSI 26.76, trend DOWN).",
-      "composite_score": -0.5636,
+      "momentum": -0.5797,
+      "pattern_score": -0.1475,
+      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 51%, RSI 28.24, trend DOWN).",
+      "composite_score": -0.5124,
       "trend_strength": 1.0,
-      "last_price": 73522.1
+      "last_price": 73728.3
     },
     "memoria": {
       "sense": "memoria",
       "symbol": "BTC/USDT",
-      "timestamp": "2026-05-30T08:52:03.780747+00:00",
+      "timestamp": "2026-05-30T13:09:04.161321+00:00",
       "status": "ok",
       "verdict": "NEUTRAL",
-      "alpha_score": 0.0699,
+      "alpha_score": 0.0676,
       "factors": {
-        "mom_5d": -0.050813,
-        "mom_20d": -0.111167,
-        "mean_rev": -1.5818,
-        "vol_momentum": -0.2012,
-        "vol_regime": 0.6521,
-        "hl_efficiency": 0.3751
+        "mom_5d": -0.048012,
+        "mom_20d": -0.108366,
+        "mean_rev": -1.5081,
+        "vol_momentum": -0.1955,
+        "vol_regime": 0.7088,
+        "hl_efficiency": 0.4119
       },
-      "message": "Memoria storica BTC/USDT: alpha=+0.0699 → NEUTRAL. Momentum 5g=-0.050813, mean_rev=-1.5818.",
+      "message": "Memoria storica BTC/USDT: alpha=+0.0676 → NEUTRAL. Momentum 5g=-0.048012, mean_rev=-1.5081.",
       "candles_used": 60
     },
     "equilibrio": {
       "sense": "equilibrio",
       "symbol": "BTC/USDT",
-      "timestamp": "2026-05-30T08:52:03.780747+00:00",
+      "timestamp": "2026-05-30T13:09:04.161321+00:00",
       "status": "ok",
       "verdict": "STRESS",
       "risk_regime": "MEDIUM",
-      "sharpe_30d": -2.637,
-      "calmar_30d": -5.0242,
+      "sharpe_30d": -2.5125,
+      "calmar_30d": -4.8708,
       "max_drawdown_pct": 10.58,
       "max_drawdown_abs": 8696.5,
-      "pain_index": 0.041654,
-      "volatility_ann_pct": 26.52,
-      "message": "Equilibrio BTC/USDT: regime MEDIUM, Sharpe30g=-2.637, maxDD=10.6%, vol=26.52% ann. → STRESS.",
+      "pain_index": 0.041571,
+      "volatility_ann_pct": 26.53,
+      "message": "Equilibrio BTC/USDT: regime MEDIUM, Sharpe30g=-2.5125, maxDD=10.6%, vol=26.53% ann. → STRESS.",
       "candles_used": 60
     },
     "occhi": {
@@ -182,20 +182,20 @@
       "status": "ok",
       "symbol": "BTC-USD",
       "trade_date": "2026-05-30",
-      "timestamp": "2026-05-30T08:52:03.903894+00:00",
+      "timestamp": "2026-05-30T13:09:04.340126+00:00",
       "decision": "Underweight",
       "verdict": "BEARISH",
       "message": "TradingAgents su BTC-USD (2026-05-30): Underweight → BEARISH.",
       "raw_report": {
-        "market_report": "Now let me get the most recent close price on the last trading day (2026-05-29) to complete my analysis.\n\nBased on the data, the last trading day with close was **2026-05-29**: **$73,372.52**. Let me also check May 28 for the close price.\n\nFrom the stock data:\n- 2026-05-28 Close: **$73,536.55**\n- 2026-05-29 Close: **$73,372.52**\n\nNow I have everything needed for a comprehensive analysis. Let me compile the full report.\n\n---\n\n# 📊 BTC-USD Comprehensive Technical Analysis Report\n**Date:** May 30, 2…",
-        "sentiment_report": "I'll analyze the available data for BTC-USD. Let me begin by noting the significant data gaps — StockTwits and Reddit sources returned no data, which limits my analysis to news headlines only. I'll flag this caveat clearly throughout.\n\n---\n\n## Sentiment Report: BTC-USD (2026-05-23 to 2026-05-30)\n\n### 1. Overall Sentiment Direction\n\n**MIXED with a slight bearish tilt** — *Low confidence due to data limitations*\n\n**Confidence note:** This assessment is based **solely on news headlines**, as both S…",
-        "news_report": "Now I have a comprehensive set of data. Let me compile the full report.\n\n---\n\n# BTC-USD Macroeconomic & News Research Report\n**Date:** 2026-05-30  \n**Asset:** BTC-USD  \n**Timeframe Analyzed:** May 23–30, 2026\n\n---\n\n## Executive Summary\n\nBitcoin (BTC-USD) enters the final days of May under notable pressure, down approximately **4% for the month**. The cryptocurrency market is experiencing a broad \"breakdown\" while equities (S&P 500, Nasdaq, Dow) continue to surge to record highs. Key macro themes…",
-        "final_decision": "**Rating**: Underweight\n\n**Executive Summary**: Reduce BTC-USD exposure by 20-30% using a layered approach: sell 10% immediately at current levels (~$73,372), another 10% on any bounce to $74,500-$75,000, and set a trailing stop at $72,800 on the remaining position to guard against further downside. Maintain a dynamic stop-loss structure—tighten to $75,000 if price breaks below $72,000. Do not initiate new longs until BTC-USD reclaims the 50-day SMA (~$77,173) on above-average volume or prints a bullish RSI divergence below the 30 oversold threshold.\n\n**Investment Thesis**: The decision synthesizes the evidence across all three analysts. The bear case is data-rich and compelling: a widening Death Cross (50 SMA at $77k vs 200 SMA at $80k, gap growing), price below VWMA ($76.7k vs spot $73.4…"
+        "market_report": "Excellent! I have all the data I need. Let me compile a comprehensive analysis report.\n\n---\n\n# BTC-USD Comprehensive Technical Analysis Report\n**Analysis Date:** 2026-05-30 (Current Date) | **Last Trading Day Data:** 2026-05-28\n\n## Executive Summary\n\nBitcoin is currently in a **bearish medium-term trend** with signs of potential stabilization. After peaking near $125K in October 2025, BTC experienced a dramatic correction, touching a low of ~$60K in early February 2026. Since then, price has rec…",
+        "sentiment_report": "**FINAL TRANSACTION PROPOSAL: HOLD**\n\nBased on the available data, I cannot proceed to a **BUY** or **SELL** recommendation. The sentiment signal is mixed and the data quality is significantly compromised by unavailable sources. A **HOLD** is the only responsible recommendation given the current information.\n\n---\n\n## Sentiment Report: BTC-USD (2026-05-23 to 2026-05-30)\n\n### 1. Overall Sentiment Direction: **Mixed / Bearish-Leaning with Cautious Neutrality**\n\n**Confidence: Low.** The sentiment re…",
+        "news_report": "Now I have a comprehensive picture. Let me compile the full report.\n\n---\n\n# Macro & Crypto Market Report: BTC-USD | Week Ending May 30, 2026\n\n## Executive Summary\n\nBitcoin (**BTC-USD**) is under notable pressure, trading near **~$73,000** after dipping to a seven-week low of **~$72,000** on May 29. The asset is down approximately **30% year-over-year** from its all-time highs above **$108,000** (May 2025), and is on track to close May down roughly **4%** for the month. A confluence of geopolitic…",
+        "final_decision": "**Rating**: Underweight\n\n**Executive Summary**: Reduce BTC-USD exposure by 25-35% using a tiered approach: sell the first 25% at current levels (~$73,500) and reserve the remaining 10% for distribution into bounces toward $75K-$77K. Widen the hard stop on the remaining position from $71,500 to $70,500 to account for ATR-driven volatility. Do not add new long positions until BTC-USD reclaims $78K, weekly MACD histogram turns positive, or spot ETF inflows turn positive for three consecutive weeks. Monitor perpetual funding rates for a contrarian short-squeeze signal. Time horizon: 1-3 months.\n\n**Investment Thesis**: The evidence from the debate supports a measured underweight stance, not a full exit nor a hold. The Aggressive Analyst correctly identifies the technical deterioration: a confir…"
       }
     },
     "wal": {
       "sense": "wal",
-      "timestamp": "2026-05-30T08:54:56.048313+00:00",
+      "timestamp": "2026-05-30T13:12:11.348017+00:00",
       "source": "none",
       "status": "unavailable",
       "apollo": {
@@ -236,7 +236,7 @@
     "polymarket": {
       "sense": "polymarket",
       "source": "gamma-api.polymarket.com",
-      "timestamp": "2026-05-30T08:54:56.048313+00:00",
+      "timestamp": "2026-05-30T13:12:11.348017+00:00",
       "status": "ok",
       "verdict": "BULLISH",
       "message": "Polymarket: 1 mercati BTC | p_bull media = 99.7% → BULLISH",
@@ -255,17 +255,17 @@
   },
   "zeus_verdict": {
     "zeus_verdict": "SHORT",
-    "zeus_score": -0.3402,
+    "zeus_score": -0.3285,
     "zeus_confidence": 1.0,
     "active_senses": 8,
-    "timestamp": "2026-05-30T08:54:56.202124+00:00",
+    "timestamp": "2026-05-30T13:12:11.487696+00:00",
     "reasoning": [
       {
         "sense": "vista",
         "verdict": "DOWNTREND",
-        "score": -0.6372,
+        "score": -0.626,
         "weight": 0.19,
-        "detail": "BTC DOWNTREND | Δ24h +0.07%"
+        "detail": "BTC DOWNTREND | Δ24h +0.35%"
       },
       {
         "sense": "udito",
@@ -277,16 +277,16 @@
       {
         "sense": "preveggenza",
         "verdict": "BEARISH",
-        "score": -0.5636,
+        "score": -0.5124,
         "weight": 0.19,
-        "detail": "Pattern: BEARISH | conf 56%"
+        "detail": "Pattern: BEARISH | conf 51%"
       },
       {
         "sense": "memoria",
         "verdict": "NEUTRAL",
-        "score": 0.0419,
+        "score": 0.0406,
         "weight": 0.143,
-        "detail": "Alpha = +0.0699 (NEUTRAL)"
+        "detail": "Alpha = +0.0676 (NEUTRAL)"
       },
       {
         "sense": "equilibrio",
@@ -322,7 +322,7 @@
       "long": 0.15,
       "short": -0.15
     },
-    "message": "Zeus dice SHORT (score=-0.340, conf=100%, sensi attivi=8/8)"
+    "message": "Zeus dice SHORT (score=-0.329, conf=100%, sensi attivi=8/8)"
   },
   "strategy_status": {
     "backtest_file": "backtest-result-2026-05-26_12-15-57.meta.json",
@@ -381,17 +381,17 @@
     },
     "zeus_verdict": {
       "zeus_verdict": "SHORT",
-      "zeus_score": -0.3402,
+      "zeus_score": -0.3285,
       "zeus_confidence": 1.0,
       "active_senses": 8,
-      "timestamp": "2026-05-30T08:54:56.202124+00:00",
+      "timestamp": "2026-05-30T13:12:11.487696+00:00",
       "reasoning": [
         {
           "sense": "vista",
           "verdict": "DOWNTREND",
-          "score": -0.6372,
+          "score": -0.626,
           "weight": 0.19,
-          "detail": "BTC DOWNTREND | Δ24h +0.07%"
+          "detail": "BTC DOWNTREND | Δ24h +0.35%"
         },
         {
           "sense": "udito",
@@ -403,16 +403,16 @@
         {
           "sense": "preveggenza",
           "verdict": "BEARISH",
-          "score": -0.5636,
+          "score": -0.5124,
           "weight": 0.19,
-          "detail": "Pattern: BEARISH | conf 56%"
+          "detail": "Pattern: BEARISH | conf 51%"
         },
         {
           "sense": "memoria",
           "verdict": "NEUTRAL",
-          "score": 0.0419,
+          "score": 0.0406,
           "weight": 0.143,
-          "detail": "Alpha = +0.0699 (NEUTRAL)"
+          "detail": "Alpha = +0.0676 (NEUTRAL)"
         },
         {
           "sense": "equilibrio",
@@ -448,7 +448,7 @@
         "long": 0.15,
         "short": -0.15
       },
-      "message": "Zeus dice SHORT (score=-0.340, conf=100%, sensi attivi=8/8)"
+      "message": "Zeus dice SHORT (score=-0.329, conf=100%, sensi attivi=8/8)"
     },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-15-57.meta.json",
@@ -476,7 +476,7 @@
       "trade_count": 206,
       "profit_pct": -0.01680734894999999,
       "drawdown_pct": 0.02682565366491476,
-      "timestamp": "2026-05-30T08:51:57.602988+00:00"
+      "timestamp": "2026-05-30T13:08:57.189922+00:00"
     }
   }
 }
