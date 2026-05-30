@@ -464,23 +464,28 @@ def write_zeus_signal(verdict_data: dict, senses: dict | None = None) -> None:
     v = str(verdict_data.get("zeus_verdict", "FLAT")).upper()
     score = verdict_data.get("zeus_score", 0.0) or 0.0
     conf  = verdict_data.get("zeus_confidence", 0.0) or 0.0
+    component_st = _build_component_status(senses)
     signal = {
         "verdict":      v,
         "score":        round(float(score), 4),
         "confidence":   round(float(conf), 4),
         "timestamp":    verdict_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
+        # ── Gate PAPER: Apollo legge questi prima di agire ──
+        "mode":         "PAPER",                   # sempre PAPER finché non attivato live
         "allow_long":   v == "LONG",
         "allow_short":  v == "SHORT",
         "allow_any":    v not in ("FLAT",),
+        "apollo_bridge": component_st["apollo_bridge"],  # SETUP_REQUIRED | SHADOW
+        # ── Contesto sensi ──
         "active_senses": verdict_data.get("active_senses", 0),
-        "message":      verdict_data.get("message", ""),
-        # ── Stato operativo (LIVE/SHADOW/UNAVAILABLE/SETUP_REQUIRED) ──
-        "component_status": _build_component_status(senses),
-        # Istruzione per Apollo:
+        "message":       verdict_data.get("message", ""),
+        # ── Stato dettagliato componenti ──
+        "component_status": component_st,
+        # ── Istruzione per Apollo ──
         "_info": (
-            "Generato da Zeus (MODE=PAPER). "
-            "Apollo: leggi 'allow_any' prima di aprire trade. "
-            "Controlla 'component_status.apollo_bridge' per sapere se il bridge e' attivo."
+            "Zeus PAPER signal. "
+            "Controlla 'mode' (PAPER/LIVE) e 'allow_any' prima di aprire trade. "
+            "apollo_bridge=SETUP_REQUIRED significa che il bridge non e' ancora attivo."
         ),
     }
     signal_path = OUTPUT_DIR / "zeus_signal.json"
