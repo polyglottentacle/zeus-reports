@@ -1,12 +1,12 @@
 {
   "verdict": "FLAT",
-  "score": -0.0282,
-  "confidence": 0.437,
-  "timestamp": "2026-05-29T23:58:10.484065+00:00",
+  "score": -0.1153,
+  "confidence": 0.9394,
+  "timestamp": "2026-05-30T00:07:33.108647+00:00",
   "allow_long": false,
   "allow_short": false,
   "allow_any": false,
-  "active_senses": 4,
-  "message": "Zeus dice FLAT (score=-0.028, conf=44%, sensi attivi=4/8)",
+  "active_senses": 7,
+  "message": "Zeus dice FLAT (score=-0.115, conf=94%, sensi attivi=7/8)",
   "_info": "Generato da Zeus. Apollo: leggi allow_any prima di aprire trade."
 }

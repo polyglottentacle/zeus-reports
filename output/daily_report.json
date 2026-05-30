@@ -128,7 +128,7 @@
     },
     "wal": {
       "sense": "wal",
-      "timestamp": "2026-05-29T23:58:10.484065+00:00",
+      "timestamp": "2026-05-30T00:07:33.108647+00:00",
       "source": "none",
       "status": "unavailable",
       "apollo": {
@@ -169,7 +169,7 @@
     "polymarket": {
       "sense": "polymarket",
       "source": "gamma-api.polymarket.com",
-      "timestamp": "2026-05-29T23:58:10.288166+00:00",
+      "timestamp": "2026-05-30T00:07:32.936582+00:00",
       "status": "ok",
       "verdict": "BULLISH",
       "message": "Polymarket: 1 mercati BTC | p_bull media = 99.6% → BULLISH",
@@ -184,6 +184,57 @@
       ],
       "avg_bullish_prob": 0.9955,
       "market_count": 1
+    },
+    "preveggenza": {
+      "sense": "preveggenza",
+      "symbol": "BTC/USDT",
+      "horizon_days": 3,
+      "timestamp": "2026-05-30T00:07:32.915139+00:00",
+      "status": "ok",
+      "verdict": "BEARISH",
+      "confidence": 0.6067,
+      "rsi": 26.32,
+      "trend": "DOWN",
+      "momentum": -0.6028,
+      "pattern_score": -0.4157,
+      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 61%, RSI 26.32, trend DOWN).",
+      "composite_score": -0.6067,
+      "trend_strength": 1.0,
+      "last_price": 73447.9
+    },
+    "memoria": {
+      "sense": "memoria",
+      "symbol": "BTC/USDT",
+      "timestamp": "2026-05-30T00:07:32.915139+00:00",
+      "status": "ok",
+      "verdict": "BULLISH",
+      "alpha_score": 0.1052,
+      "factors": {
+        "mom_5d": -0.051822,
+        "mom_20d": -0.112176,
+        "mean_rev": -1.608,
+        "vol_momentum": -0.0376,
+        "vol_regime": 0.6327,
+        "hl_efficiency": 0.4107
+      },
+      "message": "Memoria storica BTC/USDT: alpha=+0.1052 → BULLISH. Momentum 5g=-0.051822, mean_rev=-1.608.",
+      "candles_used": 60
+    },
+    "equilibrio": {
+      "sense": "equilibrio",
+      "symbol": "BTC/USDT",
+      "timestamp": "2026-05-30T00:07:32.915139+00:00",
+      "status": "ok",
+      "verdict": "STRESS",
+      "risk_regime": "MEDIUM",
+      "sharpe_30d": -2.681,
+      "calmar_30d": -5.0651,
+      "max_drawdown_pct": 10.61,
+      "max_drawdown_abs": 8719.0,
+      "pain_index": 0.041684,
+      "volatility_ann_pct": 26.53,
+      "message": "Equilibrio BTC/USDT: regime MEDIUM, Sharpe30g=-2.681, maxDD=10.6%, vol=26.53% ann. → STRESS.",
+      "candles_used": 60
     }
   },
   "strategy_status": {
@@ -234,7 +285,10 @@
     "senses": {
       "udito": "EXTREME_FEAR",
       "vista": "DOWNTREND",
-      "polymarket": "BULLISH"
+      "polymarket": "BULLISH",
+      "preveggenza": "BEARISH",
+      "memoria": "BULLISH",
+      "equilibrio": "STRESS"
     },
     "summary": {
       "meta_file": "backtest-result-2026-05-26_12-17-42.meta.json",
@@ -266,10 +320,10 @@
     },
     "zeus_verdict": {
       "zeus_verdict": "FLAT",
-      "zeus_score": -0.0282,
-      "zeus_confidence": 0.437,
-      "active_senses": 4,
-      "timestamp": "2026-05-29T23:58:10.484065+00:00",
+      "zeus_score": -0.1153,
+      "zeus_confidence": 0.9394,
+      "active_senses": 7,
+      "timestamp": "2026-05-30T00:07:33.108647+00:00",
       "reasoning": [
         {
           "sense": "vista",
@@ -284,6 +338,27 @@
           "score": 0.1,
           "weight": 0.143,
           "detail": "F&G = 23 (EXTREME_FEAR)"
+        },
+        {
+          "sense": "preveggenza",
+          "verdict": "BEARISH",
+          "score": -0.6067,
+          "weight": 0.19,
+          "detail": "Pattern: BEARISH | conf 61%"
+        },
+        {
+          "sense": "memoria",
+          "verdict": "BULLISH",
+          "score": 0.7631,
+          "weight": 0.143,
+          "detail": "Alpha = +0.1052 (BULLISH)"
+        },
+        {
+          "sense": "equilibrio",
+          "verdict": "STRESS",
+          "score": -0.6,
+          "weight": 0.143,
+          "detail": "Rischio: MEDIUM | STRESS"
         },
         {
           "sense": "polymarket",
@@ -305,15 +380,15 @@
         "long": 0.15,
         "short": -0.15
       },
-      "message": "Zeus dice FLAT (score=-0.028, conf=44%, sensi attivi=4/8)"
+      "message": "Zeus dice FLAT (score=-0.115, conf=94%, sensi attivi=7/8)"
     }
   },
   "zeus_verdict": {
     "zeus_verdict": "FLAT",
-    "zeus_score": -0.0282,
-    "zeus_confidence": 0.437,
-    "active_senses": 4,
-    "timestamp": "2026-05-29T23:58:10.484065+00:00",
+    "zeus_score": -0.1153,
+    "zeus_confidence": 0.9394,
+    "active_senses": 7,
+    "timestamp": "2026-05-30T00:07:33.108647+00:00",
     "reasoning": [
       {
         "sense": "vista",
@@ -328,6 +403,27 @@
         "score": 0.1,
         "weight": 0.143,
         "detail": "F&G = 23 (EXTREME_FEAR)"
+      },
+      {
+        "sense": "preveggenza",
+        "verdict": "BEARISH",
+        "score": -0.6067,
+        "weight": 0.19,
+        "detail": "Pattern: BEARISH | conf 61%"
+      },
+      {
+        "sense": "memoria",
+        "verdict": "BULLISH",
+        "score": 0.7631,
+        "weight": 0.143,
+        "detail": "Alpha = +0.1052 (BULLISH)"
+      },
+      {
+        "sense": "equilibrio",
+        "verdict": "STRESS",
+        "score": -0.6,
+        "weight": 0.143,
+        "detail": "Rischio: MEDIUM | STRESS"
       },
       {
         "sense": "polymarket",
@@ -349,6 +445,6 @@
       "long": 0.15,
       "short": -0.15
     },
-    "message": "Zeus dice FLAT (score=-0.028, conf=44%, sensi attivi=4/8)"
+    "message": "Zeus dice FLAT (score=-0.115, conf=94%, sensi attivi=7/8)"
   }
 }
