@@ -176,7 +176,7 @@ def format_message(report: dict) -> str:
     if wal_status == "ok":
         wal_line = f"  Win 7d: `{wal_wr*100:.1f}%` | PnL oggi: `{wal_pnl:+.2f}` USDT | Apollo: `{wal_verdict}`"
     else:
-        wal_line = f"  ⚠️ APOLLO_WAL_PATH non configurato — connetti Zeus al VPS"
+        wal_line = f"  ⚠️ `APOLLO_WAL_PATH` non configurato — connetti Zeus al VPS"
 
     msg = (
         f"🔱 *Zeus Morning Briefing* — {ts} UTC\n"
