@@ -96,6 +96,8 @@ def commit_and_push_report() -> None:
         return
 
     report_relative_path = report_path.relative_to(BASE_DIR).as_posix()
+    signal_path = BASE_DIR / "output" / "zeus_signal.json"
+    signal_relative_path = signal_path.relative_to(BASE_DIR).as_posix() if signal_path.exists() else None
     append_log("Starting git add/commit/push cycle.")
 
     add_result = run_git_command(["add", report_relative_path])
@@ -107,6 +109,11 @@ def commit_and_push_report() -> None:
     if add_result.returncode != 0:
         append_log("git add ha restituito un errore; interrompo il flusso.")
         return
+
+    # Aggiungi zeus_signal.json se esiste
+    if signal_relative_path:
+        sig_add = run_git_command(["add", signal_relative_path])
+        append_log(f"git add zeus_signal returncode={sig_add.returncode}")
 
     diff_result = run_git_command(["diff", "--cached", "--quiet", "--", report_relative_path])
     if diff_result.returncode == 0:

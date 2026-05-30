@@ -20,8 +20,9 @@ fi
 git remote set-url origin \
   "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git"
 
-# Stage solo il report (non secrets, non .env)
+# Stage solo i file di output (non secrets, non .env)
 git add output/daily_report.json
+git add output/zeus_signal.json 2>/dev/null || true
 git add output/strategy_status.json 2>/dev/null || true
 
 # Commit solo se ci sono cambiamenti
