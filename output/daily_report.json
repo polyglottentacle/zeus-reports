@@ -1,6 +1,326 @@
 {
-  "timestamp": "2026-05-31T00:52:48.418507+00:00",
-  "status": "no data available",
-  "message": "nessun dato disponibile",
-  "backtest": null
+  "timestamp": "2026-05-31T00:54:05.409454+00:00",
+  "status": "ok (no backtest)",
+  "backtest_summary": {
+    "meta_file": null,
+    "strategy_name": "n/d (no backtest)",
+    "run_id": null,
+    "backtest_start_time": null,
+    "backtest_end_time": null,
+    "timestamp": "2026-05-31T00:54:05.409454+00:00"
+  },
+  "dsr": {
+    "dsr": null,
+    "skew": null,
+    "kurtosis": null,
+    "benchmark_sharpe": null,
+    "trades_used": 0,
+    "note": "Deflated Sharpe Ratio not calculated."
+  },
+  "kelly": {
+    "kelly_fraction": null,
+    "half_kelly": null,
+    "max_position_usdt": null,
+    "win_rate": null,
+    "avg_win_ratio": null,
+    "avg_loss_ratio": null,
+    "note": "Non ci sono vittorie o perdite sufficienti per calcolare Kelly."
+  },
+  "costs": {
+    "commissioni_stimate": 0.0,
+    "slippage_stimato": 0.0,
+    "funding_rate": 0.0001,
+    "funding_stimato": 0.0,
+    "tassa_box3_stimata": 21.6,
+    "tassa_box1_rischio": 0.0,
+    "profit_netto_stimato": -21.6,
+    "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
+  },
+  "mirofish": {
+    "timestamp": "2026-05-31T00:54:05.815798+00:00",
+    "source": "mirofish",
+    "enabled": false,
+    "status": "disabled",
+    "message": "MiroFish integration is not available.",
+    "scenario_count": 0,
+    "scenarios": [],
+    "recommendation": "Provide LLM_API_KEY and ZEP_API_KEY in the root .env and ensure MiroFish is cloned under the workspace.",
+    "errors": [
+      "MiroFish repository missing at /opt/zeus/MiroFish."
+    ]
+  },
+  "senses": {
+    "udito": {
+      "sense": "udito",
+      "source": "alternative.me/fng",
+      "timestamp": "2026-05-31T00:54:05.409556+00:00",
+      "status": "ok",
+      "value": 28,
+      "classification": "FEAR",
+      "verdict": "FEAR",
+      "message": "Fear & Greed Index = 28 (FEAR).",
+      "label_remote": "Fear"
+    },
+    "vista": {
+      "sense": "vista",
+      "symbol": "BTC/USDT",
+      "timeframe": "1d",
+      "timestamp": "2026-05-31T00:54:05.737383+00:00",
+      "status": "error",
+      "exchange": null,
+      "last_price": null,
+      "change_24h_pct": null,
+      "change_period_pct": null,
+      "volatility_pct": null,
+      "trend": null,
+      "verdict": null,
+      "message": "ccxt non installato; Vista in pausa."
+    },
+    "preveggenza": {
+      "sense": "preveggenza",
+      "symbol": "BTC/USDT",
+      "horizon_days": 3,
+      "timestamp": "2026-05-31T00:54:05.737581+00:00",
+      "status": "error",
+      "verdict": null,
+      "confidence": null,
+      "rsi": null,
+      "trend": null,
+      "momentum": null,
+      "pattern_score": null,
+      "message": "Preveggenza non disponibile.",
+      "error": "No module named 'ccxt'"
+    },
+    "memoria": {
+      "sense": "memoria",
+      "symbol": "BTC/USDT",
+      "timestamp": "2026-05-31T00:54:05.737608+00:00",
+      "status": "error",
+      "verdict": null,
+      "alpha_score": null,
+      "factors": {},
+      "message": "Memoria non disponibile.",
+      "error": "No module named 'ccxt'"
+    },
+    "equilibrio": {
+      "sense": "equilibrio",
+      "symbol": "BTC/USDT",
+      "timestamp": "2026-05-31T00:54:05.737657+00:00",
+      "status": "error",
+      "verdict": null,
+      "risk_regime": null,
+      "sharpe_30d": null,
+      "calmar_30d": null,
+      "max_drawdown_pct": null,
+      "max_drawdown_abs": null,
+      "pain_index": null,
+      "volatility_ann_pct": null,
+      "message": "Equilibrio non disponibile.",
+      "error": "No module named 'ccxt'"
+    },
+    "occhi": {
+      "sense": "occhi",
+      "symbol": "BTC-USD",
+      "trade_date": "2026-05-31",
+      "timestamp": "2026-05-31T00:54:05.737680+00:00",
+      "status": "error",
+      "decision": null,
+      "verdict": null,
+      "message": "Runner non trovato: /opt/zeus/ochi/runner.py"
+    },
+    "wal": {
+      "sense": "wal",
+      "timestamp": "2026-05-31T00:54:05.737767+00:00",
+      "source": "none",
+      "status": "unavailable",
+      "apollo": {
+        "black": {
+          "win_rate_7d": 0.0,
+          "win_rate_30d": 0.0,
+          "pnl_today": 0.0,
+          "pnl_30d": 0.0,
+          "trades_7d": 0,
+          "trades_30d": 0,
+          "open_positions": 0,
+          "drawdown_live": 0.0,
+          "mode": "SHADOW",
+          "last_trade": null
+        },
+        "white": {
+          "win_rate_7d": 0.0,
+          "win_rate_30d": 0.0,
+          "pnl_today": 0.0,
+          "pnl_30d": 0.0,
+          "trades_7d": 0,
+          "trades_30d": 0,
+          "open_positions": 0,
+          "drawdown_live": 0.0,
+          "mode": "SHADOW",
+          "last_trade": null
+        }
+      },
+      "combined": {
+        "win_rate_7d": 0.0,
+        "pnl_today": 0.0,
+        "total_trades": 0,
+        "verdict": "SHADOW"
+      },
+      "verdict": "SHADOW",
+      "message": "WAL non disponibile. Imposta APOLLO_WAL_PATH (path al file WAL) o APOLLO_API_URL_BLACK / APOLLO_API_URL_WHITE (REST API Apollo)."
+    },
+    "polymarket": {
+      "sense": "polymarket",
+      "source": "gamma-api.polymarket.com",
+      "timestamp": "2026-05-31T00:54:05.737782+00:00",
+      "status": "ok",
+      "verdict": "BULLISH",
+      "message": "Polymarket: 2 mercati BTC | p_bull media = 99.4% → BULLISH",
+      "markets": [
+        {
+          "question": "Will the price of Bitcoin be between $64,000 and $66,000 on June 4?",
+          "p_yes": 0.0025,
+          "effective_bullish_prob": 0.9975,
+          "framing": "bearish_framing",
+          "volume": "9.989082"
+        },
+        {
+          "question": "Will the price of Bitcoin be between $66,000 and $68,000 on June 4?",
+          "p_yes": 0.0105,
+          "effective_bullish_prob": 0.9895,
+          "framing": "bearish_framing",
+          "volume": "9.985678"
+        }
+      ],
+      "avg_bullish_prob": 0.9935,
+      "market_count": 2
+    }
+  },
+  "zeus_verdict": {
+    "zeus_verdict": "LONG",
+    "zeus_score": 0.3237,
+    "zeus_confidence": 0.2876,
+    "active_senses": 2,
+    "timestamp": "2026-05-31T00:54:05.816064+00:00",
+    "reasoning": [
+      {
+        "sense": "udito",
+        "verdict": "FEAR",
+        "score": 0.1,
+        "weight": 0.143,
+        "detail": "F&G = 28 (FEAR)"
+      },
+      {
+        "sense": "polymarket",
+        "verdict": "BULLISH",
+        "score": 0.9948,
+        "weight": 0.048,
+        "detail": "Prediction markets: BULLISH | p_bull 99.4%"
+      }
+    ],
+    "penalties": [],
+    "thresholds": {
+      "long": 0.15,
+      "short": -0.15
+    },
+    "message": "Zeus dice LONG (score=+0.324, conf=29%, sensi attivi=2/8)"
+  },
+  "strategy_status": {
+    "backtest_file": null,
+    "run_id": null,
+    "strategy_name": "n/d (no backtest)",
+    "dsr": {
+      "dsr": null,
+      "skew": null,
+      "kurtosis": null,
+      "benchmark_sharpe": null,
+      "trades_used": 0,
+      "note": "Deflated Sharpe Ratio not calculated."
+    },
+    "kelly": {
+      "kelly_fraction": null,
+      "half_kelly": null,
+      "max_position_usdt": null,
+      "win_rate": null,
+      "avg_win_ratio": null,
+      "avg_loss_ratio": null,
+      "note": "Non ci sono vittorie o perdite sufficienti per calcolare Kelly."
+    },
+    "costs": {
+      "commissioni_stimate": 0.0,
+      "slippage_stimato": 0.0,
+      "funding_rate": 0.0001,
+      "funding_stimato": 0.0,
+      "tassa_box3_stimata": 21.6,
+      "tassa_box1_rischio": 0.0,
+      "profit_netto_stimato": -21.6,
+      "note": "Costi calcolati su commissioni Binance spot 0.1% o Hyperliquid futures 0.045%, slippage 0.05% per lato, funding 0.01% ogni 8h, tasse Box3 e Box1."
+    },
+    "mirofish": {
+      "status": "disabled",
+      "scenario_count": 0,
+      "message": "MiroFish integration is not available.",
+      "sentiment": null
+    },
+    "senses": {
+      "udito": "FEAR",
+      "vista": null,
+      "preveggenza": null,
+      "memoria": null,
+      "equilibrio": null,
+      "occhi": null,
+      "wal": "SHADOW",
+      "polymarket": "BULLISH"
+    },
+    "zeus_verdict": {
+      "zeus_verdict": "LONG",
+      "zeus_score": 0.3237,
+      "zeus_confidence": 0.2876,
+      "active_senses": 2,
+      "timestamp": "2026-05-31T00:54:05.816064+00:00",
+      "reasoning": [
+        {
+          "sense": "udito",
+          "verdict": "FEAR",
+          "score": 0.1,
+          "weight": 0.143,
+          "detail": "F&G = 28 (FEAR)"
+        },
+        {
+          "sense": "polymarket",
+          "verdict": "BULLISH",
+          "score": 0.9948,
+          "weight": 0.048,
+          "detail": "Prediction markets: BULLISH | p_bull 99.4%"
+        }
+      ],
+      "penalties": [],
+      "thresholds": {
+        "long": 0.15,
+        "short": -0.15
+      },
+      "message": "Zeus dice LONG (score=+0.324, conf=29%, sensi attivi=2/8)"
+    },
+    "summary": {
+      "meta_file": null,
+      "strategy_name": "n/d (no backtest)",
+      "run_id": null,
+      "backtest_start_time": null,
+      "backtest_end_time": null,
+      "timestamp": "2026-05-31T00:54:05.409454+00:00"
+    }
+  },
+  "component_status": {
+    "trading_mode": "PAPER",
+    "apollo_bridge": "SETUP_REQUIRED",
+    "apollo_wal": "UNAVAILABLE",
+    "telegram": "SETUP_REQUIRED",
+    "sense_vista": "SHADOW",
+    "sense_udito": "LIVE",
+    "sense_preveggenza": "SHADOW",
+    "sense_memoria": "SHADOW",
+    "sense_equilibrio": "SHADOW",
+    "sense_occhi": "SHADOW",
+    "sense_polymarket": "LIVE",
+    "sense_wal": "UNAVAILABLE"
+  }
 }
