@@ -1,15 +1,15 @@
 {
   "verdict": "SHORT",
-  "score": -0.2299,
-  "confidence": 0.8785,
-  "timestamp": "2026-06-01T08:05:07.686685+00:00",
+  "score": -0.4693,
+  "confidence": 0.9979,
+  "timestamp": "2026-06-02T08:05:08.129750+00:00",
   "mode": "PAPER",
   "allow_long": false,
   "allow_short": true,
   "allow_any": true,
   "apollo_bridge": "SHADOW",
-  "active_senses": 5,
-  "message": "Zeus dice SHORT (score=-0.230, conf=88%, sensi attivi=5/8)",
+  "active_senses": 6,
+  "message": "Zeus dice SHORT (score=-0.469, conf=100%, sensi attivi=6/8)",
   "component_status": {
     "trading_mode": "PAPER",
     "apollo_bridge": "SHADOW",
@@ -21,7 +21,7 @@
     "sense_memoria": "LIVE",
     "sense_equilibrio": "LIVE",
     "sense_occhi": "SHADOW",
-    "sense_polymarket": "UNAVAILABLE",
+    "sense_polymarket": "LIVE",
     "sense_wal": "LIVE"
   },
   "_info": "Zeus PAPER signal. Controlla 'mode' (PAPER/LIVE) e 'allow_any' prima di aprire trade. apollo_bridge=SETUP_REQUIRED significa che il bridge non e' ancora attivo."
