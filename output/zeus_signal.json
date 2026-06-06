@@ -1,15 +1,15 @@
 {
   "verdict": "SHORT",
-  "score": -0.6045,
+  "score": -0.6893,
   "confidence": 1.0,
-  "timestamp": "2026-06-05T08:05:07.846782+00:00",
+  "timestamp": "2026-06-06T08:05:08.670276+00:00",
   "mode": "PAPER",
   "allow_long": false,
   "allow_short": true,
   "allow_any": true,
   "apollo_bridge": "SHADOW",
   "active_senses": 6,
-  "message": "Zeus dice SHORT (score=-0.605, conf=100%, sensi attivi=6/8)",
+  "message": "Zeus dice SHORT (score=-0.689, conf=100%, sensi attivi=6/8)",
   "component_status": {
     "trading_mode": "PAPER",
     "apollo_bridge": "SHADOW",
