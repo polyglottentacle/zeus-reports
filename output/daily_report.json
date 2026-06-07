@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-06T08:05:01.437661+00:00",
+  "timestamp": "2026-06-07T08:05:01.797260+00:00",
   "status": "ok (no backtest)",
   "backtest_summary": {
     "meta_file": null,
@@ -7,7 +7,7 @@
     "run_id": null,
     "backtest_start_time": null,
     "backtest_end_time": null,
-    "timestamp": "2026-06-06T08:05:01.437661+00:00"
+    "timestamp": "2026-06-07T08:05:01.797260+00:00"
   },
   "dsr": {
     "dsr": null,
@@ -37,7 +37,7 @@
     "note": "Nessun dato backtest o trade disponibile — costi non stimabili."
   },
   "mirofish": {
-    "timestamp": "2026-06-06T08:05:08.669999+00:00",
+    "timestamp": "2026-06-07T08:05:08.851810+00:00",
     "source": "mirofish",
     "enabled": false,
     "status": "disabled",
@@ -53,7 +53,7 @@
     "udito": {
       "sense": "udito",
       "source": "alternative.me/fng",
-      "timestamp": "2026-06-06T08:05:01.437864+00:00",
+      "timestamp": "2026-06-07T08:05:01.797412+00:00",
       "status": "ok",
       "value": 12,
       "classification": "EXTREME_FEAR",
@@ -65,16 +65,16 @@
       "sense": "vista",
       "symbol": "BTC/USDT",
       "timeframe": "1d",
-      "timestamp": "2026-06-06T08:05:01.774705+00:00",
+      "timestamp": "2026-06-07T08:05:02.120472+00:00",
       "status": "ok",
       "exchange": "kraken",
-      "last_price": 60921.0,
-      "change_24h_pct": -0.11,
-      "change_period_pct": -24.04,
-      "volatility_pct": 1.9,
+      "last_price": 62374.8,
+      "change_24h_pct": 2.44,
+      "change_period_pct": -22.7,
+      "volatility_pct": 1.98,
       "trend": "DOWNTREND",
       "verdict": "DOWNTREND",
-      "message": "BTC visto su kraken: 60921.0 USDT.",
+      "message": "BTC visto su kraken: 62374.8 USDT.",
       "candles": 30,
       "high_period": 82425.5,
       "low_period": 59150.3
@@ -83,58 +83,58 @@
       "sense": "preveggenza",
       "symbol": "BTC/USDT",
       "horizon_days": 3,
-      "timestamp": "2026-06-06T08:05:07.497276+00:00",
+      "timestamp": "2026-06-07T08:05:07.625010+00:00",
       "status": "ok",
       "verdict": "BEARISH",
-      "confidence": 0.7718,
-      "rsi": 5.58,
+      "confidence": 0.603,
+      "rsi": 11.17,
       "trend": "DOWN",
-      "momentum": -0.9475,
-      "pattern_score": -0.3563,
-      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 77%, RSI 5.58, trend DOWN).",
-      "composite_score": -0.7718,
+      "momentum": -0.8776,
+      "pattern_score": 0.0688,
+      "message": "Preveggenza 3g su BTC/USDT: BEARISH (confidence 60%, RSI 11.17, trend DOWN).",
+      "composite_score": -0.603,
       "trend_strength": 1.0,
-      "last_price": 60921.0
+      "last_price": 62365.0
     },
     "memoria": {
       "sense": "memoria",
       "symbol": "BTC/USDT",
-      "timestamp": "2026-06-06T08:05:07.497390+00:00",
+      "timestamp": "2026-06-07T08:05:07.625112+00:00",
       "status": "ok",
       "verdict": "NEUTRAL",
-      "alpha_score": 0.0136,
+      "alpha_score": 0.0063,
       "factors": {
-        "mom_5d": -0.15879,
-        "mom_20d": -0.240024,
-        "mean_rev": -2.0562,
-        "vol_momentum": -0.147,
-        "vol_regime": 1.2393,
-        "hl_efficiency": 0.43
+        "mom_5d": -0.06872,
+        "mom_20d": -0.210819,
+        "mean_rev": -1.581,
+        "vol_momentum": -0.2968,
+        "vol_regime": 1.2002,
+        "hl_efficiency": 0.4794
       },
-      "message": "Memoria storica BTC/USDT: alpha=+0.0136 → NEUTRAL. Momentum 5g=-0.15879, mean_rev=-2.0562.",
+      "message": "Memoria storica BTC/USDT: alpha=+0.0063 → NEUTRAL. Momentum 5g=-0.06872, mean_rev=-1.581.",
       "candles_used": 60
     },
     "equilibrio": {
       "sense": "equilibrio",
       "symbol": "BTC/USDT",
-      "timestamp": "2026-06-06T08:05:07.497454+00:00",
+      "timestamp": "2026-06-07T08:05:07.625180+00:00",
       "status": "ok",
       "verdict": "STRESS",
       "risk_regime": "HIGH",
-      "sharpe_30d": -7.7728,
-      "calmar_30d": -3.7312,
-      "max_drawdown_pct": 25.86,
-      "max_drawdown_abs": 21245.9,
-      "pain_index": 0.086081,
-      "volatility_ann_pct": 30.95,
-      "message": "Equilibrio BTC/USDT: regime HIGH, Sharpe30g=-7.7728, maxDD=25.9%, vol=30.95% ann. → STRESS.",
+      "sharpe_30d": -7.0092,
+      "calmar_30d": -3.6937,
+      "max_drawdown_pct": 25.89,
+      "max_drawdown_abs": 21276.8,
+      "pain_index": 0.094126,
+      "volatility_ann_pct": 31.33,
+      "message": "Equilibrio BTC/USDT: regime HIGH, Sharpe30g=-7.0092, maxDD=25.9%, vol=31.33% ann. → STRESS.",
       "candles_used": 60
     },
     "occhi": {
       "sense": "occhi",
       "symbol": "BTC-USD",
-      "trade_date": "2026-06-06",
-      "timestamp": "2026-06-06T08:05:07.497502+00:00",
+      "trade_date": "2026-06-07",
+      "timestamp": "2026-06-07T08:05:07.625250+00:00",
       "status": "error",
       "decision": null,
       "verdict": null,
@@ -142,7 +142,7 @@
     },
     "wal": {
       "sense": "wal",
-      "timestamp": "2026-06-06T08:05:07.497712+00:00",
+      "timestamp": "2026-06-07T08:05:07.625442+00:00",
       "source": "file",
       "status": "ok",
       "apollo": {
@@ -153,8 +153,8 @@
           "pnl_30d": 0,
           "trades_7d": 0,
           "trades_30d": 0,
-          "open_positions": 1,
-          "unrealized_pnl": -2.29,
+          "open_positions": 0,
+          "unrealized_pnl": 0.0,
           "drawdown_live": 0.0,
           "last_trade": null,
           "mode": "PAPER"
@@ -175,54 +175,37 @@
       "combined": {
         "win_rate_7d": 0.0,
         "pnl_today": 0.0,
-        "unrealized_pnl": -2.29,
-        "open_positions": 1,
+        "unrealized_pnl": 0.0,
+        "open_positions": 0,
         "total_trades": 0,
         "verdict": "SHADOW"
       },
       "verdict": "SHADOW",
-      "message": "WAL letto da file: /opt/white-cerbero/cerbero_audit_wal.log (1 entries)."
+      "message": "WAL letto da file: /opt/white-cerbero/cerbero_audit_wal.log (0 entries)."
     },
     "polymarket": {
       "sense": "polymarket",
       "source": "gamma-api.polymarket.com",
-      "timestamp": "2026-06-06T08:05:08.502798+00:00",
-      "status": "ok",
-      "verdict": "BEARISH",
-      "message": "Polymarket: 2 mercati BTC | p_bull media = 29.0% → BEARISH",
-      "markets": [
-        {
-          "question": "Bitcoin Up or Down - June 6, 5AM ET",
-          "p_yes": 0.5,
-          "effective_bullish_prob": 0.5,
-          "framing": "bearish_framing",
-          "volume": "99.99"
-        },
-        {
-          "question": "Will Bitcoin reach $130,000 by December 31, 2026?",
-          "p_yes": 0.08,
-          "effective_bullish_prob": 0.08,
-          "framing": "bullish",
-          "volume": "998471.4037600006"
-        }
-      ],
-      "avg_bullish_prob": 0.29,
-      "market_count": 2
+      "timestamp": "2026-06-07T08:05:08.654212+00:00",
+      "status": "unavailable",
+      "verdict": null,
+      "message": "Nessun mercato BTC/crypto trovato su Polymarket.",
+      "markets": []
     }
   },
   "zeus_verdict": {
     "zeus_verdict": "SHORT",
-    "zeus_score": -0.6893,
-    "zeus_confidence": 1.0,
-    "active_senses": 6,
-    "timestamp": "2026-06-06T08:05:08.670276+00:00",
+    "zeus_score": -0.6071,
+    "zeus_confidence": 0.9916,
+    "active_senses": 5,
+    "timestamp": "2026-06-07T08:05:08.852152+00:00",
     "reasoning": [
       {
         "sense": "vista",
         "verdict": "DOWNTREND",
-        "score": -0.6444,
+        "score": -0.5424,
         "weight": 0.19,
-        "detail": "BTC DOWNTREND | Δ24h -0.11%"
+        "detail": "BTC DOWNTREND | Δ24h +2.44%"
       },
       {
         "sense": "udito",
@@ -234,16 +217,16 @@
       {
         "sense": "preveggenza",
         "verdict": "BEARISH",
-        "score": -0.7718,
+        "score": -0.603,
         "weight": 0.19,
-        "detail": "Pattern: BEARISH | conf 77%"
+        "detail": "Pattern: BEARISH | conf 60%"
       },
       {
         "sense": "memoria",
         "verdict": "NEUTRAL",
-        "score": 0.0082,
+        "score": 0.0038,
         "weight": 0.143,
-        "detail": "Alpha = +0.0136 (NEUTRAL)"
+        "detail": "Alpha = +0.0063 (NEUTRAL)"
       },
       {
         "sense": "equilibrio",
@@ -251,13 +234,6 @@
         "score": -0.8,
         "weight": 0.143,
         "detail": "Rischio: HIGH | STRESS"
-      },
-      {
-        "sense": "polymarket",
-        "verdict": "BEARISH",
-        "score": -0.768,
-        "weight": 0.048,
-        "detail": "Prediction markets: BEARISH | p_bull 29.0%"
       }
     ],
     "penalties": [
@@ -267,7 +243,7 @@
       "long": 0.15,
       "short": -0.15
     },
-    "message": "Zeus dice SHORT (score=-0.689, conf=100%, sensi attivi=6/8)"
+    "message": "Zeus dice SHORT (score=-0.607, conf=99%, sensi attivi=5/8)"
   },
   "strategy_status": {
     "backtest_file": null,
@@ -314,21 +290,21 @@
       "equilibrio": "STRESS",
       "occhi": null,
       "wal": "SHADOW",
-      "polymarket": "BEARISH"
+      "polymarket": null
     },
     "zeus_verdict": {
       "zeus_verdict": "SHORT",
-      "zeus_score": -0.6893,
-      "zeus_confidence": 1.0,
-      "active_senses": 6,
-      "timestamp": "2026-06-06T08:05:08.670276+00:00",
+      "zeus_score": -0.6071,
+      "zeus_confidence": 0.9916,
+      "active_senses": 5,
+      "timestamp": "2026-06-07T08:05:08.852152+00:00",
       "reasoning": [
         {
           "sense": "vista",
           "verdict": "DOWNTREND",
-          "score": -0.6444,
+          "score": -0.5424,
           "weight": 0.19,
-          "detail": "BTC DOWNTREND | Δ24h -0.11%"
+          "detail": "BTC DOWNTREND | Δ24h +2.44%"
         },
         {
           "sense": "udito",
@@ -340,16 +316,16 @@
         {
           "sense": "preveggenza",
           "verdict": "BEARISH",
-          "score": -0.7718,
+          "score": -0.603,
           "weight": 0.19,
-          "detail": "Pattern: BEARISH | conf 77%"
+          "detail": "Pattern: BEARISH | conf 60%"
         },
         {
           "sense": "memoria",
           "verdict": "NEUTRAL",
-          "score": 0.0082,
+          "score": 0.0038,
           "weight": 0.143,
-          "detail": "Alpha = +0.0136 (NEUTRAL)"
+          "detail": "Alpha = +0.0063 (NEUTRAL)"
         },
         {
           "sense": "equilibrio",
@@ -357,13 +333,6 @@
           "score": -0.8,
           "weight": 0.143,
           "detail": "Rischio: HIGH | STRESS"
-        },
-        {
-          "sense": "polymarket",
-          "verdict": "BEARISH",
-          "score": -0.768,
-          "weight": 0.048,
-          "detail": "Prediction markets: BEARISH | p_bull 29.0%"
         }
       ],
       "penalties": [
@@ -373,7 +342,7 @@
         "long": 0.15,
         "short": -0.15
       },
-      "message": "Zeus dice SHORT (score=-0.689, conf=100%, sensi attivi=6/8)"
+      "message": "Zeus dice SHORT (score=-0.607, conf=99%, sensi attivi=5/8)"
     },
     "summary": {
       "meta_file": null,
@@ -381,7 +350,7 @@
       "run_id": null,
       "backtest_start_time": null,
       "backtest_end_time": null,
-      "timestamp": "2026-06-06T08:05:01.437661+00:00"
+      "timestamp": "2026-06-07T08:05:01.797260+00:00"
     }
   },
   "component_status": {
@@ -395,7 +364,7 @@
     "sense_memoria": "LIVE",
     "sense_equilibrio": "LIVE",
     "sense_occhi": "SHADOW",
-    "sense_polymarket": "LIVE",
+    "sense_polymarket": "UNAVAILABLE",
     "sense_wal": "LIVE"
   }
 }
