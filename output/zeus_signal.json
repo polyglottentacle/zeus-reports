@@ -2,8 +2,8 @@
   "verdict": "FLAT",
   "proposed_verdict": "FLAT",
   "score": -0.25,
-  "confidence": 1.0,
-  "timestamp": "2026-06-09T03:10:01.886881+00:00",
+  "confidence": 0.9321,
+  "timestamp": "2026-06-09T06:04:14.119996+00:00",
   "mode": "PAPER",
   "allow_long": false,
   "allow_short": false,
@@ -12,8 +12,8 @@
   "machine_gate": {
     "state": "PENDING_APPROVAL",
     "approved": false,
-    "proposal_hash": "fe6a49fe50ac570d5793db64bb912e237b6dd0e0beaf04f4a6830447f8ce9264",
-    "proposal_file": "C:\\Users\\docum\\Desktop\\_SCRIVANIA_ORDINATA\\00_ATTIVI_APOLLO_ZEUS\\zeus\\output\\staging\\proposal_fe6a49fe50ac.json",
+    "proposal_hash": "b29897037866933f2e290b677bbdb6263dc6a87f4687bdd043d231a74279deae",
+    "proposal_file": "C:\\Users\\docum\\Desktop\\_SCRIVANIA_ORDINATA\\00_ATTIVI_APOLLO_ZEUS\\zeus\\output\\staging\\proposal_b29897037866.json",
     "approve_file": "C:\\Users\\docum\\Desktop\\_SCRIVANIA_ORDINATA\\00_ATTIVI_APOLLO_ZEUS\\zeus\\output\\staging\\APPROVE.txt",
     "guards_passed": true,
     "guards": [
@@ -35,12 +35,12 @@
       {
         "name": "cooldown",
         "passed": true,
-        "detail": "cooldown disabled or no audit log"
+        "detail": "no recent approved/emitted event"
       }
     ]
   },
-  "active_senses": 8,
-  "message": "Zeus dice FLAT (score=-0.250, conf=100%, sensi attivi=8/8)",
+  "active_senses": 6,
+  "message": "Zeus dice FLAT (score=-0.250, conf=93%, sensi attivi=6/8)",
   "component_status": {
     "trading_mode": "PAPER",
     "apollo_bridge": "SHADOW",
@@ -51,8 +51,8 @@
     "sense_preveggenza": "LIVE",
     "sense_memoria": "LIVE",
     "sense_equilibrio": "LIVE",
-    "sense_occhi": "LIVE",
-    "sense_polymarket": "LIVE",
+    "sense_occhi": "SHADOW",
+    "sense_polymarket": "UNAVAILABLE",
     "sense_wal": "LIVE"
   },
   "_info": "Zeus PAPER signal. Controlla 'mode' (PAPER/LIVE) e 'allow_any' prima di aprire trade. apollo_bridge=SETUP_REQUIRED significa che il bridge non e' ancora attivo."
