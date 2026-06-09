@@ -10,7 +10,7 @@ Non deve sostituire il container Hermes gia' attivo e non deve avviare un second
 Zeus gira localmente su Windows in:
 
 ```text
-C:\Users\docum\Desktop\zeus
+C:\Users\docum\Desktop\_SCRIVANIA_ORDINATA\00_ATTIVI_APOLLO_ZEUS\zeus
 ```
 
 Il ciclo principale e':

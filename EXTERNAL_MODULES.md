@@ -19,7 +19,7 @@ occhio_ai_trader / AI-Trader = arena esterna (segnali, copy-trading, leaderboard
 ## ochi — TradingAgents (TauricResearch/TradingAgents)
 
 **Stato: INTEGRATO (setup_required)**
-**Percorso:** `C:\Users\docum\Desktop\zeus\ochi`
+**Percorso:** `C:\Users\docum\Desktop\_SCRIVANIA_ORDINATA\00_ATTIVI_APOLLO_ZEUS\zeus\ochi`
 **Modulo Zeus:** `agents/agent_occhi.py`
 
 **Ruolo:** Occhio analitico — analisti LLM (market + social + news) che producono
@@ -40,7 +40,7 @@ cd ochi && bash setup_venv.sh
 ## occhio_ai_trader — AI-Trader (HKUDS/AI-Trader)
 
 **Stato: IN VALUTAZIONE — non integrato**
-**Percorso:** `C:\Users\docum\Desktop\zeus\occhio_ai_trader`
+**Percorso:** `C:\Users\docum\Desktop\_SCRIVANIA_ORDINATA\00_ATTIVI_APOLLO_ZEUS\zeus\occhio_ai_trader`
 **Modulo Zeus:** nessuno (ancora)
 
 **Ruolo:** Arena di trading per agenti — non un cervello decisionale.
