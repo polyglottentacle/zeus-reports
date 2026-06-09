@@ -1,5 +1,6 @@
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv(r'C:/Users/docum/Desktop/zeus/.env')
+load_dotenv(Path(__file__).resolve().parent.parent / '.env')
 import csv
 import json
 import os
@@ -10,11 +11,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# Python interpreter corretto: legge PYTHON_EXECUTABLE da .env o usa il percorso codex
-_CODEX_PYTHON = r"C:\Users\docum\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
+# Python interpreter corretto: legge PYTHON_EXECUTABLE da .env o usa sys.executable
 PYTHON_EXECUTABLE = (
     os.environ.get("PYTHON_EXECUTABLE")
-    or (_CODEX_PYTHON if Path(_CODEX_PYTHON).exists() else sys.executable)
+    or sys.executable
 )
 
 BASE_DIR = Path(__file__).resolve().parent

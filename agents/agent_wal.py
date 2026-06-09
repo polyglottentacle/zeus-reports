@@ -51,6 +51,77 @@ APOLLO_WAL_JSON = os.environ.get("APOLLO_WAL_JSON", "")            # JSON grezzo
 
 _API_TIMEOUT = 8  # secondi
 
+# ─── CERBERO WAL FORMAT (White/Black Apollo) ─────────────────────────────────
+# Il WAL di Apollo usa JSON-Lines con struttura nested:
+#   { "timestamp": float, "event_type": str, "payload": { "position": {...} } }
+# Questi event type NON contengono dati di trade e vanno skippati.
+_SKIP_EVENT_TYPES = {
+    "MARKET_DATA", "MARKET_REGIME", "MARKET_DATA_DEGRADED",
+    "SIGNAL_PROPOSED", "SIGNAL_SCORED", "PAPER_REJECT",
+    "PAPER_AGENT_STATUS", "SYSTEM_MESSAGE",
+}
+# Questi event type contengono aggiornamenti di posizione (aperta o chiusa).
+_POSITION_EVENT_TYPES = {
+    "PAPER_POSITION_UPDATE", "POSITION_UPDATE", "LIVE_POSITION_UPDATE",
+}
+
+
+def _read_wal_tail(path: Path, max_mb: int = 10) -> List[str]:
+    """Legge solo gli ultimi max_mb MB del WAL per evitare di caricare file enormi (es. 762 MB)."""
+    max_bytes = max_mb * 1024 * 1024
+    try:
+        with open(path, "rb") as f:
+            f.seek(0, 2)
+            size = f.tell()
+            if size <= max_bytes:
+                f.seek(0)
+                skip_first = False
+            else:
+                f.seek(-max_bytes, 2)
+                skip_first = True
+            raw = f.read()
+        text = raw.decode("utf-8", errors="replace")
+        lines = text.splitlines()
+        if skip_first and lines:
+            lines = lines[1:]  # prima riga potrebbe essere troncata (seek a metà riga)
+        return lines
+    except Exception:
+        return []
+
+
+def _normalize_cerbero_entry(e: dict) -> Optional[dict]:
+    """Normalizza entry WAL formato Cerbero (payload.position.*) → flat dict.
+    Ritorna None per eventi non rilevanti (MARKET_DATA, SIGNAL_*, ecc.)."""
+    event_type = e.get("event_type", "")
+    if event_type in _SKIP_EVENT_TYPES:
+        return None
+    if event_type in _POSITION_EVENT_TYPES:
+        payload = e.get("payload") or {}
+        pos = payload.get("position") or {}
+        if not pos:
+            return None
+        return {
+            "timestamp":   e.get("timestamp"),
+            "event_type":  event_type,
+            "symbol":      payload.get("symbol", "unknown"),
+            "action":      payload.get("action", ""),
+            "mode":        payload.get("mode", "PAPER"),
+            # Campi posizione flattened (compatibili con _entry_profit / _is_win)
+            "status":      pos.get("status", ""),
+            "direction":   pos.get("direction", ""),
+            "entry_price": pos.get("entry_price"),
+            "last_price":  pos.get("last_price"),
+            "pnl":         pos.get("pnl_net"),   # alias per _entry_profit()
+            "pnl_net":     pos.get("pnl_net"),
+            "pnl_gross":   pos.get("pnl_gross"),
+            "pnl_pct":     pos.get("pnl_pct"),
+            "opened_at":   pos.get("opened_at"),
+            "closed_at":   pos.get("closed_at"),
+            "size":        pos.get("size") or pos.get("qty"),
+        }
+    # Entry già flat o formato sconosciuto → passthrough (retrocompatibilità)
+    return e
+
 
 # ─── PARSE HELPERS ──────────────────────────────────────────────────────────
 
@@ -162,12 +233,17 @@ def _compute_metrics(entries: List[dict]) -> dict:
     trades_7d, trades_30d = [], []
     pnl_today = 0.0
     open_positions = 0
+    unrealized_pnl = 0.0
     last_trade = None
 
     for e in entries:
-        # Conta posizioni aperte
+        # Conta posizioni aperte e somma PnL non realizzato
         if e.get("status") in ("open", "OPEN", "active", "ACTIVE"):
             open_positions += 1
+            try:
+                unrealized_pnl += float(e.get("pnl_net") or e.get("pnl") or 0)
+            except (TypeError, ValueError):
+                pass
             continue
 
         if not _is_trade_entry(e):
@@ -218,6 +294,7 @@ def _compute_metrics(entries: List[dict]) -> dict:
         "trades_7d":      len(trades_7d),
         "trades_30d":     len(trades_30d),
         "open_positions": open_positions,
+        "unrealized_pnl": round(unrealized_pnl, 4),
         "drawdown_live":  round(max_dd, 4),
         "last_trade":     last_trade,
     }
@@ -235,23 +312,59 @@ def _blank_metrics(mode: str = "SHADOW") -> dict:
 
 # ─── DATA FETCH ─────────────────────────────────────────────────────────────
 
-def _fetch_from_file() -> Optional[List[dict]]:
-    """Legge il WAL da file locale (JSON-Lines o JSON array)."""
+def _fetch_from_file(max_mb: int = 10) -> Optional[List[dict]]:
+    """Legge il WAL da file locale.
+    - max_mb: quanti MB di coda leggere per file grandi (default 10 = comportamento storico).
+    - Usa tail reader per file > 5 MB (es. 762 MB WAL di White Apollo).
+    - Normalizza il formato Cerbero (payload.position.*) → flat dict.
+    - Deduplica posizioni aperte: per ogni (symbol, opened_at) tiene solo l'entry più recente,
+      evitando di contare migliaia di PNL_UPDATE come trade separati."""
     if not APOLLO_WAL_PATH:
         return None
     p = Path(APOLLO_WAL_PATH)
     if not p.exists():
         return None
     try:
-        text = p.read_text(encoding="utf-8")
-        # Prova JSON array prima
-        try:
-            data = json.loads(text)
-            return _parse_wal_array(data)
-        except json.JSONDecodeError:
-            pass
-        # Prova JSON-Lines
-        return _parse_wal_lines(text.splitlines())
+        file_size_mb = p.stat().st_size / (1024 * 1024)
+        if file_size_mb > 5:
+            lines = _read_wal_tail(p, max_mb=max_mb)
+        else:
+            lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
+
+        raw_entries = _parse_wal_lines(lines)
+
+        # Normalizza formato Cerbero → flat; salta eventi non rilevanti
+        normalized: List[dict] = []
+        for e in raw_entries:
+            n = _normalize_cerbero_entry(e)
+            if n is not None:
+                normalized.append(n)
+
+        if not normalized:
+            return []
+
+        # Deduplica posizioni aperte (evita conteggio multiplo di PNL_UPDATE)
+        open_latest: dict = {}   # key=(symbol, opened_at) → entry più recente
+        closed_trades: List[dict] = []
+
+        for e in normalized:
+            status = str(e.get("status", "")).upper()
+            action = str(e.get("action", "")).upper()
+            symbol = e.get("symbol", "unknown")
+            opened_at = e.get("opened_at") or 0
+
+            if status in ("OPEN", "ACTIVE"):
+                key = (symbol, opened_at)
+                ts = e.get("timestamp") or 0
+                existing = open_latest.get(key)
+                if existing is None or (existing.get("timestamp") or 0) < ts:
+                    open_latest[key] = e
+            elif status in ("CLOSED",) or action in ("CLOSE", "TRADE_CLOSE"):
+                closed_trades.append(e)
+
+        # Lista finale: una entry per ogni posizione aperta unica + tutti i trade chiusi
+        return list(open_latest.values()) + closed_trades
+
     except Exception:
         return None
 
@@ -354,17 +467,19 @@ def read() -> Dict[str, Any]:
     entries_file = _fetch_from_file()
     if entries_file is not None:
         m = _compute_metrics(entries_file)
-        m["mode"] = os.environ.get("APOLLO_MODE", "SHADOW")
+        m["mode"] = os.environ.get("APOLLO_MODE", "PAPER")
         verdict = _compute_verdict(m, _blank_metrics())
         return {**base,
                 "status": "ok",
                 "source": "file",
                 "apollo": {"black": {**m, "mode": m["mode"]}, "white": _blank_metrics()},
                 "combined": {
-                    "win_rate_7d": m["win_rate_7d"],
-                    "pnl_today": m["pnl_today"],
-                    "total_trades": m["trades_7d"] + m["trades_30d"],
-                    "verdict": verdict,
+                    "win_rate_7d":    m["win_rate_7d"],
+                    "pnl_today":      m["pnl_today"],
+                    "unrealized_pnl": m.get("unrealized_pnl", 0.0),
+                    "open_positions": m["open_positions"],
+                    "total_trades":   m["trades_7d"] + m["trades_30d"],
+                    "verdict":        verdict,
                 },
                 "verdict": verdict,
                 "message": f"WAL letto da file: {APOLLO_WAL_PATH} ({len(entries_file)} entries)."}

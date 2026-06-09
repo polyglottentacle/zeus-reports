@@ -144,8 +144,10 @@ def format_message(report: dict) -> str:
     wal_status = wal_data.get("status", "n/d")
     wal_verdict= wal_data.get("verdict", "n/d")
     wal_comb  = wal_data.get("combined", {})
-    wal_wr    = wal_comb.get("win_rate_7d", 0)
-    wal_pnl   = wal_comb.get("pnl_today", 0)
+    wal_wr         = wal_comb.get("win_rate_7d", 0)
+    wal_pnl        = wal_comb.get("pnl_today", 0)
+    wal_unreal     = wal_comb.get("unrealized_pnl", 0)
+    wal_open_pos   = wal_comb.get("open_positions", 0)
     btc_price = (senses.get("vista") or {}).get("last_price") if isinstance(senses.get("vista"), dict) else None
     fng_val   = (senses.get("udito") or {}).get("value") if isinstance(senses.get("udito"), dict) else None
 
@@ -174,9 +176,16 @@ def format_message(report: dict) -> str:
 
     # WAL line
     if wal_status == "ok":
-        wal_line = f"  Win 7d: `{wal_wr*100:.1f}%` | PnL oggi: `{wal_pnl:+.2f}` USDT | Apollo: `{wal_verdict}`"
+        wal_line = (
+            f"  Win 7d: `{wal_wr*100:.1f}%` | Open: `{wal_open_pos}` pos"
+            f" | Unreal.: `{wal_unreal:+.2f}` USDT"
+            f" | PnL oggi: `{wal_pnl:+.2f}` USDT"
+            f" | Apollo: `{wal_verdict}`"
+        )
+    elif wal_status == "unavailable":
+        wal_line = f"  ⏳ White Cerbero non ancora sul VPS — migrazione in corso"
     else:
-        wal_line = f"  ⚠️ `APOLLO_WAL_PATH` non configurato — connetti Zeus al VPS"
+        wal_line = f"  ⚠️ WAL errore: `{wal_status}` — verifica APOLLO\\_WAL\\_PATH"
 
     msg = (
         f"🔱 *Zeus Morning Briefing* — {ts} UTC\n"

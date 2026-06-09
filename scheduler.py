@@ -181,6 +181,19 @@ def run_once() -> None:
     if result.stderr:
         append_log(f"stderr: {result.stderr.strip()}")
 
+    # Logga il verdetto Zeus nello storico per la scorecard shadow (additivo, append-only).
+    # Non-fatale: un errore qui non deve mai bloccare il ciclo report/push.
+    try:
+        sc_result = subprocess.run(
+            [PYTHON_EXECUTABLE, str(BASE_DIR / "scorecard.py"), "--log"],
+            cwd=str(BASE_DIR),
+            capture_output=True,
+            text=True,
+        )
+        append_log(f"scorecard --log: {(sc_result.stdout or sc_result.stderr).strip()}")
+    except Exception as exc:
+        append_log(f"scorecard --log fallito (non-fatale): {exc}")
+
     commit_and_push_report()
 
 

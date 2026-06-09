@@ -1,11 +1,23 @@
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 import zipfile
+
+# Carica .env dalla root di Zeus PRIMA di qualsiasi import di agenti
+# (gli agenti leggono le env var a import-time, es. APOLLO_WAL_PATH in agent_wal)
+try:
+    from dotenv import load_dotenv as _load_dotenv
+    _env_path = Path(__file__).resolve().parent.parent / ".env"
+    if _env_path.exists():
+        _load_dotenv(dotenv_path=_env_path, override=False)
+except ImportError:
+    pass
+
 from agents.agent2_dsr import compute_dsr
 from agents.agent3_kelly import compute_kelly_fraction
 from agents.agent4_costs import estimate_costs
-from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi, agent_wal, agent_polymarket
+from agents import agent_udito, agent_vista, agent_preveggenza, agent_memoria, agent_equilibrio, agent_occhi, agent_wal, agent_polymarket, agent_guards
 from agents.agent_verdict import synthesize as compute_zeus_verdict
 from mirofish_runner.run_daily import run_daily_scenarios
 
@@ -229,38 +241,40 @@ def build_report() -> dict:
     now = datetime.now(timezone.utc).isoformat()
     latest_meta = find_best_meta()
 
-    if latest_meta is None:
-        return {
-            "timestamp": now,
-            "status": "no data available",
-            "message": "nessun dato disponibile",
-            "backtest": None,
+    # ── Backtest: opzionale. I sensi girano SEMPRE anche senza dati freqtrade ──
+    if latest_meta is not None:
+        raw_meta = read_json(latest_meta)
+        strategy_name = None
+        if isinstance(raw_meta, dict) and len(raw_meta) == 1:
+            first_key = next(iter(raw_meta))
+            first_value = raw_meta[first_key]
+            if isinstance(first_value, dict):
+                strategy_name = first_key
+                raw_meta = first_value
+        meta = normalize_meta(raw_meta)
+        summary = {
+            "meta_file": str(latest_meta.name),
+            "strategy_name": strategy_name or meta.get("strategy_name") or meta.get("strategy"),
+            "run_id": meta.get("run_id"),
+            "backtest_start_time": format_timestamp(meta.get("backtest_start_ts") or meta.get("backtest_start_time")),
+            "backtest_end_time": format_timestamp(meta.get("backtest_end_ts") or meta.get("backtest_end_time")),
         }
+        metrics = extract_backtest_metrics_from_zip(latest_meta)
+        trades = metrics.pop("trades", [])
+        summary.update(metrics)
+    else:
+        # Nessun file backtest (es. VPS senza freqtrade) — usa dati vuoti
+        summary = {
+            "meta_file": None,
+            "strategy_name": "n/d (no backtest)",
+            "run_id": None,
+            "backtest_start_time": None,
+            "backtest_end_time": None,
+        }
+        trades = []
 
-    raw_meta = read_json(latest_meta)
-    strategy_name = None
-    if isinstance(raw_meta, dict) and len(raw_meta) == 1:
-        first_key = next(iter(raw_meta))
-        first_value = raw_meta[first_key]
-        if isinstance(first_value, dict):
-            strategy_name = first_key
-            raw_meta = first_value
-
-    meta = normalize_meta(raw_meta)
-    summary = {
-        "meta_file": str(latest_meta.name),
-        "strategy_name": strategy_name or meta.get("strategy_name") or meta.get("strategy"),
-        "run_id": meta.get("run_id"),
-        "backtest_start_time": format_timestamp(meta.get("backtest_start_ts") or meta.get("backtest_start_time")),
-        "backtest_end_time": format_timestamp(meta.get("backtest_end_ts") or meta.get("backtest_end_time")),
-    }
-
-    metrics = extract_backtest_metrics_from_zip(latest_meta)
-    trades = metrics.pop("trades", [])
-    summary.update(metrics)
     summary["timestamp"] = now
-
-    dsr = compute_dsr(summary, trades)
+    dsr   = compute_dsr(summary, trades)
     kelly = compute_kelly_fraction(summary, trades)
     costs = estimate_costs(summary, trades)
 
@@ -392,7 +406,7 @@ def build_report() -> dict:
 
     report = {
         "timestamp": now,
-        "status": "ok",
+        "status": "ok" if latest_meta is not None else "ok (no backtest)",
         "backtest_summary": summary,
         "dsr": dsr,
         "kelly": kelly,
@@ -465,20 +479,43 @@ def write_zeus_signal(verdict_data: dict, senses: dict | None = None) -> None:
     score = verdict_data.get("zeus_score", 0.0) or 0.0
     conf  = verdict_data.get("zeus_confidence", 0.0) or 0.0
     component_st = _build_component_status(senses)
+    gate = agent_guards.stage_and_gate(verdict_data, component_status=component_st)
+    proposal = gate.get("proposal", {})
+    guard_result = proposal.get("guards", {})
+    approval = proposal.get("approval_status", {})
+    approved_for_emit = bool(gate.get("approved")) or v == "FLAT"
+    emitted_v = v if approved_for_emit else "FLAT"
+    gate_message = verdict_data.get("message", "")
+    if not approved_for_emit:
+        gate_message = (
+            f"Zeus staged {v} but did not emit it: human approval required. "
+            f"Approve hash {proposal.get('proposal_hash', '')} in output/staging/APPROVE.txt."
+        )
     signal = {
-        "verdict":      v,
+        "verdict":      emitted_v,
+        "proposed_verdict": v,
         "score":        round(float(score), 4),
         "confidence":   round(float(conf), 4),
         "timestamp":    verdict_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
         # ── Gate PAPER: Apollo legge questi prima di agire ──
         "mode":         "PAPER",                   # sempre PAPER finché non attivato live
-        "allow_long":   v == "LONG",
-        "allow_short":  v == "SHORT",
-        "allow_any":    v not in ("FLAT",),
+        "allow_long":   emitted_v == "LONG",
+        "allow_short":  emitted_v == "SHORT",
+        "allow_any":    emitted_v not in ("FLAT",),
         "apollo_bridge": component_st["apollo_bridge"],  # SETUP_REQUIRED | SHADOW
+        # ── Staging/guardie: Alice clean-room, nessun broker in Zeus ──
+        "machine_gate": {
+            "state": proposal.get("state", "UNKNOWN"),
+            "approved": bool(approval.get("approved")),
+            "proposal_hash": proposal.get("proposal_hash"),
+            "proposal_file": gate.get("proposal_file"),
+            "approve_file": approval.get("approve_file"),
+            "guards_passed": bool(guard_result.get("passed")),
+            "guards": guard_result.get("checks", []),
+        },
         # ── Contesto sensi ──
         "active_senses": verdict_data.get("active_senses", 0),
-        "message":       verdict_data.get("message", ""),
+        "message":       gate_message,
         # ── Stato dettagliato componenti ──
         "component_status": component_st,
         # ── Istruzione per Apollo ──
@@ -516,18 +553,19 @@ def _push_report_if_cloud() -> None:
 
 def main() -> None:
     report = build_report()
-    write_json(OUTPUT_DIR / "daily_report.json", report)
-    write_json(OUTPUT_DIR / "strategy_status.json", report.get("strategy_status", {}))
 
-    # Scrivi zeus_signal.json — ponte verso Apollo (Apollo lo leggerà in futuro)
+    # Scrivi zeus_signal.json — ponte verso Apollo
     zv = report.get("zeus_verdict", {})
     senses = report.get("senses", {})
     if zv:
         write_zeus_signal(zv, senses=senses)
         print(f"zeus_signal.json → {zv.get('zeus_verdict')} (score={zv.get('zeus_score',0):+.3f})")
 
-    # Aggiungi component_status anche al report principale
+    # Aggiungi component_status PRIMA di scrivere il report su disco
     report["component_status"] = _build_component_status(senses)
+
+    write_json(OUTPUT_DIR / "daily_report.json", report)
+    write_json(OUTPUT_DIR / "strategy_status.json", report.get("strategy_status", {}))
 
     if report["status"] == "ok":
         print("daily_report.json aggiornato con backtest result.")

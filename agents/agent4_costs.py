@@ -65,7 +65,22 @@ def estimate_costs(backtest_summary: dict, trades: List[dict] = None) -> dict:
 
     trades = trades or []
     total_commission, total_slippage, total_funding = _total_trade_costs(trades)
-    patrimonio = float(backtest_summary.get("starting_balance") or backtest_summary.get("stake_amount") or backtest_summary.get("equity") or 1000.0)
+
+    # Se non ci sono trade reali E non c'è un backtest, non inventare costi
+    starting_balance_raw = backtest_summary.get("starting_balance") or backtest_summary.get("stake_amount") or backtest_summary.get("equity")
+    if not trades and starting_balance_raw is None:
+        result.update({
+            "commissioni_stimate": 0.0,
+            "slippage_stimato": 0.0,
+            "funding_stimato": 0.0,
+            "tassa_box3_stimata": None,
+            "tassa_box1_rischio": None,
+            "profit_netto_stimato": None,
+            "note": "Nessun dato backtest o trade disponibile — costi non stimabili.",
+        })
+        return result
+
+    patrimonio = float(starting_balance_raw or 1000.0)
     gross_profit = float(backtest_summary.get("profit_total_abs") or _total_profit(trades) or 0.0)
 
     tassa_box3 = patrimonio * 0.06 * 0.36
