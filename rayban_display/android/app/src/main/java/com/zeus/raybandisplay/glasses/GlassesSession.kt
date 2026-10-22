@@ -1,40 +1,45 @@
 package com.zeus.raybandisplay.glasses
 
 /**
- * Astrazione sulla sessione verso i Ray-Ban Meta (via Device Access Toolkit).
+ * Astrazione dell'app sopra il Meta Wearables Device Access Toolkit (DAT):
+ * registrazione, sessione, display e speech.
  *
- * ⚠️ IPOTESI — nessuna implementazione reale del DAT SDK è disponibile in
- * questo ambiente di sviluppo: l'SDK è distribuito tramite Developer Preview
- * gated (wearables.developer.meta.com) e non è stato possibile scaricarlo né
- * testarlo qui. Questa interfaccia riflette il flusso descritto nella doc
- * pubblica di Meta (sessione → eventi microfono → render su display), ma le
- * firme esatte delle classi DAT reali vanno verificate e adattate quando si
- * ha accesso all'SDK.
+ * Le firme qui sotto riflettono le API reali documentate nel repo ufficiale
+ * `facebook/meta-wearables-dat-android` (letto in questa sessione, commit
+ * f4371bc, AGENTS.md + regole .cursor/rules/display-access.mdc e speech.mdc):
+ * `Wearables.initialize`, `Wearables.startRegistration`,
+ * `Wearables.createSession`, `session.addDisplay()`, `session.addSpeech()`.
+ *
+ * ⚠️ Speech e Display restano capability "experimental": si possono
+ * sviluppare e testare ma non pubblicare ancora sui canali di release
+ * pubblici di Meta (vedi plugins/mwdat-android/skills/speech/SKILL.md e
+ * rayban_display/README.md).
  */
 interface GlassesSession {
-    /** Apre la sessione verso l'app Meta AI / gli occhiali associati. */
-    suspend fun connect()
+    /** true se la registrazione app↔Meta AI è completata (RegistrationState.REGISTERED). */
+    val isRegistered: Boolean
 
-    /** Chiude la sessione e libera le risorse. */
-    fun disconnect()
-
-    /** true se la sessione è attualmente connessa a un paio di occhiali. */
+    /** true se la sessione verso gli occhiali è DeviceSessionState.STARTED. */
     val isConnected: Boolean
 
-    /** Registra un listener per gli eventi di trascrizione vocale e di stato. */
+    /** Avvia la registrazione (apre l'app Meta AI) e poi la sessione. */
+    fun connect()
+
+    /** Ferma display/speech e la sessione. */
+    fun disconnect()
+
     fun setListener(listener: GlassesSessionListener)
 
-    /** Invia un testo da mostrare sul display degli occhiali. */
+    /** Mostra una card di testo sul display (sostituisce il contenuto precedente). */
     suspend fun showOnDisplay(title: String, body: String)
 }
 
 interface GlassesSessionListener {
-    /** Chiamato quando il microfono degli occhiali produce una trascrizione finale. */
-    fun onTranscript(text: String)
-
-    /** Chiamato quando lo stato della connessione cambia. */
+    fun onRegistrationChanged(registered: Boolean)
     fun onConnectionStateChanged(connected: Boolean)
 
-    /** Chiamato su errori non recuperabili della sessione DAT. */
+    /** Trascrizione FINALE dal riconoscimento vocale sugli occhiali (result.isFinal == true). */
+    fun onTranscript(text: String)
+
     fun onError(message: String)
 }

@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Richiesti per fare da proxy verso il backend dell'agente -->
+    <!-- Richiesti dal Meta Wearables Device Access Toolkit (DAT) per la
+         sessione verso gli occhiali, verificati in
+         facebook/meta-wearables-dat-android, samples/DisplayAccess. -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!--
-    ⚠️ IPOTESI: i permessi/categorie per la pairing con gli occhiali e per
-    l'accesso al microfono/display via DAT dipendono dalla Developer Preview
-    SDK di Meta (non pubblici in questo ambiente). Da completare seguendo la
-    documentazione ufficiale, es. eventuali <queries> per l'app Meta AI.
-    -->
 
     <application
+        android:name=".RaybanDisplayApplication"
         android:allowBackup="true"
         android:label="Rayban Display Agent"
         android:theme="@style/Theme.RaybanDisplayAgent">
+
+        <!-- Meta Wearables Device Access Toolkit — setup.
+             Senza Developer Mode, sostituire con le credenziali reali
+             ottenute dal Wearables Developer Center. -->
+        <meta-data
+            android:name="com.meta.wearable.mwdat.APPLICATION_ID"
+            android:value="${mwdat_application_id}" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CLIENT_TOKEN"
+            android:value="${mwdat_client_token}" />
 
         <activity
             android:name=".ui.MainActivity"

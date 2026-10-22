@@ -1,11 +1,11 @@
 # Rayban Display Agent — scheletro
 
 Scheletro di progetto per collegare un **agente vocale LLM generico (con tool
-calling)** al display dei **Ray-Ban Meta Display**, seguendo l'architettura
-ufficiale Meta (Wearables Device Access Toolkit, DAT):
+calling)** al display dei **Ray-Ban Meta Display**, usando il
+**Meta Wearables Device Access Toolkit (DAT)**:
 
 ```
-Microfono occhiali → DAT → app Android → POST /agent/invoke → risposta → DAT → Display occhiali
+Microfono occhiali → DAT (speech) → app Android → POST /agent/invoke → risposta → DAT (display) → Display occhiali
 ```
 
 Non è legato a Zeus/MiroFish: vive in questo repo solo come modulo
@@ -13,56 +13,100 @@ indipendente (`rayban_display/`). L'unico punto di contatto opzionale è il
 tool `zeus_status` nel backend, che legge `output/daily_report.json` se
 presente — rimovibile senza impatti.
 
+## Link utili (controllali tu stesso)
+
+- **Developer Center DAT** (iscrizione, Application ID / Client Token, gestione progetti): https://wearables.developer.meta.com
+- **Guida "Getting started"**: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit/
+- **Guida integrazione Android**: https://wearables.developer.meta.com/docs/build-integration-android
+- **API reference Android**: https://wearables.developer.meta.com/docs/reference/android/dat/latest
+- **Repo ufficiale SDK Android** (sample app incluse): https://github.com/facebook/meta-wearables-dat-android
+- **Repo ufficiale SDK iOS**: https://github.com/facebook/meta-wearables-dat-ios
+- **Annuncio toolkit** (maggio 2026): https://developers.meta.com/blog/introducing-meta-wearables-device-access-toolkit/
+- **Toolkit 1.0** (30 settembre 2026): https://developers.meta.com/blog/build-for-display-glasses/
+
+## Aggiornamento 2026-10-22: cosa è cambiato rispetto alla prima versione
+
+La prima versione di questo scheletro (commit precedente) trattava l'SDK DAT
+come non verificabile (Developer Preview gated, coordinate Maven ignote).
+Ricerca e verifica in questa sessione hanno corretto quell'assunzione:
+
+- Il toolkit è **pubblico** su GitHub (`facebook/meta-wearables-dat-android`,
+  licenza "Meta Wearables Developer Terms") e pubblicato su **Maven Central**
+  sotto il gruppo `com.meta.wearable`, versione `1.0.1` — **nessun token o
+  repository extra richiesto** (contraddice una vecchia indicazione "GitHub
+  Packages + token" trovata in una fonte terza: la fonte primaria, il README
+  del repo, non la richiede).
+- Il toolkit è passato da *developer preview* (maggio 2026) a **1.0 stabile**
+  dal 30 settembre 2026, per Ray-Ban Meta (Gen 1/2), Ray-Ban Meta Display,
+  Oakley Meta HSTN e Oakley Meta Vanguard.
+- ⚠️ **Importante per questo progetto**: **Speech** (riconoscimento vocale
+  sugli occhiali) e, in parte, **Display** restano capability
+  **"experimental"**: si possono sviluppare e testare (anche in beta), ma
+  **Meta non consente ancora di pubblicarle sui canali di release pubblici**.
+  Quindi oggi si può costruire e provare un agente vocale con display, ma
+  **non distribuirlo pubblicamente** finché Meta non stabilizza queste due
+  capability. Fonte: `plugins/mwdat-android/skills/speech/SKILL.md` nel repo
+  ufficiale ("Apps can use it for development and beta testing, but cannot
+  publish it to production release channels yet").
+- Ho aggiornato `android/` con le dipendenze Gradle reali
+  (`com.meta.wearable:mwdat-core/display/speech/mockdevice:1.0.1`), i
+  permessi/manifest reali (`BLUETOOTH`, `BLUETOOTH_CONNECT`, `INTERNET` +
+  meta-data `APPLICATION_ID`/`CLIENT_TOKEN`), e un `glasses/RealGlassesSession.kt`
+  che segue i pattern documentati (registrazione → sessione → `addDisplay()` /
+  `addSpeech()` → `sendContent` / `transcriptions`), al posto del vecchio
+  stub inventato. Ho anche copiato il Gradle wrapper (binario generico,
+  Apache License, identico in ogni progetto Android) dal sample ufficiale
+  `DisplayAccess`, così il progetto è davvero compilabile con
+  `./gradlew assembleDebug` una volta aperto in Android Studio con l'SDK
+  Android installato.
+
 ## Stato — cosa è ✅ VERIFICATO e cosa è ⚠️ IPOTESI
 
 - ✅ **VERIFICATO**: il backend FastAPI (`backend/app/`) importa ed esegue
-  correttamente in questo ambiente. Test eseguiti con `TestClient`:
-  - `GET /health` → `200 {"status": "ok", "model": "llama3-8b-8192"}`
-  - `POST /agent/invoke` senza `LLM_API_KEY` configurata → `502` con messaggio
-    chiaro (nessuna chiamata di rete, nessun crash).
-  - `tools.py`: `get_time` e `zeus_status` eseguiti a mano, `zeus_status` ha
-    letto il vero `output/daily_report.json` del repo e prodotto
-    `"Zeus (2026-06-09T06:05:02.574786+00:00): DSR 0.0037, Kelly 0.0000"`.
-  - Non è stata testata la chiamata reale a Groq/OpenAI (serve una
-    `LLM_API_KEY` valida, non presente in questo ambiente): il loop di
-    tool-calling in `agent.py` è scritto seguendo lo schema OpenAI-compatibile
-    standard ma **non è stato verificato end-to-end contro un vero LLM**.
+  correttamente. Test con `TestClient`: `GET /health` → 200; `POST
+  /agent/invoke` senza `LLM_API_KEY` → 502 con messaggio chiaro; tool
+  `get_time`/`zeus_status` eseguiti con successo (`zeus_status` ha letto il
+  vero `output/daily_report.json` del repo).
+- ✅ **VERIFICATO** (fonte primaria, non ipotesi): le coordinate Gradle
+  (`com.meta.wearable:mwdat-*:1.0.1`, Maven Central, nessun token), i
+  permessi manifest, i meta-data `APPLICATION_ID`/`CLIENT_TOKEN`, e le firme
+  delle API Kotlin usate in `RealGlassesSession.kt` (`Wearables.initialize`,
+  `Wearables.startRegistration`, `Wearables.createSession`,
+  `session.addDisplay()`, `session.addSpeech()`, `display.sendContent {
+  flexBox { ... } }`, `speech.transcriptions`) — letti direttamente dal
+  codice e dalla documentazione del repo ufficiale `facebook/meta-wearables-
+  dat-android` (commit `f4371bc`), non da fonti terze.
+- ⚠️ **IPOTESI (non verificato in questa sessione)**:
+  - Nessuna compilazione reale: questo ambiente non ha Android SDK né
+    emulatore, quindi `RealGlassesSession.kt` non è stato compilato né
+    eseguito. La sintassi segue i sample ufficiali ma potrebbe avere piccoli
+    errori di battitura non colti senza una build reale.
+  - Nessun test contro hardware reale né contro MockDeviceKit (serve una
+    macchina con Android Studio + dispositivo/emulatore).
+  - Nessuna chiamata reale a un LLM nel backend (manca una `LLM_API_KEY`
+    valida in questo ambiente).
+  - `APPLICATION_ID`/`CLIENT_TOKEN` reali non ottenuti: in questa sessione
+    nessuno ha un account sul Wearables Developer Center collegato.
 
-- ⚠️ **IPOTESI (non verificato)**: tutta la parte Android/`glasses/`:
-  - Il modulo Android **non è stato compilato né eseguito**: questo ambiente
-    non ha Android SDK, emulatore, né accesso al Meta Wearables DAT SDK (è
-    dietro Developer Preview gated, richiede iscrizione su
-    `wearables.developer.meta.com`).
-  - `glasses/GlassesSession.kt` è un'interfaccia scritta sulla base del
-    flusso descritto nella documentazione pubblica Meta, ma le classi/metodi
-    reali del DAT SDK vanno verificati quando si ha accesso effettivo.
-  - `glasses/StubGlassesSession.kt` è un finto "occhiali" per poter sviluppare
-    e testare il resto dell'app (UI + chiamata al backend) senza hardware.
-  - Le coordinate Maven del DAT SDK in `android/app/build.gradle.kts` e
-    `android/settings.gradle.kts` sono placeholder commentati, non reali.
-
-**Non dichiarare mai "funziona con gli occhiali reali"**: finché
-`StubGlassesSession` non è sostituito da un'implementazione reale e testata
-su hardware, questo resta uno scheletro lato software.
+**Non dichiarare "funziona con gli occhiali reali" finché non è stato
+testato almeno con MockDeviceKit o hardware vero** — questa resta la regola
+di tracciabilità del progetto.
 
 ## Struttura
 
 ```
 rayban_display/
-├── backend/                      # Proxy FastAPI verso l'LLM
-│   ├── app/
-│   │   ├── main.py               # Endpoint /health, /agent/invoke
-│   │   ├── agent.py              # Loop tool-calling verso endpoint OpenAI-compatibile
-│   │   ├── tools.py               # Tool di esempio (get_time, zeus_status)
-│   │   ├── schemas.py             # Modelli Pydantic richiesta/risposta
-│   │   └── config.py              # Lettura .env
-│   ├── requirements.txt
-│   └── .env.example
-└── android/                       # App companion (Kotlin)
+├── backend/                      # Proxy FastAPI verso l'LLM (invariato)
+└── android/
+    ├── local.properties.example   # mwdat_application_id / mwdat_client_token
+    ├── gradle/libs.versions.toml  # versioni verificate (AGP 8.11.1, Kotlin 2.2.21, mwdat 1.0.1)
     └── app/src/main/java/com/zeus/raybandisplay/
-        ├── ui/MainActivity.kt      # UI minima: connetti, simula voce, mostra risposta
-        ├── net/AgentApiClient.kt   # Client Retrofit verso il backend
-        └── glasses/                # Astrazione sessione DAT + stub
+        ├── RaybanDisplayApplication.kt  # Wearables.initialize(this)
+        ├── ui/MainActivity.kt            # UI minima + wiring
+        ├── net/AgentApiClient.kt         # client verso il backend
+        └── glasses/
+            ├── GlassesSession.kt          # interfaccia app-specifica
+            └── RealGlassesSession.kt      # implementazione sulle API DAT reali
 ```
 
 ## Come avviare il backend (verificato)
@@ -74,8 +118,6 @@ cp .env.example .env   # poi inserire una vera LLM_API_KEY (Groq/OpenAI-compatib
 uvicorn app.main:app --reload --port 8000
 ```
 
-Test rapido:
-
 ```bash
 curl http://127.0.0.1:8000/health
 curl -X POST http://127.0.0.1:8000/agent/invoke \
@@ -83,29 +125,37 @@ curl -X POST http://127.0.0.1:8000/agent/invoke \
   -d '{"session_id": "s1", "text": "che ore sono?"}'
 ```
 
-## Come procedere sull'app Android (non ancora possibile qui)
+## Come procedere sull'app Android (passi concreti, non ancora eseguiti qui)
 
-1. Iscriversi alla Developer Preview del Wearables DAT su
-   `wearables.developer.meta.com` e ottenere l'SDK reale per Android.
-2. Aprire `rayban_display/android/` in Android Studio (genererà da solo il
-   Gradle wrapper mancante — in questo ambiente non è stato possibile
-   scaricare il binario `gradle-wrapper.jar`, nessun accesso di rete a
-   servizi Gradle).
-3. Aggiungere la dipendenza reale del DAT SDK in `app/build.gradle.kts` al
-   posto del placeholder commentato.
-4. Creare `glasses/RealGlassesSession.kt` che implementa `GlassesSession`
-   con le classi vere del DAT SDK (sessione, callback microfono, display).
-5. In `MainActivity.kt`, sostituire `StubGlassesSession()` con
-   `RealGlassesSession(context)`.
-6. Puntare `AgentApiClient` al backend reale (di default assume
-   `10.0.2.2:8000`, cioè l'host visto da un emulatore Android; su dispositivo
-   fisico va sostituito con l'IP/hostname raggiungibile del backend).
+1. Vai su https://wearables.developer.meta.com, crea un account/organizzazione,
+   crea un progetto e abilita la **Developer Mode** sull'app Meta AI del tuo
+   telefono (richiede Android 10+ e l'app Meta AI installata).
+2. Apri `rayban_display/android/` in Android Studio (Flamingo o più recente).
+   Lo SDK Android e il Gradle wrapper servono una toolchain reale che questo
+   ambiente cloud non ha.
+3. Copia `local.properties.example` in `local.properties` (già in
+   `.gitignore`); in Developer Mode puoi lasciare `0`/`0`.
+4. `./gradlew assembleDebug` per la prima build. Se fallisce per versioni di
+   AGP/Kotlin/SDK, allinea `gradle/libs.versions.toml` a quanto richiesto
+   dalla tua installazione di Android Studio.
+5. Per testare senza occhiali fisici, usa `MockDeviceKit`
+   (`mwdat-mockdevice`, già in `build.gradle.kts`): `MockDeviceKit
+   .getInstance(context).enable()`, poi `pairGlasses(GlassesModel.RAYBAN_META)`,
+   e per la voce `glasses.services.speech.simulateTranscription("...", isFinal
+   = true)`. Pattern completo nel repo ufficiale,
+   `.cursor/rules/mockdevice-testing.mdc` e
+   `plugins/mwdat-android/skills/speech/SKILL.md`.
+6. Per il device reale, abbina gli occhiali all'app Meta AI, abilita
+   Developer Mode sul dispositivo, poi premi "Connetti" nell'app: parte la
+   registrazione (`Wearables.startRegistration`), poi la sessione.
+7. Prima di qualunque pubblicazione pubblica, verifica lo stato aggiornato di
+   Speech/Display sul Developer Center: a oggi (2026-10-22) sono
+   "experimental" e non pubblicabili sui canali pubblici di release.
 
 ## Note di sicurezza
 
 - `RAYBAN_BACKEND_API_KEY` (opzionale in `.env`) protegge `/agent/invoke` con
-  un header `X-API-Key`. In produzione andrebbe sempre impostata, insieme a
-  HTTPS (qui non configurato: è uno scheletro locale/dev).
-- Nessuna chiave è hardcoded nel codice: tutto passa da `.env` /
-  variabili d'ambiente, seguendo la stessa convenzione già in uso nel resto
-  del repo Zeus.
+  un header `X-API-Key`.
+- Nessuna chiave è hardcoded: `LLM_API_KEY` nel backend e
+  `mwdat_application_id`/`mwdat_client_token` nell'app passano da `.env` /
+  `local.properties`, entrambi gitignored.

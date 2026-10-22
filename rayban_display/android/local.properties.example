@@ -1,0 +1,8 @@
+# Copiare in local.properties (gitignored) nella root di rayban_display/android/.
+# Valori ottenuti dal Wearables Developer Center (wearables.developer.meta.com).
+# In Developer Mode possono restare "0".
+mwdat_application_id=0
+mwdat_client_token=0
+
+# Posizione dell'Android SDK, se Android Studio non lo rileva da solo.
+# sdk.dir=/path/to/Android/sdk

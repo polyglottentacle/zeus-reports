@@ -1,21 +1,25 @@
 pluginManagement {
     repositories {
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        // Il Meta Wearables Device Access Toolkit (gruppo com.meta.wearable) è
+        // pubblicato su Maven Central: nessun repository extra o token richiesto.
+        // Verificato in facebook/meta-wearables-dat-android (AGENTS.md, 2026-10-22).
         mavenCentral()
-        // ⚠️ IPOTESI: il Meta Wearables Device Access Toolkit (DAT) per Android
-        // non è su Maven Central/jcenter pubblico al momento della scrittura.
-        // Va aggiunto il repository Maven indicato nella Developer Preview una
-        // volta ottenuto l'accesso su wearables.developer.meta.com. Esempio
-        // placeholder, DA VERIFICARE con la doc ufficiale:
-        // maven { url = uri("https://artifactory.meta.com/wearables-dat") }
     }
 }
 
