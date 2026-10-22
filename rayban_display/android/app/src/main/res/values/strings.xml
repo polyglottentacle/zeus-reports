@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rayban Display Agent</string>
+    <string name="status_disconnected">Disconnesso</string>
+    <string name="connect_glasses">Connetti agli occhiali</string>
+    <string name="voice_input_hint">Testo (simula trascrizione vocale)</string>
+    <string name="simulate_voice">Simula voce → agente</string>
+    <string name="display_preview_label">Anteprima display occhiali</string>
+</resources>

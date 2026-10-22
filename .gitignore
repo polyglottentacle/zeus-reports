@@ -34,6 +34,8 @@ ochi/**/__pycache__/
 secrets/
 *secret*
 *credenziali*
+# Template senza chiavi reali, va versionato
+!rayban_display/backend/.env.example
 
 # Common editor/temp files
 *.swp

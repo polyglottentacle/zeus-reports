@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Richiesti per fare da proxy verso il backend dell'agente -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+    ⚠️ IPOTESI: i permessi/categorie per la pairing con gli occhiali e per
+    l'accesso al microfono/display via DAT dipendono dalla Developer Preview
+    SDK di Meta (non pubblici in questo ambiente). Da completare seguendo la
+    documentazione ufficiale, es. eventuali <queries> per l'app Meta AI.
+    -->
+
+    <application
+        android:allowBackup="true"
+        android:label="Rayban Display Agent"
+        android:theme="@style/Theme.RaybanDisplayAgent">
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
